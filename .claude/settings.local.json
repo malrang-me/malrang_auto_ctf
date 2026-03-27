@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wsl *)",
+      "Bash(python *)",
+      "Bash(powershell.exe -ExecutionPolicy Bypass -File *malrang_auto_ctf*)",
+      "Bash(nc *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(file *)",
+      "Bash(strings *)",
+      "Bash(docker *)",
+      "Bash(pip install *)",
+      "Bash(cd *)",
+      "mcp__filesystem__*",
+      "mcp__py-repl__*",
+      "mcp__pwn-local__*",
+      "mcp__solver-z3__*",
+      "mcp__solver-pysat__*",
+      "mcp__solver-cryptominisat__*",
+      "mcp__sage-helper__*",
+      "WebSearch(*)",
+      "WebFetch(domain:dreamhack.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:ctftime.org)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "docker",
+    "filesystem",
+    "github",
+    "ida-pro-mcp",
+    "notion",
+    "pwn-local",
+    "solver-z3",
+    "py-repl",
+    "solver-pysat",
+    "sage-helper",
+    "solver-cryptominisat"
+  ]
+}

@@ -1,0 +1,30 @@
+# Downloads staging
+_downloads/*.zip
+_downloads/*.tar.gz
+
+# Challenge binaries & runtime
+challenges/*/deploy/
+challenges/*/core
+challenges/*/*.so*
+challenges/*/ld-*
+challenges/*/flag
+challenges/*/LAST_RUN.log
+challenges/*/__pycache__/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Pwntools cache
+.pwntools-cache/
