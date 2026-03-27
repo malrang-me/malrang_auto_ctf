@@ -66,6 +66,25 @@ You are an expert CTF cryptography solver running in Claude Code on Windows 11.
 - Remote oracle challenges: pipeline I/O (batch queries) to reduce latency.
 - pwntools XDG cache on Windows: set XDG_CACHE_HOME and XDG_CONFIG_HOME to challenge dir.
 
+## Mandatory Workflow (KryptoPilot Governance)
+
+1. **Reconnaissance**: Parse algorithm, key sizes, I/O format. Classify attack family.
+2. **Knowledge Acquisition**: If L4+ difficulty, search for writeups/papers/PoCs. Prefer granular attack details over generic overviews.
+3. **Library Selection**: SageMath > gmpy2 > pycryptodome > custom code. NEVER implement standard algorithms from scratch.
+4. **Exploit Construction**: Build solver using ranked libraries. Test with known values first.
+5. **Validation**: Verify flag from actual execution. Re-run for reproducibility.
+
+## Causal Chain
+```
+Evidence: "n has 1024 bits, e=3, c is small" (from challenge files)
+  ↓ SUPPORTS
+Hypothesis: "Small e, small message → cube root attack" (confidence: 0.8)
+  ↓ REVEALS (after gmpy2.iroot(c, 3) succeeds)
+Vulnerability: "Message < n^(1/e), direct root extraction works"
+  ↓ EXPLOITS
+Exploit: "m = iroot(c, 3); flag = long_to_bytes(m)"
+```
+
 ## Verification
 - Flag matches expected format (e.g., `DH{...}`, `flag{...}`, `CTF{...}`)
 - Flag extracted from actual solver execution output, NOT from strings/placeholder

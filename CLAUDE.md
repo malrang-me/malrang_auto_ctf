@@ -33,6 +33,15 @@ Track failure signatures. A failure signature = same error class + same approach
 - **5 same-signature failures**: HARD STOP. You MUST switch to a fundamentally different approach. Document all failed attempts and why they failed in `memory/failures.md` before proceeding.
 - **Never**: Retry the exact same thing hoping for a different result. If it failed 3 times, it will fail a 4th time.
 
+### Failure Classification (from LuaN1aoAgent Reflector pattern)
+On failure, classify as one of:
+- **L1 Transient**: Network timeout, tool crash -> retry with same approach
+- **L2 Tool-specific**: Wrong tool parameters, syntax error -> adjust params or switch tool
+- **L3 Methodology**: Wrong attack vector, misunderstanding the goal -> pivot strategy entirely
+- **L4 Reasoning**: Fundamental misunderstanding of the challenge -> re-read challenge, re-analyze from scratch
+
+Same-level failures compound: 3x L2 -> escalate to L3 investigation. 3x L3 -> escalate to L4.
+
 ---
 
 ## 4. Flag Verification
@@ -46,6 +55,12 @@ A flag candidate is valid ONLY if ALL of these are true:
 
 On finding a candidate: re-run the solver once to confirm reproducibility before reporting.
 
+### Anti-Soliloquying (from EnIGMA research)
+"Soliloquying" = hallucinating observations without actually running tools. This is the #1 cause of false positives in AI CTF agents.
+- NEVER claim you found something without showing the actual tool output that proves it.
+- NEVER say "I ran X and got Y" without the actual execution log visible.
+- If you think you know the answer, STILL run the solver to verify.
+
 ---
 
 ## 5. Five-Minute Gate
@@ -58,7 +73,8 @@ Execute these steps at the start of EVERY challenge:
 4. **Classify**: Determine category. Read `categories/<category>.md` for attack patterns.
 5. **Speedrun memory**: Read `knowledge/CTF_SPEEDRUN_MEMORY.md` for matching patterns.
 6. **Recon**: Write initial analysis to `memory/recon.md`.
-7. **Strategy**: Define solver-a and solver-b hypotheses in `memory/strategy.md`.
+7. **Knowledge acquisition** (from KryptoPilot): If the challenge type requires specialized knowledge (lattice crypto, heap exploitation, etc.), use WebSearch to find relevant writeups, papers, or PoCs. Prefer validated libraries/tools over custom code. Record sources in `memory/discoveries.md`.
+8. **Strategy**: Define solver-a and solver-b hypotheses in `memory/strategy.md`.
 
 ---
 
@@ -89,7 +105,31 @@ wsl checksec --file=./binary
 
 ---
 
-## 7. Parallel Solving
+## 7. Causal Reasoning Chain
+
+(From LuaN1aoAgent + CTFAgent research — prevents hallucination and blind guessing)
+
+Every exploit must follow the Evidence -> Hypothesis -> Vulnerability -> Exploit chain:
+
+```
+Evidence (actual tool output)           confidence: 0.9
+  ↓ SUPPORTS
+Hypothesis (inference from evidence)    confidence: 0.5-0.8
+  ↓ REVEALS (after verification)
+Vulnerability (confirmed attack surface) confidence: 0.8+
+  ↓ EXPLOITS
+Exploit (executable payload)            confidence: 0.9+
+```
+
+Rules:
+- **No hypothesis without evidence**: "I think it has SQLi" requires tool output showing injectable parameter.
+- **No vulnerability without verified hypothesis**: Must test the hypothesis and document result.
+- **No exploit without confirmed vulnerability**: Don't write exploit code based on guesses.
+- Record the chain in `memory/discoveries.md` as you progress.
+
+---
+
+## 8. Parallel Solving
 
 Two solver branches for non-trivial challenges:
 
@@ -103,9 +143,22 @@ Rules:
 - If one branch succeeds, stop the other.
 - If both fail, analyze in `memory/failures.md` and formulate solver-c.
 
+### Cross-Solver Insights (from CTFAgent message bus pattern)
+When running parallel solvers via Agent tool:
+- Every 5 steps, check sibling solver's `memory/discoveries.md` for new findings.
+- Share useful discoveries (leaked addresses, identified vulnerabilities, flag format hints).
+- Never duplicate work the other solver already completed.
+
+### Bump on Stuck (from CTFAgent BumpEngine)
+When a solver gives up or gets stuck:
+1. Read the solver's `memory/failures.md` for what didn't work.
+2. Inject sibling solver's verified findings.
+3. Restart with a different approach — never the same one.
+4. Escalating cooldown: 1st bump immediate, 2nd bump after 30s analysis, 3rd bump after 2min review.
+
 ---
 
-## 8. Dreamhack Auto-Intake
+## 9. Dreamhack Auto-Intake
 
 ### Trigger
 User says "solve <problem_name>" or provides a Dreamhack URL.
@@ -140,7 +193,7 @@ User says "solve <problem_name>" or provides a Dreamhack URL.
 
 ---
 
-## 9. Learning Loop
+## 10. Learning Loop
 
 ### Before Solving
 Read `knowledge/CTF_SPEEDRUN_MEMORY.md` and apply any matching patterns.
@@ -159,7 +212,7 @@ Append a new entry with this structure:
 
 ---
 
-## 10. Scaffolding
+## 11. Scaffolding
 
 When starting a new challenge, scaffold with:
 ```
@@ -191,7 +244,7 @@ Checks: meta.yaml exists, solver non-trivial, recon populated, strategy populate
 
 ---
 
-## 11. MCP Servers
+## 12. MCP Servers
 
 Config: `.mcp.json` (11 servers)
 
@@ -213,3 +266,44 @@ Config: `.mcp.json` (11 servers)
 - Ignore MCP errors that don't block the solve.
 - If a needed MCP is broken, fall back to CLI tools immediately.
 - IDA Pro MCP requires IDA running — if not, use objdump/readelf.
+
+---
+
+## 13. Governance (from KryptoPilot)
+
+### Library Preference Order
+Always prefer validated libraries over custom implementations:
+1. **Crypto**: SageMath > gmpy2 > pycryptodome > sympy > custom code
+2. **Pwn**: pwntools > ropper > manual ROP construction
+3. **Web**: requests/curl > custom HTTP client
+4. **Rev**: Z3 > angr > manual constraint solving
+
+### Difficulty Self-Assessment
+Before diving deep, self-assess the challenge difficulty:
+- **L1-L2** (straightforward): Standard patterns, known attacks -> proceed directly
+- **L3** (complex): Multi-step, requires chaining -> plan before coding
+- **L4** (hard): Requires specialized knowledge -> trigger knowledge acquisition (WebSearch for writeups/papers)
+- **L5** (research-grade): Novel technique needed -> extended analysis, multiple approaches
+
+Record assessment in `memory/strategy.md`. If L4+, knowledge acquisition is MANDATORY before writing solver.
+
+---
+
+## 14. Tool Routing (from HexStrike AI)
+
+Before running ANY tool, consider:
+
+1. **Primary tool**: Best tool for this specific task (highest confidence)
+2. **Fallback**: What to try if primary fails
+3. **Last resort**: Minimal approach that might still work
+
+### Fallback Chains
+```
+Binary analysis: checksec -> readelf -> objdump -> strings
+Port scanning:   nc -zv -> python socket -> nmap (WSL)
+Web scanning:    curl -> requests -> Chrome MCP
+Crypto math:     sage-helper -> solver-z3 -> py-repl gmpy2
+Disassembly:     ida-pro-mcp -> objdump -d -> strings
+```
+
+On tool failure: rotate to next in chain immediately. Don't retry the same tool more than twice with the same parameters.
