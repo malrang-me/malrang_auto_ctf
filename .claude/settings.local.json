@@ -22,7 +22,21 @@
       "WebSearch(*)",
       "WebFetch(domain:dreamhack.io)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:ctftime.org)"
+      "WebFetch(domain:ctftime.org)",
+      "WebFetch(domain:r.jina.ai)"
+    ]
+  },
+  "hooks": {
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/check_completion.sh",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "enabledMcpjsonServers": [

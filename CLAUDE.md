@@ -1,4 +1,4 @@
-# CLAUDE.md — malrang_auto_ctf
+# CLAUDE.md — malrang_auto_ctf v2
 
 Autonomous CTF solving framework for Claude Code.
 BASE = `C:\Users\malrangme\Desktop\malrang_auto_ctf`
@@ -10,6 +10,66 @@ BASE = `C:\Users\malrangme\Desktop\malrang_auto_ctf`
 - Every challenge runs end-to-end: analyze -> write solver -> execute -> verify -> report flag.
 - "Idea only" is never acceptable. Completion = flag recovered + verified + reported for manual submission.
 - The recovered flag MUST be printed clearly in the final report so the user can copy-paste it.
+
+---
+
+## 1.5. Architecture: Agent Teams
+
+**MANDATORY**: Use Agent Teams for all non-trivial challenges. Never solve directly.
+Spawn agents via `subagent_type="<role>"` from `.claude/agents/*.md`.
+
+### Pipeline Selection (see `.claude/rules/ctf_pipeline.md` for full detail)
+
+```
+trivial (1-3 line bug):  ctf-solver → reporter                              (2-agent)
+crypto / reversing:      reverser → solver → critic → verifier → reporter    (5-agent)
+pwn (vuln clear):        reverser → chain → critic → verifier → reporter     (5-agent)
+pwn (vuln unclear):      reverser → trigger → chain → critic → verifier      (6-agent)
+web:                     scout → analyst → exploiter → reporter              (4-agent)
+```
+
+### Agent Model Assignment (MANDATORY — no spawn without model)
+
+| Agent | Model | Role |
+|-------|-------|------|
+| reverser | sonnet | Structure analysis, attack map |
+| solver | opus | Constraint solving, inverse computation |
+| chain | opus | Pwn exploit chain assembly |
+| critic | opus | Adversarial 2-stage review |
+| verifier | sonnet | Execution verification |
+| reporter | sonnet | Writeup documentation |
+| ctf-solver | sonnet | Trivial single-agent fallback |
+
+### Structured Handoff Protocol
+
+All agent transitions MUST use:
+```
+[HANDOFF from @<agent> to @<next_agent>]
+- Finding/Artifact: <filename>
+- Confidence: PASS / PARTIAL / FAIL
+- Key Result: <1-2 sentence core result>
+- Next Action: <specific task for next agent>
+- Blockers: <if any, else "None">
+[KNOWLEDGE CONTEXT]: <relevant past challenges/techniques from knowledge/>
+```
+
+### Checkpoint Protocol
+
+All work agents maintain `<challenge_dir>/checkpoint.json`:
+```json
+{"agent":"solver","status":"in_progress","phase":2,"completed":["recon"],"in_progress":"z3_formulation","critical_facts":{},"timestamp":"..."}
+```
+- `status`: `in_progress` | `completed` | `error`
+- Agent idle with `status != completed` → **FAKE IDLE** → resume or respawn
+- Hook `.claude/hooks/check_completion.sh` auto-detects this
+
+### Context Positioning (Lost-in-Middle Prevention)
+```
+[Lines 1-2] Critical Facts — vuln type, key values, FLAG conditions
+[Lines 3-5] Remote info — host:port, platform, interaction limits
+[Middle]    Agent definition (auto-loaded)
+[End]       HANDOFF detail (full context, failure history)
+```
 
 ---
 
@@ -129,7 +189,7 @@ Rules:
 
 ---
 
-## 8. Parallel Solving
+## 8. Parallel Solving & Dual-Approach
 
 Two solver branches for non-trivial challenges:
 
@@ -143,6 +203,16 @@ Rules:
 - If one branch succeeds, stop the other.
 - If both fail, analyze in `memory/failures.md` and formulate solver-c.
 
+### Dual-Approach Auto-Trigger (after 2 failures)
+
+When solver/chain fails 2x consecutively:
+```
+Orchestrator spawns 2 agents simultaneously:
+  solver-A (subagent_type="solver", approach A) + solver-B (subagent_type="solver", approach B)
+  First success adopted, other terminated.
+```
+After 4 failures: mandatory `WebSearch` for external writeups.
+
 ### Cross-Solver Insights (from CTFAgent message bus pattern)
 When running parallel solvers via Agent tool:
 - Every 5 steps, check sibling solver's `memory/discoveries.md` for new findings.
@@ -155,6 +225,13 @@ When a solver gives up or gets stuck:
 2. Inject sibling solver's verified findings.
 3. Restart with a different approach — never the same one.
 4. Escalating cooldown: 1st bump immediate, 2nd bump after 30s analysis, 3rd bump after 2min review.
+
+### Critic 2-Stage Review (from Terminator)
+Critic agent performs TWO review stages:
+1. **Fact-Check**: Verify every address, offset, constant against binary/server output. GDB/tool verification mandatory.
+2. **Logic Review**: Trace full exploit chain. Check ASLR handling, payload fit, ROP constraints, mathematical correctness.
+- APPROVED requires ALL checks pass. Single failure = REJECTED with specific fix instructions.
+- See `.claude/agents/critic.md` for full checklist.
 
 ---
 
@@ -193,13 +270,29 @@ User says "solve <problem_name>" or provides a Dreamhack URL.
 
 ---
 
-## 10. Learning Loop
+## 10. Learning Loop & Knowledge System
+
+### Knowledge Base Structure
+```
+knowledge/
+├── index.md                    # Master challenge index (solved/attempted)
+├── CTF_SPEEDRUN_MEMORY.md      # Quick-reference speed patterns
+├── techniques/                 # Reusable technique guides
+│   └── efficient_solving.md    # Problem type → approach mapping
+└── challenges/                 # Per-challenge writeups
+    └── <name>.md               # Technique, approach, code snippets
+```
 
 ### Before Solving
-Read `knowledge/CTF_SPEEDRUN_MEMORY.md` and apply any matching patterns.
+1. Read `knowledge/index.md` — check if already solved or similar challenge exists.
+2. Read `knowledge/CTF_SPEEDRUN_MEMORY.md` for matching speed patterns.
+3. Read `knowledge/techniques/efficient_solving.md` for problem classification.
+4. Search `knowledge/challenges/` for similar past challenges.
 
 ### After Solving
-Append a new entry with this structure:
+1. Create `knowledge/challenges/<name>.md` with writeup.
+2. Update `knowledge/index.md` with result.
+3. Append speed pattern to `CTF_SPEEDRUN_MEMORY.md`:
 ```
 ---
 ### <Challenge Name> | <Category> | <Date>
