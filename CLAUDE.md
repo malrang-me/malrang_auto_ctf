@@ -367,18 +367,43 @@ knowledge/
 3. Read `knowledge/techniques/efficient_solving.md` for problem classification.
 4. Search `knowledge/challenges/` for similar past challenges.
 
-### After Solving
-1. Create `knowledge/challenges/<name>.md` with writeup.
-2. Update `knowledge/index.md` with result.
-3. Append speed pattern to `CTF_SPEEDRUN_MEMORY.md`:
+### After FLAG_FOUND (MANDATORY — never skip)
+Spawn `@reporter` agent immediately after verifier confirms FLAG_FOUND.
+Reporter executes this sequence automatically:
+
+```bash
+# 1. Record result + auto-generate writeup
+python3 tools/learn.py record \
+  --challenge-dir challenges/<name> \
+  --status success \
+  --flag "DH{...}" \
+  --category <category>
+
+# 2. Extract reusable technique (if novel)
+python3 tools/learn.py extract-technique \
+  --challenge-dir challenges/<name> \
+  --name "<technique_name>" \
+  --category <category>
 ```
----
+
+Reporter then enriches the auto-generated writeup and appends speed pattern to `CTF_SPEEDRUN_MEMORY.md`:
+```
 ### <Challenge Name> | <Category> | <Date>
 **Fast detection**: <signals that identify this problem type quickly>
 **Winning chain**: <what worked and why>
 **Failures -> fixes**: <what didn't work and the immediate correction>
 **Reusable**: <code snippets, techniques, or checklists to reuse>
 **Speedup**: <estimated time savings for next similar challenge>
+```
+
+### After FAILURE (also mandatory)
+If max retries exhausted without flag, still record:
+```bash
+python3 tools/learn.py record \
+  --challenge-dir challenges/<name> \
+  --status failed \
+  --category <category> \
+  --notes "blocker: <specific reason>"
 ```
 
 ---
