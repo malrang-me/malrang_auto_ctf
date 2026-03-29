@@ -4,8 +4,7 @@
       "command": "npx",
       "args": [
         "-y", "@playwright/mcp",
-        "--headless",
-        "--user-data-dir", "/home/malrangme/.ctf-browser-data"
+        "--config", "/home/malrangme/.ctf-playwright-config.json"
       ]
     },
     "filesystem": {
