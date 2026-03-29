@@ -286,38 +286,65 @@ Critic agent performs TWO review stages:
 
 ---
 
-## 9. Dreamhack Auto-Intake
+## 9. Multi-Platform Auto-Intake
+
+### Supported Platforms
+| Platform | URL Pattern | Login Method |
+|---|---|---|
+| Dreamhack | `dreamhack.io/wargame/challenges/*` | ID/PW or OAuth |
+| CTFd-based | `*/challenges` | ID/PW |
+| picoCTF | `play.picoctf.org` | ID/PW |
+| CryptoHack | `cryptohack.org` | ID/PW |
+| HackTheBox | `app.hackthebox.com` | ID/PW |
+| Generic | any URL | manual |
 
 ### Trigger
-User says "solve <problem_name>" or provides a Dreamhack URL.
+User says "solve <problem_name>", provides a URL, or names a platform + challenge.
 
-### Procedure (Chrome MCP)
-1. `tabs_context_mcp` -> get/create tab
-2. `navigate` to `https://dreamhack.io`
-3. `find` search input -> `form_input` problem name -> search
-4. Click result -> enter challenge detail page
-5. `read_page` to collect: category, attachments, remote host/port
-6. Download attachments to `_downloads/`
-7. Run intake script:
+### Browser Environment
+- **Windows Claude App**: Chrome MCP (`mcp__Claude_in_Chrome__*`)
+- **WSL Claude Code**: Playwright MCP (`mcp__playwright__*`, headless)
+  - Config: `.mcp.wsl.json` with `--user-data-dir ~/.ctf-browser-data`
+  - Launch: `claude --mcp-config .mcp.wsl.json` (or alias `ctf`)
+
+### Persistent Login (IMPORTANT)
+Browser sessions are persisted in `~/.ctf-browser-data/`.
+- **First time per platform**: Claude navigates to login page, asks user for credentials, logs in via Playwright. Session cookie is saved automatically.
+- **Subsequent sessions**: Cookie is reused. No re-login needed.
+- **Session expired**: Claude detects login page redirect, re-prompts user.
+- **NEVER store passwords in files.** Only browser cookies persist.
+
+### Intake Procedure
+1. Navigate to platform challenge page (Playwright or Chrome MCP)
+2. Detect login state — if login page, ask user for credentials and log in
+3. Read challenge page: category, description, attachments, remote host/port
+4. Download attachments to `_downloads/`
+5. Scaffold challenge folder:
+   ```bash
+   # WSL:
+   mkdir -p challenges/<name>/{artifacts,memory,deploy}
+   # Windows:
+   powershell.exe -ExecutionPolicy Bypass -File scripts\scaffold.ps1 -Name "<name>" -Category "<cat>"
    ```
-   powershell.exe -ExecutionPolicy Bypass -File scripts\intake.ps1 -ProblemName "<name>" -Category "<category>"
-   ```
-8. Start solving with the appropriate category rules.
+6. Extract downloaded files to `challenges/<name>/deploy/`
+7. Write `challenges/<name>/meta.yaml` with remote info
+8. Start solving with the appropriate category pipeline
 
 ### Category Mapping
-- Crypto / 암호학 -> crypto
-- Pwnable / 시스템 해킹 -> pwn
-- Web / 웹 해킹 -> web
-- Reversing / 리버싱 -> rev
+- Crypto / 암호학 / Cryptography -> crypto
+- Pwnable / 시스템 해킹 / Binary Exploitation -> pwn
+- Web / 웹 해킹 / Web Exploitation -> web
+- Reversing / 리버싱 / Reverse Engineering -> rev
 - Blockchain / Web3 -> web3
-- Forensics / 포렌식 -> forensics
-- AI -> ai
-- Misc -> misc
+- Forensics / 포렌식 / Digital Forensics -> forensics
+- AI / ML -> ai
+- Misc / Miscellaneous -> misc
 
 ### Edge Cases
-- Login required: guide user to log in, wait, then resume.
+- Login required: navigate to login page, ask user for credentials, log in via browser.
 - Multiple attachments: download all to same challenge folder.
 - Existing folder: append timestamp suffix to avoid collision.
+- No attachments (remote only): record host:port in meta.yaml, proceed to recon.
 
 ---
 

@@ -1,32 +1,8 @@
 {
   "permissions": {
+    "defaultMode": "bypassPermissions",
     "allow": [
-      "Bash(wsl *)",
-      "Bash(python *)",
-      "Bash(powershell.exe -ExecutionPolicy Bypass -File *malrang_auto_ctf*)",
-      "Bash(nc *)",
-      "Bash(ls *)",
-      "Bash(cat *)",
-      "Bash(file *)",
-      "Bash(strings *)",
-      "Bash(docker *)",
-      "Bash(pip install *)",
-      "Bash(cd *)",
-      "Bash(mkdir *)",
-      "Bash(cp *)",
-      "Bash(mv *)",
-      "Bash(chmod *)",
-      "Bash(unzip *)",
-      "Bash(tar *)",
-      "Bash(grep *)",
-      "Bash(find *)",
-      "Bash(head *)",
-      "Bash(tail *)",
-      "Bash(echo *)",
-      "Bash(git *)",
-      "Bash(timeout *)",
-      "Bash(python.exe *)",
-      "Bash(powershell.exe *)",
+      "Bash(*)",
       "mcp__filesystem__*",
       "mcp__py-repl__*",
       "mcp__pwn-local__*",
@@ -34,11 +10,9 @@
       "mcp__solver-pysat__*",
       "mcp__solver-cryptominisat__*",
       "mcp__sage-helper__*",
+      "mcp__github__*",
       "WebSearch(*)",
-      "WebFetch(domain:dreamhack.io)",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:ctftime.org)",
-      "WebFetch(domain:r.jina.ai)"
+      "WebFetch(*)"
     ]
   },
   "hooks": {
