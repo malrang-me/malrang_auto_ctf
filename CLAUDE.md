@@ -123,6 +123,57 @@ On finding a candidate: re-run the solver once to confirm reproducibility before
 
 ---
 
+## 4.5. Pipeline Modes (from Machine v2)
+
+| Difficulty | Mode | Flow |
+|-----------|------|------|
+| Easy | **Lightweight** | solver only — analyze + exploit + verify in one session |
+| Medium | **Lightweight + escalation** | solver → spawns @critic if stuck 3x |
+| Hard | **Full** | reverser → solver → critic → verifier → reporter |
+
+`triage.py` determines difficulty automatically. Override with `--category`.
+
+### Triage-First Flow (MANDATORY before solving)
+
+```bash
+python.exe tools/triage.py challenges/<name> [--category crypto]
+```
+
+Output: category, difficulty, pipeline mode, knowledge context block.
+The knowledge context is injected into the solver agent's prompt.
+
+### Learning Loop (ALWAYS runs — success or failure)
+
+```bash
+# After success
+python.exe tools/learn.py record --challenge-dir challenges/<name> --status success --flag "DH{...}" --category crypto
+
+# After failure
+python.exe tools/learn.py record --challenge-dir challenges/<name> --status failed --category crypto --notes "DLP infeasible"
+```
+
+### Decision Tree (when stuck)
+
+```bash
+# Get next approach to try
+python.exe tools/decision_tree.py next --agent crypto --trigger solve_failure
+
+# Record that an approach was tried (advances to next)
+python.exe tools/decision_tree.py record --agent crypto --trigger solve_failure --action-id z3_attempt
+```
+
+### State Management (verified constants)
+
+```bash
+# Record a verified fact
+python.exe tools/state.py set --key vuln_type --val "phi_leaked" --src "server_output.txt" --agent solver
+
+# Read it back
+python.exe tools/state.py get --key vuln_type
+```
+
+---
+
 ## 5. Five-Minute Gate
 
 Execute these steps at the start of EVERY challenge:
