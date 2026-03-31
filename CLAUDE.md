@@ -5,6 +5,41 @@ BASE = `C:\Users\malrangme\Desktop\malrang_auto_ctf`
 
 ---
 
+## 0. 학습 트리거 (최우선)
+
+사용자가 **"[URL] 학습해"** 또는 **"[URL]에 있는거 학습해"** 형태로 입력하면:
+
+1. 크롤 실행:
+   ```
+   python tools/bulk_learn.py crawl <URL> --max 20
+   ```
+   GitHub 레포면 자동으로 마크다운 파일 수집.
+   여러 URL이면 `--url-file` 사용.
+
+2. `knowledge/writeup_staging/` 의 미처리 JSON 파일을 **순서대로** 읽는다.
+
+3. 각 파일의 `text` 필드에서 아래 항목을 추출한다:
+   - `challenge_name`: 문제 이름
+   - `category`: crypto/pwn/web/reversing/web3/misc/forensics
+   - `fast_detection_signals`: 이 유형을 빠르게 식별하는 신호 2~4개
+   - `winning_chain`: 성공한 공격 체인 요약
+   - `why_it_won`: 왜 이 체인이 됐는지 한 문장
+   - `failure_signatures`: 실패했던 것 → 즉시 수정법
+   - `key_technique`: 핵심 기술명 (예: LLL lattice, ret2libc, SSTI)
+   - `reusable_snippet`: 재사용 가능한 코드 패턴
+
+4. 추출한 내용으로 `knowledge/CTF_SPEEDRUN_MEMORY.md`에 엔트리 추가.
+   형식은 기존 Entry 템플릿과 동일하게.
+
+5. 처리 완료된 파일은 `"processed": true` 로 업데이트.
+
+6. 전체 완료 후 요약 보고: "N개 라이트업에서 M개 엔트리 학습 완료"
+
+**주의**: 라이트업이 CTF 관련 내용이 아니면 건너뛴다.
+텍스트가 너무 짧거나(<300자) 내용 없으면 건너뛴다.
+
+---
+
 ## 1. Goal
 
 - Every challenge runs end-to-end: analyze -> write solver -> execute -> verify -> report flag.
