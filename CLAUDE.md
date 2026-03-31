@@ -79,6 +79,22 @@ All work agents maintain `<challenge_dir>/checkpoint.json`:
 2. **Reuse before create**: Before creating any file, Glob for existing code/artifacts. Prefer editing over creating.
 3. **Evidence required**: No guessed constants, offsets, or formulas. Every key decision must have a code/output/log basis. Record reasoning in `memory/discoveries.md`.
 4. **No auto flag submission**: Never submit flags automatically. Default = recover + verify + report. Only submit if the user explicitly asks in the same turn.
+4.5. **MANDATORY learning + compact after flag**:
+  The INSTANT a real flag (not DH{flag}/DH{testflag}/placeholder) is confirmed:
+  1. Write SPEEDRUN_MEMORY entry BEFORE reporting to user:
+     ```
+     python tools/learn.py record --challenge-dir challenges/<name> --status success --flag "DH{...}" --category <cat>
+     ```
+     If learn.py fails, manually append to `knowledge/CTF_SPEEDRUN_MEMORY.md`.
+  2. Report flag to user.
+  3. Run `/compact` immediately after — no exceptions.
+  **Solve sequence: flag → learn → report → /compact. Always in this order.**
+
+  Also: at session START, check for `.compact_needed` file in project root:
+  ```bash
+  [ -f .compact_needed ] && rm .compact_needed && echo "Previous solve needs compact"
+  ```
+  If found, run `/compact` before doing anything else.
 5. **False-positive prevention**: Re-run the solver at least once to confirm the flag is reproducible. For remote challenges, verify the flag came from the actual server, not a local test.
 6. **Brute-force timebox**: Any brute-force must have an explicit time limit (10/20/30 min) and abort condition defined before starting.
 7. **Final report format**: (1) What was done (2) How it was verified (3) Remaining risks or caveats.
@@ -503,3 +519,91 @@ Disassembly:     ida-pro-mcp -> objdump -d -> strings
 ```
 
 On tool failure: rotate to next in chain immediately. Don't retry the same tool more than twice with the same parameters.
+
+---
+
+## 15. Session Management & Context Economy
+
+### Session Architecture
+
+**NEVER open a new Claude Code session per problem.**
+One main session stays alive as an orchestrator. Each problem gets a spawned subagent.
+
+```
+Main Session (always on)
+│  - Loads CLAUDE.md once
+│  - Holds CTF_SPEEDRUN_MEMORY across problems
+│  - Orchestrates only — does NOT accumulate problem noise
+│
+├─ Agent subagent (problem A)  ← isolated context window
+├─ Agent subagent (problem B)  ← isolated context window
+└─ Agent subagent (problem C)  ← isolated context window
+```
+
+### How to Spawn a Subagent
+
+Use the `Agent` tool with a fully-specified prompt. The subagent gets NO implicit context — everything must be in the prompt:
+
+```
+Agent(
+  subagent_type = "general-purpose",   # or any .claude/agents/*.md role
+  isolation     = "worktree",           # git worktree isolation (file ops safe)
+  run_in_background = True,             # parallel execution
+  prompt = """
+    Challenge: <name>, Category: <crypto|pwn|web|rev>
+    Path: challenges/<name>/
+    Remote: <host>:<port>  (if any)
+    Files: <list key files>
+
+    Follow CLAUDE.md pipeline for <category>.
+    Key facts: <any critical info recon found>
+    Goal: recover flag, write to memory/discoveries.md, return flag string.
+  """
+)
+```
+
+**What the subagent gets:**
+- Clean context (no other problem's logs)
+- Full tool access (MCP, Bash, files)
+- worktree isolation → writes don't conflict with other agents
+
+**What the subagent does NOT get:**
+- Main session's conversation history
+- Other agents' context
+→ Must pass ALL needed facts in the prompt.
+
+### Parallel Solving (3 problems at once)
+
+```python
+# Main session spawns 3 agents simultaneously:
+Agent(prompt="solve challenges/prob_A ...", run_in_background=True)
+Agent(prompt="solve challenges/prob_B ...", run_in_background=True)
+Agent(prompt="solve challenges/prob_C ...", run_in_background=True)
+# All 3 run in parallel. Main session waits for results.
+```
+
+### /compact Timing Rules
+
+Run `/compact` in the **main session** at these trigger points:
+
+| Trigger | Action |
+|---------|--------|
+| Problem solved (flag recovered) | `/compact` — summarize and drop problem context |
+| After 3+ problems in one session | `/compact` — prevent context bloat |
+| Context > ~80k tokens | `/compact` immediately |
+| Before spawning 3+ parallel agents | `/compact` — free headroom for orchestration |
+
+**What to preserve before /compact:**
+- Flag(s) already found — print them out first
+- Any reusable snippets → already in `knowledge/CTF_SPEEDRUN_MEMORY.md`
+- The memory/ files are on disk — they survive /compact automatically
+
+### Token Budget Rules
+
+```
+Main session budget target: < 30k tokens at any time
+Per-subagent budget:        unlimited (isolated window)
+After /compact:             main session resets to ~5k baseline
+```
+
+If you are the main session and context is growing due to direct solving (not orchestration), you are doing it wrong — spawn a subagent instead.

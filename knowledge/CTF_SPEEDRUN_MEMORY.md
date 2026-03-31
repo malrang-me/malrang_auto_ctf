@@ -179,6 +179,101 @@ Purpose: keep short, high-signal lessons that make future solves faster.
 - Expected Speed-up Next Time:
   - 2x to 3x faster on MT challenges where the success predicate is a zero-prefix or other simple post-twist state pattern.
 
+## Entry 007 - Not So Smart
+- Challenge: Not So Smart
+- Category: crypto
+- Date: 2026-03-29
+- Fast Detection Signals:
+  - Challenge name hints at "Smart's attack"
+  - ECC problem with custom curve parameters
+  - Description: "what's wrong with this curve" = anomalous curve
+- Winning Chain:
+  - Verify #E(GF(p)) == p (anomalous) → Smart's attack via p-adic lifting → recover private key m → compute shared_secret → AES-CBC decrypt
+  - Why it won: single well-known attack, pure Python implementation works without SageMath
+- Failure Signatures -> Immediate Fix:
+  - SageMath not installed → use pure Python p-adic arithmetic implementation
+  - Hensel lift fails → ensure lifted point satisfies curve equation mod p^2
+- Reusable Assets:
+  - `challenges/Not_So_Smart/solve.py` (Smart's attack, pure Python)
+- Expected Speed-up Next Time:
+  - 5x+ faster — reuse solve.py template for any anomalous curve challenge
+
+---
+
+## Entry 008 - 이것도 딸깍해 보시지!
+- Challenge: 이것도 딸깍해 보시지!
+- Category: misc
+- Date: 2026-03-29
+- Fast Detection Signals:
+  - PDF 파일에 Python 코드가 있고 실행 결과를 서버에 제출하는 형태
+  - 문제 이름/이미지가 AI 사용을 풍자 ("딸깍" = AI에 복붙)
+  - 댓글에 "징벌 당했다", "복붙했습니다 반성" 등 함정 힌트
+- Winning Chain:
+  - PDF를 이미지로 렌더링 → 실제 연산자/들여쓰기 확인 → 정확한 코드 실행 → nc 제출
+  - Why it won: 텍스트 추출 대신 이미지 확인으로 함정 회피
+- Failure Signatures -> Immediate Fix:
+  - pdftotext/get_text()로 추출한 코드가 틀림 -> PDF를 이미지로 렌더링해서 확인
+  - 하나의 if-elif 체인으로 해석 -> 들여쓰기 확인, 별도 if 블록 여부 체크
+  - `>=` vs `>`, `<=` vs `<` 연산자 혼동 -> 이미지에서 정확히 읽기
+- Reusable Assets:
+  - pymupdf로 PDF→이미지 변환: `page.get_pixmap(dpi=200).save("out.png")`
+- Expected Speed-up Next Time:
+  - 10x+ — PDF 코드 문제 = 무조건 이미지 렌더링 먼저
+
+---
+
+## Entry 009 - Times
+- Challenge: Times
+- Category: reversing
+- Date: 2026-03-29
+- Fast Detection Signals:
+  - .init_array에 `time(0)` 비교 → 미래 날짜 시간 게이트
+  - .init_array에 `ptrace(PTRACE_TRACEME)` + 전역 u16 XOR 패턴
+  - main에서 동일한 `time(0)` 호출로 seed를 두 번 생성 → 키스트림 XOR 두 번 적용
+  - 32비트 비트 반전 루프가 유일한 비가역 변환처럼 보임
+- Winning Chain:
+  - ptrace 결과 추적 → 일반 실행 시 전역 XOR 키가 0x0000 → 16-bit XOR 단계 항등
+  - 동일 time() seed → 동일 MD5 키스트림 → 두 XOR 패스 상쇄
+  - 남은 변환 = bit_reverse_32 (자기 역함수)
+  - 목표 데이터에 bit_reverse_32 적용 → 등록 키 즉시 획득
+  - Why it won: 보호 메커니즘 분석으로 실질 변환을 하나로 줄인 후 역산이 자명해짐
+- Failure Signatures -> Immediate Fix:
+  - 시간 게이트로 바이너리 실행 불가 -> `LD_PRELOAD` faketime.so로 `time()`을 임계값+1로 패치
+  - 디버거에서 잘못된 XOR 키 관찰 -> 디버거 없이 실행, ptrace 결과 재확인
+  - 키스트림 XOR 취소를 놓침 -> seed 생성 코드가 완전히 동일한지 정적 분석으로 확인
+- Reusable Assets:
+  - `challenges/Times/solve.py` (bit_reverse_32 + 목표 데이터 → 키 복원)
+  - faketime.c 패턴: `time_t time(time_t *t) { time_t v = TARGET; if(t)*t=v; return v; }`
+  - XOR 취소 패턴 인식: 동일 seed를 두 번 쓰는 XOR 구조는 항등 → 무시하고 나머지 분석
+- Expected Speed-up Next Time:
+  - 5x+ — 시간 게이트 + ptrace 조합은 단골 패턴. LD_PRELOAD 우회 즉시 적용 가능
+
+---
+
+## Entry 010 - playing-with-login
+- Challenge: playing-with-login
+- Category: web
+- Date: 2026-03-29
+- Fast Detection Signals:
+  - v1/v2 두 버전 공존 (마이그레이션 패턴)
+  - MariaDB 11.3+ 사용 (docker-compose에서 `mariadb:11.3.x` 확인)
+  - v2 엔드포인트가 `abort(501)` 반환하지만 DB 쿼리가 먼저 실행됨
+  - username이 form input 그대로 inbox key로 사용 vs DB 조회 결과 사용
+- Winning Chain:
+  - v1 signup "ádmin" → v2 request-pw "ádmin" (DB accent-insensitive match) → v1 login → mypage에서 토큰 획득 → v2 change-pw → v2 login admin → flag
+  - Why it won: MariaDB 11.3의 uca1400_ai_ci collation이 accent-insensitive라는 점과, abort 전 side-effect를 정확히 파악
+- Failure Signatures -> Immediate Fix:
+  - MariaDB 버전별 기본 collation 모름 -> docker-compose에서 이미지 버전 확인, 11.3+는 uca1400_ai_ci
+  - accent 문자로 가입 시 "already exists" -> collation이 accent-sensitive일 수 있음, case만 다른 문자로 시도 (단 v1 signup은 .lower() 적용)
+- Reusable Assets:
+  - `challenges/playing-with-login/solve.py`
+  - MariaDB collation 체크: `SELECT @@collation_database;`
+  - accent 문자 목록: á(U+00E1), à(U+00E0), ä(U+00E4), â(U+00E2)
+- Expected Speed-up Next Time:
+  - 5x+ — v1/v2 공존 + MariaDB 11.3+ 패턴 즉시 인식 가능
+
+---
+
 ## Entry - Magnus_Carlsen
 - Challenge: Magnus_Carlsen
 - Category: pwn
@@ -194,3 +289,55 @@ Purpose: keep short, high-signal lessons that make future solves faster.
   - <script/snippet/checklist>
 - Expected Speed-up Next Time:
   - <fill me>
+
+---
+
+## Entry 011 - Basic_CrackME
+- Challenge: Basic_CrackME
+- Category: reversing
+- Date: 2026-03-30
+- Fast Detection Signals:
+  - AutoIt compiled script (.exe) with embedded x86 shellcode
+  - 32-character input validated character-by-character
+  - CRC32 computation inside shellcode (polynomial 0xEDB88320)
+  - Hardcoded FLAG array XORed with a key
+- Winning Chain:
+  - Decompile AutoIt -> extract shellcode -> identify standard CRC32
+  - Brute-force XOR key 0~255: count positions that map to printable ASCII
+  - Key 0x7F (127) gives 32/32 matches -> DH{Profitez_des_analyses_AUTOIT}
+  - Why it won: 256-iteration brute is instant, avoids trusting stated key value
+- Failure Signatures -> Immediate Fix:
+  - Used stated key 0xDEADC0DE directly -> no printable result
+  - Fix: AutoIt truncates large integers to byte -> stated key != effective key -> always brute 0~255
+- Reusable Assets:
+  - CRC32 reverse lookup: brute all printable ASCII, build crc->char map
+  - XOR key brute-force with printability scoring (count valid ASCII / total)
+  - challenges/Basic_CrackME/solve.py
+- Expected Speed-up Next Time:
+  - AutoIt + CRC32 + XOR pattern recognized in <5 min -> flag in ~10 min
+
+---
+
+## Entry 012 - 1-Weight Overwrite
+- Challenge: 1-Weight Overwrite
+- Category: ai
+- Date: 2026-03-30
+- Fast Detection Signals:
+  - MNIST model with high accuracy (99%+)
+  - "Modify exactly ONE weight" = adversarial weight perturbation
+  - TanhLinear final layer (bounded effective weights via tanh * scale)
+  - 100 rounds with increasing difficulty: banned layers + shrinking value ranges
+- Winning Chain:
+  - Gradient-guided search: backprop d(logit[target]-logit[predicted])/dw → rank candidates by gradient*(extreme-current) → verify top-300 with forward pass → first that flips argmax wins
+  - Why it won: gradient is a strong signal for which weight matters most; early conv/DSC layers have cascading effects through BatchNorm/ReLU that amplify single-weight changes
+- Failure Signatures -> Immediate Fix:
+  - fc2 TanhLinear layer alone insufficient for high-confidence predictions -> search ALL layers via gradient
+  - Analytical fc2-only approach predicted wrong argmax -> must verify ALL 10 logits, not just target vs predicted
+  - Banned layers use glob patterns (e.g., `fc2.*`) -> use fnmatch, not exact string match
+  - Server timeout on brute-force -> gradient search is O(backward + 300 forward) ≈ 0.3s, well within limits
+- Reusable Assets:
+  - `challenges/1-Weight_Overwrite/solve.py` (gradient-guided single-weight adversarial attack)
+  - Key pattern: gradient * (extreme_value - current_value) as ranking heuristic for large discrete changes
+  - Early conv layers (dsc1.dw.conv especially) give outsized impact due to cascading through BN/ReLU
+- Expected Speed-up Next Time:
+  - 10x+ — gradient-guided single-weight attack template directly reusable for any "modify K weights" challenge
