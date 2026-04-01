@@ -1,0 +1,459 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e165]:
+    - banner:
+      - navigation [ref=e166]:
+        - generic [ref=e167]:
+          - list [ref=e168]:
+            - link [ref=e169] [cursor=pointer]:
+              - /url: /
+              - img [ref=e170]
+          - list [ref=e184]:
+            - listitem [ref=e185]:
+              - link "Learn" [ref=e186] [cursor=pointer]:
+                - /url: /lecture
+            - listitem [ref=e187]:
+              - link "Wargame" [ref=e188] [cursor=pointer]:
+                - /url: /wargame
+            - listitem [ref=e189]:
+              - link "CTF" [ref=e190] [cursor=pointer]:
+                - /url: /ctf
+            - listitem [ref=e191]:
+              - link "Community" [ref=e192] [cursor=pointer]:
+                - /url: /forum
+            - listitem [ref=e193]:
+              - link "Ranking" [ref=e194] [cursor=pointer]:
+                - /url: /ranking
+            - listitem [ref=e195]:
+              - link "Store" [ref=e196] [cursor=pointer]:
+                - /url: https://marpple.shop/kr/dreamhack/
+            - listitem [ref=e197]:
+              - link "Subscription" [ref=e198] [cursor=pointer]:
+                - /url: /payments/membership-pricing
+          - list [ref=e199]:
+            - listitem [ref=e200]:
+              - link [ref=e201] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e202]
+            - listitem [ref=e205]:
+              - link [ref=e206] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e208]
+            - listitem [ref=e214]:
+              - link [ref=e215] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e217]
+            - listitem [ref=e220]:
+              - link [ref=e221] [cursor=pointer]:
+                - /url: "#"
+            - generic [ref=e225]: "|"
+            - listitem [ref=e226]:
+              - link "Enterprise" [ref=e227] [cursor=pointer]:
+                - /url: /enterprise/introduction
+    - main [ref=e228]:
+      - generic [ref=e231]:
+        - generic [ref=e232]:
+          - generic [ref=e233]:
+            - generic [ref=e235]: Description
+            - generic [ref=e236]:
+              - generic [ref=e237]:
+                - paragraph [ref=e238]:
+                  - text: RBG stands for
+                  - strong [ref=e239]: R
+                  - text: SA + S
+                  - strong [ref=e240]: B
+                  - text: G + LC
+                  - strong [ref=e241]: G
+                  - text: "!"
+                  - text: To learn about them, please check out
+                  - link "lecture1.mp4" [ref=e242] [cursor=pointer]:
+                    - /url: https://panda.lovethosetrains.com/lecture1.mp4
+                  - text: .
+                - list [ref=e243]:
+                  - listitem [ref=e244]:
+                    - link "RSA" [ref=e245] [cursor=pointer]:
+                      - /url: https://panda.lovethosetrains.com/lecture1.mp4#t=1600
+                    - text: ","
+                    - link "LCG" [ref=e246] [cursor=pointer]:
+                      - /url: https://panda.lovethosetrains.com/lecture1.mp4#t=2370
+                - paragraph [ref=e247]:
+                  - emphasis [ref=e248]:
+                    - text: 이 문제는
+                    - link "KalmarCTF 2026" [ref=e249] [cursor=pointer]:
+                      - /url: https://github.com/soon-haari/my-ctf-challenges/tree/main/2026-kalmar/rbg%2B
+                    - text: 에 출제되었습니다.
+              - button "Translate" [ref=e250] [cursor=pointer]:
+                - generic [ref=e252]: Translate
+          - button "Download" [ref=e254] [cursor=pointer]:
+            - generic [ref=e255]:
+              - img [ref=e256]
+              - generic [ref=e258]: Download
+          - generic [ref=e259]:
+            - generic [ref=e260]:
+              - img [ref=e261]
+              - text: Submit Flag
+            - generic [ref=e263]:
+              - textbox "Submit Flag" [ref=e264]:
+                - /placeholder: Enter the flag according to the format
+              - button "Submit" [ref=e265] [cursor=pointer]
+          - generic [ref=e266]:
+            - generic [ref=e267]:
+              - generic [ref=e268]: Writeups
+              - generic [ref=e269]:
+                - button [ref=e270] [cursor=pointer]:
+                  - img [ref=e272]
+                - button [ref=e276] [cursor=pointer]:
+                  - button [ref=e277]:
+                    - img [ref=e279]
+            - generic [ref=e283]:
+              - link [ref=e288] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - generic [ref=e295]:
+                - generic [ref=e298]: "|"
+                - generic [ref=e301]: "|"
+            - generic [ref=e308]:
+              - link [ref=e313] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - generic [ref=e320]:
+                - generic [ref=e323]: "|"
+                - generic [ref=e326]: "|"
+            - generic [ref=e333]:
+              - link [ref=e338] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - generic [ref=e345]:
+                - generic [ref=e348]: "|"
+                - generic [ref=e351]: "|"
+            - generic [ref=e358]:
+              - link [ref=e363] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - generic [ref=e370]:
+                - generic [ref=e373]: "|"
+                - generic [ref=e376]: "|"
+            - generic [ref=e383]:
+              - link [ref=e388] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - generic [ref=e395]:
+                - generic [ref=e398]: "|"
+                - generic [ref=e401]: "|"
+          - generic [ref=e406]:
+            - generic [ref=e407]: Difficulty votes
+            - generic [ref=e408]: You can submit feedback after you solve the challenge.
+            - generic [ref=e411]:
+              - generic [ref=e412]:
+                - generic [ref=e413]: Full voting log
+                - generic [ref=e414]:
+                  - generic:
+                    - img
+                  - generic [ref=e415]: 1 / 1
+                  - generic:
+                    - img
+              - link [ref=e421] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - link [ref=e433] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - link [ref=e445] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - link [ref=e457] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - link [ref=e469] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+          - generic [ref=e476]:
+            - generic [ref=e477]: Questions
+            - generic [ref=e478]:
+              - generic [ref=e479]: Need help? Ask your question and get hints!
+              - link "Ask Questions" [ref=e480] [cursor=pointer]:
+                - /url: /forum/qna/new?challenge=2822
+                - text: Ask Questions
+                - img [ref=e481]
+            - generic [ref=e483]:
+              - link "Answer Recommend" [ref=e485] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e496]:
+                  - generic [ref=e497]: Answer
+                  - generic [ref=e499]: Recommend
+              - link "Answer Recommend" [ref=e504] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e515]:
+                  - generic [ref=e516]: Answer
+                  - generic [ref=e518]: Recommend
+              - link "Answer Recommend" [ref=e523] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e534]:
+                  - generic [ref=e535]: Answer
+                  - generic [ref=e537]: Recommend
+              - link "Answer Recommend" [ref=e542] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e553]:
+                  - generic [ref=e554]: Answer
+                  - generic [ref=e556]: Recommend
+              - link "Answer Recommend" [ref=e561] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e572]:
+                  - generic [ref=e573]: Answer
+                  - generic [ref=e575]: Recommend
+              - link "Answer Recommend" [ref=e580] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e591]:
+                  - generic [ref=e592]: Answer
+                  - generic [ref=e594]: Recommend
+              - link "Answer Recommend" [ref=e599] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e610]:
+                  - generic [ref=e611]: Answer
+                  - generic [ref=e613]: Recommend
+              - link "Answer Recommend" [ref=e618] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e629]:
+                  - generic [ref=e630]: Answer
+                  - generic [ref=e632]: Recommend
+              - link "Answer Recommend" [ref=e637] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e648]:
+                  - generic [ref=e649]: Answer
+                  - generic [ref=e651]: Recommend
+              - link "Answer Recommend" [ref=e656] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+                - generic [ref=e667]:
+                  - generic [ref=e668]: Answer
+                  - generic [ref=e670]: Recommend
+        - generic [ref=e674]:
+          - generic [ref=e675]:
+            - generic [ref=e676]:
+              - img [ref=e677]
+              - generic [ref=e678]: LEVEL 4
+            - heading "RBG+" [level=1] [ref=e679]
+            - generic [ref=e681]: crypto
+            - generic [ref=e682]:
+              - generic [ref=e683]:
+                - img [ref=e684]
+                - text: "67"
+              - generic [ref=e685]:
+                - img [ref=e686]
+                - text: "7"
+              - generic [ref=e688]:
+                - img [ref=e689]
+                - generic [ref=e690]: 2026.03.31. 17:31:58
+          - generic [ref=e691]:
+            - heading "Author" [level=2] [ref=e692]
+            - generic [ref=e694]:
+              - generic:
+                - generic:
+                  - img "avatar"
+              - generic [ref=e695]:
+                - link "soon_haari" [ref=e696] [cursor=pointer]:
+                  - /url: /users/18801
+                  - generic [ref=e697]: soon_haari
+                - generic [ref=e699]: There are no bios yet.
+          - generic [ref=e700]:
+            - generic [ref=e701]:
+              - img [ref=e703]
+              - generic [ref=e705]: First Blood!
+            - generic [ref=e708]:
+              - generic:
+                - generic:
+                  - img "avatar"
+              - generic [ref=e709]:
+                - link "8l4nkWherever" [ref=e710] [cursor=pointer]:
+                  - /url: /users/55937
+                  - generic [ref=e711]: 8l4nkWherever
+                - generic [ref=e713]: f
+            - generic [ref=e715]: Solved in just 13 minutes!
+          - generic [ref=e716]:
+            - generic [ref=e717]:
+              - generic [ref=e719]: Recent Solvers
+              - generic [ref=e721]:
+                - checkbox "Following" [ref=e722]
+                - generic [ref=e723]: Following
+            - link [ref=e728] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - link [ref=e737] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - link [ref=e746] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - link [ref=e755] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - link [ref=e764] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - link [ref=e773] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - link [ref=e782] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - link [ref=e791] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - link [ref=e800] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - link [ref=e809] [cursor=pointer]:
+              - /url: /wargame/challenges/2822
+            - menubar "Pagination" [ref=e814]:
+              - listitem [ref=e815]:
+                - menuitem [disabled]:
+                  - img
+              - menuitemradio "Go to page 1" [checked] [ref=e816] [cursor=pointer]: "1"
+              - menuitemradio "Go to page 2" [ref=e817] [cursor=pointer]: "2"
+              - menuitemradio "Go to page 3" [ref=e818] [cursor=pointer]: "3"
+              - menuitemradio "Go to page 4" [ref=e819] [cursor=pointer]: "4"
+              - menuitemradio "Go to page 5" [ref=e820] [cursor=pointer]: "5"
+              - menuitemradio "Go to page 6" [ref=e821] [cursor=pointer]: "6"
+              - menuitemradio "Go to page 7" [ref=e822] [cursor=pointer]: "7"
+              - menuitemradio "Go to page 8" [ref=e823] [cursor=pointer]: "8"
+              - menuitemradio "Go to page 9" [ref=e824] [cursor=pointer]: "9"
+              - menuitem "Go to next page" [ref=e825] [cursor=pointer]:
+                - img [ref=e826]
+          - generic [ref=e828]:
+            - generic [ref=e829]: Comments
+            - generic [ref=e830]:
+              - textbox "Write your comment" [ref=e831]
+              - generic [ref=e832]:
+                - generic [ref=e833]: 0/500
+                - button "Post" [disabled] [ref=e835]:
+                  - img [ref=e836]
+                  - text: Post
+            - generic [ref=e838]:
+              - link [ref=e844] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e851] [cursor=pointer]:
+                - generic [ref=e853]: Translate
+            - generic [ref=e854]:
+              - link [ref=e860] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e867] [cursor=pointer]:
+                - generic [ref=e869]: Translate
+            - generic [ref=e870]:
+              - link [ref=e876] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e883] [cursor=pointer]:
+                - generic [ref=e885]: Translate
+            - generic [ref=e886]:
+              - link [ref=e892] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e899] [cursor=pointer]:
+                - generic [ref=e901]: Translate
+            - generic [ref=e902]:
+              - link [ref=e908] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e915] [cursor=pointer]:
+                - generic [ref=e917]: Translate
+            - generic [ref=e918]:
+              - link [ref=e924] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e931] [cursor=pointer]:
+                - generic [ref=e933]: Translate
+            - generic [ref=e934]:
+              - link [ref=e940] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e947] [cursor=pointer]:
+                - generic [ref=e949]: Translate
+            - generic [ref=e950]:
+              - link [ref=e956] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e963] [cursor=pointer]:
+                - generic [ref=e965]: Translate
+            - generic [ref=e966]:
+              - link [ref=e972] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e979] [cursor=pointer]:
+                - generic [ref=e981]: Translate
+            - generic [ref=e982]:
+              - link [ref=e988] [cursor=pointer]:
+                - /url: /wargame/challenges/2822
+              - button "Translate" [ref=e995] [cursor=pointer]:
+                - generic [ref=e997]: Translate
+            - menubar "Pagination" [ref=e998]:
+              - listitem [ref=e999]:
+                - menuitem [disabled]:
+                  - img
+              - menuitemradio "Go to page 1" [checked] [ref=e1000] [cursor=pointer]: "1"
+              - menuitemradio "Go to page 2" [ref=e1001] [cursor=pointer]: "2"
+              - menuitemradio "Go to page 3" [ref=e1002] [cursor=pointer]: "3"
+              - menuitemradio "Go to page 4" [ref=e1003] [cursor=pointer]: "4"
+              - menuitemradio "Go to page 5" [ref=e1004] [cursor=pointer]: "5"
+              - menuitemradio "Go to page 6" [ref=e1005] [cursor=pointer]: "6"
+              - menuitemradio "Go to page 7" [ref=e1006] [cursor=pointer]: "7"
+              - menuitemradio "Go to page 8" [ref=e1007] [cursor=pointer]: "8"
+              - menuitemradio "Go to page 9" [ref=e1008] [cursor=pointer]: "9"
+              - menuitem "Go to next page" [ref=e1009] [cursor=pointer]:
+                - img [ref=e1010]
+    - contentinfo [ref=e1014]:
+      - generic [ref=e1015]:
+        - generic [ref=e1016]:
+          - generic [ref=e1017]:
+            - generic [ref=e1018]: All
+            - generic [ref=e1019]:
+              - link "Notices" [ref=e1020] [cursor=pointer]:
+                - /url: /board/notice
+              - link "FAQs" [ref=e1021] [cursor=pointer]:
+                - /url: /services/faq
+              - link "Contact Support" [ref=e1022] [cursor=pointer]:
+                - /url: /myaccount/contact
+              - link "Terms of Service" [ref=e1023] [cursor=pointer]:
+                - /url: /services/tos
+              - link "Privacy Policy" [ref=e1024] [cursor=pointer]:
+                - /url: /services/privacy
+          - generic [ref=e1025]:
+            - generic [ref=e1026]: Learn
+            - generic [ref=e1027]:
+              - link "All Paths" [ref=e1028] [cursor=pointer]:
+                - /url: /lecture?type=path
+              - link "All Units" [ref=e1029] [cursor=pointer]:
+                - /url: /lecture?type=unit
+          - generic [ref=e1030]:
+            - generic [ref=e1031]: Wargame
+            - generic [ref=e1032]:
+              - link "All Challenges" [ref=e1033] [cursor=pointer]:
+                - /url: /wargame
+              - link "Submit a Challenge" [ref=e1034] [cursor=pointer]:
+                - /url: /wargame/challenges/new
+          - generic [ref=e1035]:
+            - generic [ref=e1036]: CTF
+            - link "All CTFs" [ref=e1038] [cursor=pointer]:
+              - /url: /ctf/all
+          - generic [ref=e1039]:
+            - generic [ref=e1040]: Community
+            - generic [ref=e1041]:
+              - link "Free Board" [ref=e1042] [cursor=pointer]:
+                - /url: /forum/community/free-lounge/
+              - link "Job & Career" [ref=e1043] [cursor=pointer]:
+                - /url: /forum/community/careers/
+              - link "Info & Tech" [ref=e1044] [cursor=pointer]:
+                - /url: /forum/community/information/
+              - link "Study & Team" [ref=e1045] [cursor=pointer]:
+                - /url: /forum/community/study/
+              - link "CTFs & Events" [ref=e1046] [cursor=pointer]:
+                - /url: /forum/community/promotion/
+          - generic [ref=e1047]:
+            - generic [ref=e1048]: Ranking
+            - generic [ref=e1049]:
+              - link "CTF" [ref=e1050] [cursor=pointer]:
+                - /url: /ranking/ctf
+              - link "Wargame" [ref=e1051] [cursor=pointer]:
+                - /url: /ranking/wargame
+              - link "Community" [ref=e1052] [cursor=pointer]:
+                - /url: /ranking/community
+        - separator [ref=e1053]
+        - generic [ref=e1054]:
+          - generic [ref=e1055]:
+            - img [ref=e1056]
+            - generic [ref=e1057]:
+              - link [ref=e1058] [cursor=pointer]:
+                - /url: https://x.com/dreamhack_io
+                - img [ref=e1060]
+              - link [ref=e1062] [cursor=pointer]:
+                - /url: https://www.instagram.com/dreamhack_io/
+                - img [ref=e1064]
+              - link [ref=e1066] [cursor=pointer]:
+                - /url: https://www.facebook.com/dreamhack.io/
+                - img [ref=e1068]
+              - link [ref=e1070] [cursor=pointer]:
+                - /url: https://discord.gg/dreamhackio
+                - img [ref=e1072]
+          - generic [ref=e1074]:
+            - generic [ref=e1075]:
+              - generic [ref=e1076]: Theori Korea Co., Ltd.
+              - generic [ref=e1077]: Copyright © 2019 - 2026 Theori Inc. All rights reserved.
+            - generic [ref=e1078]:
+              - text: "Business Registration Number: 263-81-00731 | CEO: PAK BRIAN SEJOON |"
+              - generic [ref=e1079]:
+                - text: "Business Number:"
+                - link "제2021-서울강남-05520호" [ref=e1080] [cursor=pointer]:
+                  - /url: https://www.ftc.go.kr/bizCommPop.do?wrkr_no=2638100731
+              - text: "9F B1F, 14, Teheran-ro 4-gil, Gangnam-gu, Seoul, Republic of Korea | Email: dreamhack@dreamhack.io | Contact: 070-8864-1337"
+  - img

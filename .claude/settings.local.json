@@ -39,6 +39,11 @@
             "type": "command",
             "command": "bash .claude/hooks/post_solve_learn.sh",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/validate_handoff.sh",
+            "timeout": 10
           }
         ]
       }

@@ -50,9 +50,13 @@ All agent-to-agent transitions MUST use this format:
 | reverser | sonnet | Structure analysis, pattern matching |
 | solver | opus | Complex inverse computation, lattice |
 | chain | opus | Multi-stage exploit design |
+| trigger | opus | Crash discovery requires creative fuzzing |
 | critic | opus | Cross-verification, logic error detection |
 | verifier | sonnet | Execution + verification |
 | reporter | sonnet | Documentation |
+| scout | sonnet | Web recon, CWE checklist |
+| analyst | opus | Vuln confirmation requires reasoning |
+| exploiter | opus | Exploit chain execution |
 | ctf-solver | sonnet | Trivial single-agent solve |
 
 ## Failure Protocol

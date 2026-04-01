@@ -1,0 +1,2 @@
+[     626ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://dreamhack.io/wargame/challenges:0
+[    1305ms] [WARNING] [BootstrapVue warn]: popover - Unable to find target element by ID "#recover-button" in document. @ https://static.dreamhack.io/main/v2/js/7438ebb.js:1

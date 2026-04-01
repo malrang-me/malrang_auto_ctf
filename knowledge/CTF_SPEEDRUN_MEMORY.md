@@ -341,3 +341,191 @@ Purpose: keep short, high-signal lessons that make future solves faster.
   - Early conv layers (dsc1.dw.conv especially) give outsized impact due to cascading through BN/ReLU
 - Expected Speed-up Next Time:
   - 10x+ — gradient-guided single-weight attack template directly reusable for any "modify K weights" challenge
+
+---
+
+## Entry 013 - baby-turbofan (학습 기반)
+- Challenge: baby-turbofan
+- Category: pwn (V8 Browser Exploitation)
+- Date: 2026-03-31
+- Source: GoN 2022 Spring Open Qual / Dreamhack #462
+- Fast Detection Signals:
+  - V8 d8 바이너리 + patch 파일 제공
+  - TurboFan / JIT 관련 키워드 (turbofan, typer, optimization)
+  - Math.expm1 또는 유사한 수학 함수 타입 버그 패치 revert
+  - "Krautflare" 언급 → 동일 계열 버그
+- Winning Chain:
+  - `Object.is(Math.expm1(x), {mz:-0}.mz)` → escape analysis + 잘못된 타입 추론 → bounds check 제거 → OOB
+  - OOB로 인접 BigUint64Array length 조작 → 영구 OOB
+  - Heap base leak (pointer compression 상위 32bit) → addrof primitive
+  - ArrayBuffer backing_store 덮어쓰기 → AAR/AAW
+  - WASM 인스턴스 RWX 페이지 → shellcode 쓰기 → 실행
+  - Why it won: V8 exploit 표준 체인. 모든 primitive가 OOB 하나에서 파생
+- Failure Signatures -> Immediate Fix:
+  - Krautflare exploit 그대로 사용 → pointer compression 때문에 실패 → 오프셋 동적 디버깅 필수
+  - OOB 인덱스 계산 틀림 → `%DebugPrint` + GDB로 힙 레이아웃 확인
+  - WASM RWX 오프셋 틀림 → `addrof(wasmInstance) + offset`은 V8 버전마다 다름, GDB 확인
+  - JIT 최적화 안 됨 → 100000회 "0" 문자열 호출로 deopt feedback 충분히 축적
+- Reusable Assets:
+  - `knowledge/techniques/v8_turbofan_exploitation.md` (전체 체인 + 코드)
+  - `knowledge/challenges/baby-turbofan.md` (전체 exploit 코드)
+  - itof/ftoi 변환 함수 템플릿
+  - WASM minimal module 바이트코드 (42를 반환하는 최소 모듈)
+  - x86-64 execve("/bin/sh") shellcode: `\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x57\x54\x5f\x48\x31\xc0\xb0\x3b\x99\x4d\x31\xd2\x0f\x05`
+- Expected Speed-up Next Time:
+  - 5x+ — V8 TurboFan 타입 혼동 문제는 동일 체인 적용. 오프셋만 GDB로 확인하면 됨
+
+---
+
+## Entry 014 - GoN 2022 Collection (15문제 일괄 학습)
+- Challenge: 2022 Spring GoN Open Qual (A~V)
+- Category: multi (crypto/pwn/rev/web/misc/blockchain)
+- Date: 2026-03-31
+- Source: https://g0riya.github.io/posts/2022-Spring-GoN-Open-Qual-Writeup/
+
+### 고속 패턴 모음
+
+**Crypto 패턴**:
+- `% 0xff` vs `& 0xFF` → 값 255 누락 → 통계적 공격 (CS448)
+- AES-CTR + 같은 IV → null 암호화로 keystream leak → XOR 복호화 (Interchange)
+- Legendre PRF → cryptolu/LegendrePRF 레포 직접 사용 (Legendary)
+
+**Pwn 패턴**:
+- Rust 바이너리 + unsafe heap → 전통적 glibc tcache 공격 적용 가능 (Oxidized)
+- `scanf("%Ns")` 버퍼와 N이 같으면 null byte off-by-one → SFP 조작 (NullNull)
+- `__free_hook` 주소에 0x80+ 바이트 → UTF-8 검증 크래시 → ASLR 재시도 (Oxidized)
+
+**Reversing 패턴**:
+- 복잡한 연산 + 작은 입력 공간 → GDB Python 브루트포스 (`set $rip`로 반복) (Nonsense)
+- 커스텀 블록 암호 (ARIA sbox + AES shift) → 역연산 구현 + C++ 포팅 (Unconventional)
+- pyc XOR 난독화 → 키 XOR → 수동 opcode 해석 → 역연산 (pyc)
+- Zero-run 비트 인코딩 → 1 카운트 = 비트 수, 리틀엔디안 디코딩 (RUN)
+
+**Web 패턴**:
+- JS 백엔드 + 사용자 입력이 객체 키 → `__proto__` prototype pollution (NSS)
+- report 기능 + CSS injection → CSRF → 내부 엔드포인트 접근 (ColorfulMemo)
+- LFI + SQLi `INTO OUTFILE` → 웹쉘 → RCE (ColorfulMemo)
+- prototype pollution으로 `base_dir` 오염 → 임의 파일 읽기 (NSS)
+
+**Misc 패턴**:
+- SHA512 블록 비교 → 타이밍 사이드채널 (Leetcode)
+- OTF 폰트 GSUB 리가처 체인 역추적 → TTX로 XML 변환 후 분석 (input box)
+
+**Blockchain 패턴**:
+- 컨트랙트 스토리지 = 블록체인 탐색기에서 직접 읽기 가능 (billionaire)
+
+### Failure → Fix
+- Python 0xC0FF33회 반복 너무 느림 → C++ 포팅 (Unconventional)
+- 자동 타이밍 임계값 어려움 → 수동 확인 병행 (Leetcode)
+- UTF-8 검증이 heap addr 크래시 → ASLR 재시도로 valid UTF-8 주소 대기 (Oxidized)
+
+### 출제자 라이트업 추가 패턴 (2026-03-31)
+
+**Pwn 고급 패턴**:
+- Rust `unsafe { Box::from_raw(...) }` + drop 없이 벡터 유지 → UAF (Oxidized)
+- `scanf("%Ns")` null off-by-one → SFP → one_gadget (`0xe3b31`) + ASLR 루프 (NullNull)
+
+**Reversing 고급 패턴**:
+- 복잡한 해시 리버싱 대신 ctypes로 바이너리 함수 직접 호출 브루트포스 (Nonsense)
+  - `cdll.LoadLibrary('./main')` + `CFUNCTYPE`으로 0x10000개 매핑 → GDB보다 10배 빠름
+- `xchg rsp, rax` 커스텀 호출규약 → RSP↔RAX 스왑 후 디컴파일 (Unconventional)
+
+**Web 고급 패턴**:
+- TLS Session ID poisoning + DNS rebinding → Memcached SSRF → pickle RCE (Albireo, 3 solves)
+- pickle custom Unpickler 우회: `__dict__` → `__builtins__` → `eval` 체인 (Pieces, 2 solves)
+- 모듈 체인 탐색: `mod.submod.six.sys.modules["os"]` (Pieces)
+
+**Redis 패턴**:
+- 32-bit BITFIELD 정수 오버플로우 → ~512MB OOB → type confusion → GOT overwrite (Rendezvous, 0 solves)
+- `DEBUG mallctl arena.0.extent_hooks` → jemalloc 훅 조작 → 최신 Redis RCE (Mirai, 0 solves)
+- 기존: SLAVEOF + MODULE LOAD, CONFIG SET dir/dbfilename (crontab/ssh/webshell)
+
+### Reusable Assets
+- `knowledge/challenges/GoN2022_collection.md` (전체 라이트업 + 출제자 보강)
+- `knowledge/techniques/prototype_pollution.md`
+- `knowledge/techniques/timing_attack.md`
+- `knowledge/techniques/gdb_scripting.md`
+- `knowledge/techniques/web_exploit_chains.md`
+- `knowledge/techniques/v8_turbofan_exploitation.md`
+- `knowledge/techniques/ssrf_tls_session_poisoning.md`
+- `knowledge/techniques/pickle_deserialization.md`
+- `knowledge/techniques/redis_exploitation.md`
+
+---
+
+## Entry 015 - GoN 2022 Fall Collection (5문제 출제자 라이트업)
+- Challenge: 2022 Fall GoN Open Qual (F~J)
+- Category: web, pwn
+- Date: 2026-03-31
+- Source: https://hackmd.io/@Xion/goq_22f_authors_writeup
+
+### 고속 패턴 모음
+
+**Web 패턴**:
+- Express.js stat/stream 분리 + `/proc` → TOCTOU race → fd 재사용으로 환경변수 leak (Heliodor, 2 solves)
+- Django `dictsort` stable sort → CVE-2021-45116 사이드채널 → Z3로 UUID 복원 (Emerald Tablet, 7 solves)
+
+**Pwn 고급 패턴**:
+- TLS 배열 오버플로우 → TCB dtv 포인터 조작 → `_dl_resize_dtv()` realloc → fake chunk → tcache overlap (Reconquista, 0 solves)
+- Redis XAUTOCLAIM count 정수 오버플로우 (CVE-2022-35951) → heap overflow → 객체 위조 → RCE (Redis-made, 0 solves)
+- QEMU DMA MMIO reentrancy → UAF → safe-linking 디코딩 → TCG RWX tcache poisoning → VM escape (NPU, 1 solve)
+
+### 핵심 기법 인사이트
+
+**CVE 패치 분석 → 파생 취약점** (Redis-made):
+- CVE-2022-31144 패치의 같은 코드 영역에서 CVE-2022-35951 발견
+- CTF 출제 단골 패턴: 패치된 CVE 주변에 미패치 취약점 존재
+
+**QEMU TCG RWX 주소 계산** (NPU):
+```c
+rwx = (heap_base & ~0xffffffULL) + 0xc000000;  // heap 근처 고정 오프셋
+```
+
+**Safe-linking 디코딩** (glibc 2.32+):
+```c
+// encoded = (real_addr >> 12) ^ next_ptr
+// 상위 비트부터 순차적으로 복원
+heap |= encoded & (0xfff << 36);
+heap |= (encoded ^ (heap >> 12)) & (0xfff << 24);
+heap |= (encoded ^ (heap >> 12)) & (0xfff << 12);
+heap |= (encoded ^ (heap >> 12)) & 0xfff;
+```
+
+**Chained Recursive MMIO** (NPU):
+- DMA 버퍼 주소를 MMIO 물리 주소로 설정 → 단일 요청으로 여러 MMIO 연산 실행
+- free + leak + alloc을 하나의 RWvec 요청으로 원자적 수행
+
+### Reusable Assets
+- `knowledge/challenges/GoN2022F_collection.md` (전체 라이트업 + 전체 exploit 코드)
+- `knowledge/techniques/qemu_vm_escape.md`
+- `knowledge/techniques/tls_dtv_exploitation.md`
+- `knowledge/techniques/race_condition_toctou.md`
+- `knowledge/techniques/redis_exploitation.md` (CVE-2022-35951 추가)
+
+---
+
+## Entry 016 - RBG+++ & lance-hard? (학습 기반)
+- Challenge: RBG+++ (KalmarCTF 2026) + lance-hard? (KalmarCTF 2025)
+- Category: crypto
+- Date: 2026-04-01
+- Source: Sceleri writeup + Neobeo writeup
+- Fast Detection Signals:
+  - `m^e + m^{f(e)} mod N` 형태 (지수에 LCG/선형 관계)
+  - N이 작은 소수 곱 (인수분해 가능)
+  - 다수의 (e, r) 쌍 + 지수 간 대수적 관계
+  - 타원곡선 x좌표 합 (lance-hard? 변형)
+- Winning Chain:
+  - N 인수분해 → 변수 치환으로 monic `x³+x≡r·z` → LLL로 지수 관계식 (k=8, ±4) → 대수적 수 이론 (companion matrix + Newton's identities) → Fast Lagrange interpolation → 두 다항식 GCD → z 복원 → m 복원
+  - Why it won: resultant 대신 대수적 수 기법으로 O(mn) 계수 계산, 연속점 보간으로 O(n)
+- Failure Signatures -> Immediate Fix:
+  - 직접 resultant → 차수 2^28 폭발 → 양수/음수 분리 + 대수적 수 기법
+  - `gcd(f, z^p-z)` 단일 다항식 → NTL FFT 한계 → 두 다항식 GCD로 우회
+  - non-monic 다항식 → 변수 치환 `e+(1337-N)/2`로 monic화
+- Reusable Assets:
+  - `knowledge/challenges/rbg_plus_plus_plus.md`
+  - `knowledge/techniques/lll_algebraic_number_poly.md`
+  - lance-hard? 패턴: Wagner's Birthday (±1계수 12개) → Semaev S₁₂ → Fast Lagrange → gcd(f, x^p-x)
+- Expected Speed-up Next Time:
+  - 유사 구조 인식 → 즉시 수식 변환 + LLL 파라미터 선택 가능 (분석 시간 -2h)
+  - 대수적 수 기법 코드 재사용 (구현 시간 -3h)
+  - 총 계산은 여전히 ~10h 필요 (본질적으로 heavy)

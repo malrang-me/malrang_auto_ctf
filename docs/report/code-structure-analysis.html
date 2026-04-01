@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>malrang_auto_ctf Code Structure Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0b10;
+  --bg-sidebar: #0d0e16;
+  --bg-nav: #0d0e16;
+  --bg-card: #12131a;
+  --bg-card-hover: #181923;
+  --border: rgba(255,255,255,0.06);
+  --text-primary: #e2e4ed;
+  --text-secondary: #8b8fa3;
+  --text-muted: #5a5e72;
+  --accent-teal: #5DCAA5;
+  --accent-blue: #85B7EB;
+  --accent-amber: #EF9F27;
+  --accent-red: #F09595;
+  --accent-purple: #AFA9EC;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+.report-layout { display:flex; height:100vh; overflow:hidden; }
+
+/* Sidebar */
+.sidebar {
+  width:220px; min-width:220px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.sb-header { padding:16px 14px 12px; border-bottom:1px solid var(--border); }
+.sb-title {
+  font-size:11px; font-family:'Geist Mono',monospace;
+  color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;
+}
+.sb-stats { display:flex; gap:6px; }
+.sb-stat {
+  flex:1; padding:6px 4px; border-radius:6px; text-align:center;
+  font-size:10px; font-family:'Geist Mono',monospace;
+}
+.sb-stat.accept { background:rgba(93,202,165,0.1); color:#5DCAA5; }
+.sb-stat.defer { background:rgba(239,159,39,0.1); color:#EF9F27; }
+.sb-stat.reject { background:rgba(226,75,74,0.1); color:#F09595; }
+.sb-stat-num { display:block; font-size:16px; font-weight:500; }
+.sb-progress-wrap { padding:12px 14px; }
+.sb-progress-label {
+  display:flex; justify-content:space-between;
+  font-size:11px; color:var(--text-muted); margin-bottom:4px;
+}
+.sb-progress { height:3px; background:rgba(255,255,255,0.06); border-radius:2px; }
+.sb-progress-fill {
+  height:100%; border-radius:2px;
+  background:linear-gradient(90deg,#5DCAA5,#85B7EB);
+  transition:width 0.3s ease;
+}
+.sb-pages {
+  flex:1; overflow-y:auto; padding:4px 8px;
+  scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent;
+}
+.sb-page {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 8px; border-radius:6px; cursor:pointer;
+  font-size:12px; color:var(--text-muted); transition:all 0.12s; margin-bottom:2px;
+}
+.sb-page:hover { background:rgba(255,255,255,0.04); }
+.sb-page.active { background:rgba(133,183,235,0.08); color:#85B7EB; }
+.sb-page.done { color:#8b8fa3; }
+.sb-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(255,255,255,0.1); flex-shrink:0;
+}
+.sb-page.done .sb-dot { background:#5DCAA5; }
+.sb-page.active .sb-dot { background:#85B7EB; box-shadow:0 0 0 2px rgba(133,183,235,0.2); }
+.sb-page-label { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sb-badge {
+  margin-left:auto; font-size:9px; padding:1px 5px;
+  border-radius:4px; font-family:'Geist Mono',monospace; flex-shrink:0;
+}
+.sb-badge.pending { background:rgba(239,159,39,0.15); color:#EF9F27; }
+.sb-badge.complete { background:rgba(93,202,165,0.15); color:#5DCAA5; }
+
+/* Main */
+.main-area { flex:1; display:flex; flex-direction:column; min-width:0; overflow-y:auto; }
+.top-bar {
+  position:sticky; top:0; z-index:50;
+  padding:10px 24px; background:var(--bg-nav);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.top-bar-title { font-size:14px; font-weight:500; font-family:'Geist Mono',monospace; color:var(--text-primary); }
+.top-bar-counter { font-size:12px; font-family:'Geist Mono',monospace; color:var(--text-muted); }
+
+.page { display:none; padding:24px; animation:pageFadeIn 0.25s ease-out; }
+.page.active { display:block; }
+@keyframes pageFadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* Typography */
+h2 { font-family:'Geist Mono',monospace; font-size:20px; margin-bottom:16px; color:var(--text-primary); }
+h3 { font-family:'Geist Mono',monospace; font-size:15px; margin:20px 0 10px; color:var(--accent-blue); }
+h4 { font-family:'Geist Mono',monospace; font-size:13px; margin:16px 0 8px; color:var(--accent-teal); }
+p { font-size:13px; color:var(--text-secondary); margin-bottom:10px; }
+
+/* Cards */
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin:16px 0; }
+.stat-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:10px; padding:16px; text-align:center;
+}
+.stat-card .num { font-size:28px; font-weight:600; font-family:'Geist Mono',monospace; }
+.stat-card .label { font-size:11px; color:var(--text-muted); margin-top:4px; }
+.stat-card.teal .num { color:#5DCAA5; }
+.stat-card.blue .num { color:#85B7EB; }
+.stat-card.amber .num { color:#EF9F27; }
+.stat-card.purple .num { color:#AFA9EC; }
+.stat-card.red .num { color:#F09595; }
+
+/* Team Grid */
+.team-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; margin:16px 0; }
+.team-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:8px; padding:12px;
+}
+.team-card .tc-name { font-family:'Geist Mono',monospace; font-size:13px; font-weight:500; color:var(--accent-blue); }
+.team-card .tc-type { font-size:10px; color:var(--text-muted); margin:2px 0 6px; }
+.team-card .tc-scope { font-size:11px; color:var(--text-secondary); }
+
+/* Tables */
+.comparison-table {
+  width:100%; border-collapse:collapse; margin:12px 0; font-size:12px;
+}
+.comparison-table th {
+  text-align:left; padding:8px 10px;
+  background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border);
+  font-family:'Geist Mono',monospace; font-size:11px; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:0.3px;
+}
+.comparison-table td {
+  padding:8px 10px; border-bottom:1px solid var(--border); color:var(--text-secondary);
+  vertical-align:top;
+}
+.comparison-table tr:hover td { background:rgba(255,255,255,0.02); }
+.tag {
+  display:inline-block; padding:1px 6px; border-radius:3px;
+  font-size:10px; font-family:'Geist Mono',monospace;
+}
+.tag-teal { background:rgba(93,202,165,0.15); color:#5DCAA5; }
+.tag-blue { background:rgba(133,183,235,0.15); color:#85B7EB; }
+.tag-amber { background:rgba(239,159,39,0.15); color:#EF9F27; }
+.tag-red { background:rgba(226,75,74,0.15); color:#F09595; }
+.tag-purple { background:rgba(175,169,236,0.15); color:#AFA9EC; }
+.tag-gray { background:rgba(255,255,255,0.08); color:#8b8fa3; }
+
+/* Architecture Diagram */
+.arch-diagram {
+  padding:20px; border-radius:12px;
+  background:rgba(255,255,255,0.02); border:1px solid var(--border);
+  display:flex; flex-direction:column; gap:12px; margin:16px 0;
+}
+.arch-label { font-family:'Geist Mono',monospace; font-size:14px; color:#e2e4ed; font-weight:500; }
+.arch-layer {
+  border:1px solid var(--layer-color); border-radius:10px;
+  padding:14px; background:color-mix(in srgb,var(--layer-color) 5%,transparent);
+  position:relative;
+}
+.arch-layer-tag {
+  position:absolute; top:-9px; left:14px; background:#0a0b10;
+  padding:0 8px; font-size:11px; font-family:'Geist Mono',monospace; color:var(--layer-color);
+}
+.arch-row { display:flex; gap:8px; flex-wrap:wrap; }
+.arch-box {
+  padding:8px 14px; border-radius:8px;
+  background:var(--box-bg); border:1px solid var(--box-border);
+  font-size:12px; color:#e2e4ed; cursor:default; transition:transform 0.1s;
+}
+.arch-box:hover { transform:translateY(-2px); }
+.arch-box--sm { min-width:80px; text-align:center; }
+.arch-tree { padding-left:8px; }
+.arch-node { font-size:12px; color:#b5d4f4; padding:4px 0; font-family:'Geist Mono',monospace; }
+.arch-node code {
+  font-size:10px; color:#8b8fa3; background:rgba(255,255,255,0.06);
+  padding:1px 5px; border-radius:3px; margin-left:6px;
+}
+.arch-children { padding-left:20px; border-left:1px dashed rgba(133,183,235,0.3); margin-left:4px; }
+.arch-node--leaf { color:#8b8fa3; }
+.arch-node--leaf::before { content:'|- '; color:rgba(133,183,235,0.4); }
+.arch-children .arch-node--leaf:last-child::before { content:'\\- '; }
+
+/* Inline Rec */
+.inline-rec {
+  border:1px solid rgba(239,159,39,0.25); border-radius:8px;
+  padding:12px 14px; margin:16px 0; background:rgba(239,159,39,0.03);
+}
+.inline-rec-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.inline-rec-id {
+  font-size:11px; font-family:'Geist Mono',monospace; color:#EF9F27;
+  background:rgba(239,159,39,0.15); padding:2px 6px; border-radius:4px;
+}
+.inline-rec-title { font-size:13px; font-weight:500; color:var(--text-primary); }
+.inline-rec-pri { font-size:10px; padding:2px 6px; border-radius:4px; margin-left:auto; }
+.pri-high { background:rgba(226,75,74,0.15); color:#F09595; }
+.pri-med { background:rgba(239,159,39,0.15); color:#EF9F27; }
+.pri-low { background:rgba(255,255,255,0.08); color:#8b8fa3; }
+.inline-rec-desc { font-size:12px; color:var(--text-secondary); margin-bottom:10px; line-height:1.5; }
+.inline-rec-btns { display:flex; gap:6px; }
+.d-btn {
+  padding:5px 12px; font-size:11px; border-radius:5px; cursor:pointer;
+  border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04);
+  color:#8b8fa3; transition:all 0.12s;
+}
+.d-btn:hover { background:rgba(255,255,255,0.08); }
+.d-btn.chosen-accept { background:rgba(93,202,165,0.15); color:#5DCAA5; border-color:rgba(93,202,165,0.3); }
+.d-btn.chosen-defer { background:rgba(239,159,39,0.15); color:#EF9F27; border-color:rgba(239,159,39,0.3); }
+.d-btn.chosen-reject { background:rgba(226,75,74,0.15); color:#F09595; border-color:rgba(226,75,74,0.3); }
+.d-btn-note { margin-left:auto; font-size:10px; }
+.inline-rec-note { display:none; margin-top:8px; }
+.inline-rec-note.visible { display:block; }
+.inline-rec-note input {
+  width:100%; background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08); border-radius:5px;
+  padding:5px 8px; font-size:11px; color:var(--text-primary);
+}
+
+/* Decision Summary */
+.decision-summary { margin:16px 0; }
+.export-btn {
+  padding:8px 16px; border-radius:6px; cursor:pointer;
+  font-size:12px; font-family:'Geist Mono',monospace;
+  border:1px solid var(--border); background:var(--bg-card);
+  color:var(--text-primary); margin-right:8px; transition:all 0.12s;
+}
+.export-btn:hover { background:var(--bg-card-hover); }
+
+/* Flash Save */
+.flash-save {
+  position:fixed; bottom:20px; right:20px; padding:6px 14px;
+  background:rgba(93,202,165,0.2); color:#5DCAA5; border-radius:6px;
+  font-size:11px; font-family:'Geist Mono',monospace;
+  opacity:0; transition:opacity 0.3s; pointer-events:none;
+}
+.flash-save.visible { opacity:1; }
+
+/* Code Block */
+.code-block {
+  background:rgba(255,255,255,0.03); border:1px solid var(--border);
+  border-radius:6px; padding:12px; font-family:'Geist Mono',monospace;
+  font-size:11px; color:var(--text-secondary); overflow-x:auto; margin:10px 0;
+  white-space:pre;
+}
+.code-block .comment { color:#5a5e72; }
+.code-block .var { color:#85B7EB; }
+.code-block .val { color:#5DCAA5; }
+
+/* Misc */
+.section-intro { font-size:13px; color:var(--text-secondary); margin-bottom:16px; line-height:1.7; }
+.gap-item {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:8px; padding:14px; margin:10px 0;
+}
+.gap-title { font-family:'Geist Mono',monospace; font-size:13px; color:var(--accent-red); margin-bottom:6px; }
+.gap-desc { font-size:12px; color:var(--text-secondary); }
+.priority-row { display:flex; gap:8px; margin:6px 0; align-items:center; }
+.priority-bar {
+  height:6px; border-radius:3px; transition:width 0.3s;
+}
+.nav-footer {
+  padding:8px 14px; border-top:1px solid var(--border);
+  display:flex; gap:6px;
+}
+.nav-btn {
+  flex:1; padding:6px; border-radius:5px; cursor:pointer; text-align:center;
+  font-size:11px; font-family:'Geist Mono',monospace;
+  border:1px solid var(--border); background:var(--bg-card); color:var(--text-muted);
+  transition:all 0.12s;
+}
+.nav-btn:hover { background:var(--bg-card-hover); color:var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="report-layout">
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-header">
+    <div class="sb-title">Decisions</div>
+    <div class="sb-stats" id="sbStats">
+      <div class="sb-stat accept"><span class="sb-stat-num" id="statAccept">0</span>accept</div>
+      <div class="sb-stat defer"><span class="sb-stat-num" id="statDefer">0</span>defer</div>
+      <div class="sb-stat reject"><span class="sb-stat-num" id="statReject">0</span>reject</div>
+    </div>
+  </div>
+  <div class="sb-progress-wrap">
+    <div class="sb-progress-label">
+      <span>Progress</span>
+      <span id="sbProgressText">0 / 0</span>
+    </div>
+    <div class="sb-progress"><div class="sb-progress-fill" id="sbProgressFill"></div></div>
+  </div>
+  <nav class="sb-pages" id="sbPages"></nav>
+  <div class="nav-footer">
+    <div class="nav-btn" onclick="prevPage()">Prev</div>
+    <div class="nav-btn" onclick="nextPage()">Next</div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main-area">
+  <header class="top-bar">
+    <span class="top-bar-title" id="topBarTitle">1. Analysis Team</span>
+    <span class="top-bar-counter" id="topBarCounter">1 / 10</span>
+  </header>
+
+  <!-- Page 1: Analysis Team -->
+  <div class="page active" data-page="1" data-title="Analysis Team">
+    <h2>Analysis Team</h2>
+    <p class="section-intro">malrang_auto_ctf CTF automation framework code structure analysis. 5 expert agents dispatched in parallel.</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="tc-name">Agent Infrastructure Expert</div>
+        <div class="tc-type">Explore Agent</div>
+        <div class="tc-scope">.claude/agents/, rules, skills, settings</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-name">Tools &amp; Scripts Expert</div>
+        <div class="tc-type">Explore Agent</div>
+        <div class="tc-scope">tools/*.py, scripts/*.ps1 (7 Python + 5 PS1)</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-name">Knowledge System Expert</div>
+        <div class="tc-type">Explore Agent</div>
+        <div class="tc-scope">knowledge/, categories/ (8 guides + 15 techniques)</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-name">MCP &amp; Templates Expert</div>
+        <div class="tc-type">Explore Agent</div>
+        <div class="tc-scope">mcp_servers/ (3 custom), templates/, .mcp.json</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-name">Challenge Structure Expert</div>
+        <div class="tc-type">Explore Agent</div>
+        <div class="tc-scope">challenges/ (18 folders), CLAUDE.md (16 sections)</div>
+      </div>
+    </div>
+    <h3>Analysis Scope</h3>
+    <table class="comparison-table">
+      <tr><th>Area</th><th>Files</th><th>Lines (approx)</th></tr>
+      <tr><td>Agent Definitions</td><td>8 .md files</td><td>~1,200</td></tr>
+      <tr><td>Python Tools</td><td>9 .py files</td><td>~3,500</td></tr>
+      <tr><td>PowerShell Scripts</td><td>5 .ps1 files</td><td>~400</td></tr>
+      <tr><td>Category Guides</td><td>8 .md files</td><td>~2,400</td></tr>
+      <tr><td>Knowledge Docs</td><td>25+ .md files</td><td>~4,000</td></tr>
+      <tr><td>MCP Servers</td><td>3 custom + 8 external</td><td>~800</td></tr>
+      <tr><td>CLAUDE.md</td><td>1 file (16 sections)</td><td>~650</td></tr>
+    </table>
+  </div>
+
+  <!-- Page 2: Executive Summary -->
+  <div class="page" data-page="2" data-title="Executive Summary">
+    <h2>Executive Summary</h2>
+    <div class="stats-grid">
+      <div class="stat-card teal"><div class="num">8</div><div class="label">Agent Roles</div></div>
+      <div class="stat-card blue"><div class="num">11</div><div class="label">MCP Servers</div></div>
+      <div class="stat-card amber"><div class="num">18</div><div class="label">Challenge Folders</div></div>
+      <div class="stat-card purple"><div class="num">9</div><div class="label">Python Tools</div></div>
+      <div class="stat-card teal"><div class="num">15</div><div class="label">Speedrun Entries</div></div>
+      <div class="stat-card red"><div class="num">3</div><div class="label">Missing Agents</div></div>
+    </div>
+    <h3>Key Findings</h3>
+    <p>8-agent pipeline (reverser, solver, chain, critic, verifier, reporter, scout, ctf-solver) with model-specific assignment (opus for complex reasoning, sonnet for execution). 7 pipeline variants dynamically selected by challenge type and difficulty.</p>
+    <p>9 Python tools provide full lifecycle support: triage (559 lines), learn (434 lines), decision_tree (465 lines with 50+ action sequences), knowledge (1,172 lines with FTS5 across 7 tables), state management, context masking, and browser-based login.</p>
+    <p>Knowledge system accumulates 15 speedrun entries across 16 solved challenges, with 15 technique documents and 8 challenge writeups indexed in SQLite FTS5.</p>
+
+    <div class="inline-rec" data-rec="R1">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R1</span>
+        <span class="inline-rec-title">Define Missing Agent Files (trigger, analyst, exploiter)</span>
+        <span class="inline-rec-pri pri-high">high</span>
+      </div>
+      <p class="inline-rec-desc">Pipeline references 3 agents (trigger, analyst, exploiter) that have no .claude/agents/*.md definitions. This breaks the pwn-unclear (6-agent) and web (4-agent) pipelines.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R1','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R1','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R1','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R1')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R1">
+        <input type="text" placeholder="Add comment..." oninput="saveNote('R1',this.value)" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 3: Agent Infrastructure -->
+  <div class="page" data-page="3" data-title="Agent Infrastructure">
+    <h2>Agent Infrastructure</h2>
+
+    <div class="arch-diagram">
+      <div class="arch-label">Agent Pipeline Architecture</div>
+      <div class="arch-layer" style="--layer-color:#85B7EB;">
+        <span class="arch-layer-tag">Orchestrator (Main Session)</span>
+        <div class="arch-row">
+          <div class="arch-box arch-box--sm" style="--box-bg:#0e1a2a;--box-border:#85B7EB;">Classify</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#0e1a2a;--box-border:#85B7EB;">Triage</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#0e1a2a;--box-border:#85B7EB;">Pipeline Select</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#0e1a2a;--box-border:#85B7EB;">Spawn Agents</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#0e1a2a;--box-border:#85B7EB;">Verify Flag</div>
+        </div>
+      </div>
+      <div class="arch-layer" style="--layer-color:#AFA9EC;">
+        <span class="arch-layer-tag">Analysis Agents (sonnet)</span>
+        <div class="arch-row">
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a1a2e;--box-border:#AFA9EC;">reverser</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a1a2e;--box-border:#AFA9EC;">scout</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a1a2e;--box-border:#AFA9EC;">verifier</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a1a2e;--box-border:#AFA9EC;">reporter</div>
+        </div>
+      </div>
+      <div class="arch-layer" style="--layer-color:#EF9F27;">
+        <span class="arch-layer-tag">Compute Agents (opus)</span>
+        <div class="arch-row">
+          <div class="arch-box arch-box--sm" style="--box-bg:#2a1f0a;--box-border:#EF9F27;">solver</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#2a1f0a;--box-border:#EF9F27;">chain</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#2a1f0a;--box-border:#EF9F27;">critic</div>
+        </div>
+      </div>
+      <div class="arch-layer" style="--layer-color:#F09595;">
+        <span class="arch-layer-tag">Undefined Agents (referenced but missing)</span>
+        <div class="arch-row">
+          <div class="arch-box arch-box--sm" style="--box-bg:#2a1414;--box-border:#F09595;">trigger</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#2a1414;--box-border:#F09595;">analyst</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#2a1414;--box-border:#F09595;">exploiter</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Pipeline Selection Matrix</h3>
+    <table class="comparison-table">
+      <tr><th>Challenge Type</th><th>Pipeline</th><th>Agents</th><th>Count</th></tr>
+      <tr><td>Trivial</td><td>ctf-solver -> reporter</td><td><span class="tag tag-teal">2</span></td><td>2</td></tr>
+      <tr><td>Crypto / Rev / Web3</td><td>reverser -> solver -> critic -> verifier -> reporter</td><td><span class="tag tag-blue">5</span></td><td>5</td></tr>
+      <tr><td>Pwn (vuln clear)</td><td>reverser -> chain -> critic -> verifier -> reporter</td><td><span class="tag tag-blue">5</span></td><td>5</td></tr>
+      <tr><td>Pwn (vuln unclear)</td><td>reverser -> <span class="tag tag-red">trigger</span> -> chain -> critic -> verifier -> reporter</td><td><span class="tag tag-amber">6</span></td><td>6</td></tr>
+      <tr><td>Web</td><td>scout -> <span class="tag tag-red">analyst</span> -> <span class="tag tag-red">exploiter</span> -> reporter</td><td><span class="tag tag-amber">4</span></td><td>4</td></tr>
+    </table>
+
+    <h3>Agent Detail</h3>
+    <table class="comparison-table">
+      <tr><th>Agent</th><th>Model</th><th>Key Output</th><th>Iron Rules</th></tr>
+      <tr><td>reverser</td><td><span class="tag tag-purple">sonnet</span></td><td>reversal_map.md</td><td>NEVER write exploit code; constants must be tool-verified</td></tr>
+      <tr><td>solver</td><td><span class="tag tag-amber">opus</span></td><td>solve.py</td><td>4-stage WRIR cycle mandatory; verify against actual target</td></tr>
+      <tr><td>chain</td><td><span class="tag tag-amber">opus</span></td><td>solve.py + chain_report.md</td><td>Max 200 lines/phase; test each phase independently</td></tr>
+      <tr><td>critic</td><td><span class="tag tag-amber">opus</span></td><td>critic_review.md</td><td>Independent verification; single failure = REJECTED</td></tr>
+      <tr><td>verifier</td><td><span class="tag tag-purple">sonnet</span></td><td>FLAG_FOUND or FAIL</td><td>Never modify solve.py; local flags are FAKE</td></tr>
+      <tr><td>reporter</td><td><span class="tag tag-purple">sonnet</span></td><td>writeup + knowledge update</td><td>Only runs after FLAG_FOUND; must call learn.py</td></tr>
+      <tr><td>scout</td><td><span class="tag tag-purple">sonnet</span></td><td>web_analysis.md</td><td>Source analysis FIRST; CWE checklist mandatory</td></tr>
+      <tr><td>ctf-solver</td><td><span class="tag tag-purple">sonnet</span></td><td>FLAG_FOUND</td><td>Trivial challenges only (1-3 line bugs)</td></tr>
+    </table>
+
+    <div class="inline-rec" data-rec="R2">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R2</span>
+        <span class="inline-rec-title">Add Handoff Format Validation Hook</span>
+        <span class="inline-rec-pri pri-med">med</span>
+      </div>
+      <p class="inline-rec-desc">Handoff protocol is documented but not enforced programmatically. A hook in .claude/hooks/ could validate that agent outputs contain the required [HANDOFF] format before passing to the next agent.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R2','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R2','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R2','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R2')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R2"><input type="text" placeholder="Add comment..." oninput="saveNote('R2',this.value)" /></div>
+    </div>
+  </div>
+
+  <!-- Page 4: Tools & Scripts -->
+  <div class="page" data-page="4" data-title="Tools & Scripts">
+    <h2>Tools &amp; Scripts Pipeline</h2>
+
+    <div class="arch-diagram">
+      <div class="arch-label">Data Flow Architecture</div>
+      <div class="arch-layer" style="--layer-color:#5DCAA5;">
+        <span class="arch-layer-tag">Intake Layer</span>
+        <div class="arch-row">
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a2e24;--box-border:#5DCAA5;">scaffold.ps1</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a2e24;--box-border:#5DCAA5;">intake.ps1</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a2e24;--box-border:#5DCAA5;">ctf_login.py</div>
+        </div>
+      </div>
+      <div class="arch-layer" style="--layer-color:#85B7EB;">
+        <span class="arch-layer-tag">Analysis Layer</span>
+        <div class="arch-row">
+          <div class="arch-box arch-box--sm" style="--box-bg:#0e1a2a;--box-border:#85B7EB;">triage.py<br><small>559 LOC</small></div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#0e1a2a;--box-border:#85B7EB;">knowledge.py<br><small>1,172 LOC</small></div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#0e1a2a;--box-border:#85B7EB;">decision_tree.py<br><small>465 LOC</small></div>
+        </div>
+      </div>
+      <div class="arch-layer" style="--layer-color:#EF9F27;">
+        <span class="arch-layer-tag">Execution Layer</span>
+        <div class="arch-row">
+          <div class="arch-box arch-box--sm" style="--box-bg:#2a1f0a;--box-border:#EF9F27;">run.ps1</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#2a1f0a;--box-border:#EF9F27;">state.py<br><small>SQLite facts</small></div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#2a1f0a;--box-border:#EF9F27;">context_digest.py</div>
+        </div>
+      </div>
+      <div class="arch-layer" style="--layer-color:#AFA9EC;">
+        <span class="arch-layer-tag">Learning Layer</span>
+        <div class="arch-row">
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a1a2e;--box-border:#AFA9EC;">learn.py<br><small>434 LOC</small></div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a1a2e;--box-border:#AFA9EC;">bulk_learn.py<br><small>294 LOC</small></div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a1a2e;--box-border:#AFA9EC;">metrics.ps1</div>
+          <div class="arch-box arch-box--sm" style="--box-bg:#1a1a2e;--box-border:#AFA9EC;">gate.ps1</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Tool Function Summary</h3>
+    <table class="comparison-table">
+      <tr><th>Tool</th><th>LOC</th><th>Purpose</th><th>Key Feature</th></tr>
+      <tr><td>triage.py</td><td>559</td><td>Challenge classification + knowledge injection</td><td>Auto-detect category from files; inject knowledge context into solver prompt</td></tr>
+      <tr><td>knowledge.py</td><td>1,172</td><td>FTS5 knowledge base (7 tables)</td><td>Unified search across techniques, challenges, ExploitDB, Nuclei, CVEs</td></tr>
+      <tr><td>decision_tree.py</td><td>465</td><td>Failure recovery engine</td><td>50+ action sequences with glibc-aware context filters</td></tr>
+      <tr><td>learn.py</td><td>434</td><td>Post-solve learning loop</td><td>Auto-detect technique from code patterns; generate writeup + update index</td></tr>
+      <tr><td>bulk_learn.py</td><td>294</td><td>CTF writeup crawler</td><td>GitHub + generic URL crawling with trafilatura text extraction</td></tr>
+      <tr><td>state.py</td><td>256</td><td>Fact store &amp; artifact verifier</td><td>Source-verified facts prevent hallucination; checkpoint tracking</td></tr>
+      <tr><td>context_digest.py</td><td>198</td><td>Output masking for context efficiency</td><td>Regex key pattern extraction (hex, flags, errors, CVEs)</td></tr>
+      <tr><td>ctf_login.py</td><td>206</td><td>Browser-based platform auth</td><td>4 platforms (Dreamhack, CryptoHack, picoCTF, HTB); cookie persistence</td></tr>
+    </table>
+
+    <div class="inline-rec" data-rec="R3">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R3</span>
+        <span class="inline-rec-title">Add Unified CLI Entry Point</span>
+        <span class="inline-rec-pri pri-med">med</span>
+      </div>
+      <p class="inline-rec-desc">Currently 9 separate Python tools with individual CLIs. A unified `ctf-tool` CLI (e.g., via click/typer) with subcommands would reduce cognitive overhead: `ctf-tool triage`, `ctf-tool learn`, `ctf-tool decide`, etc.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R3','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R3','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R3','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R3')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R3"><input type="text" placeholder="Add comment..." oninput="saveNote('R3',this.value)" /></div>
+    </div>
+
+    <div class="inline-rec" data-rec="R4">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R4</span>
+        <span class="inline-rec-title">Consolidate PS1 Scripts to Python</span>
+        <span class="inline-rec-pri pri-low">low</span>
+      </div>
+      <p class="inline-rec-desc">5 PowerShell scripts handle scaffolding, execution, gating, and metrics. Since the rest of the framework is Python-based and runs in WSL, consolidating to Python would simplify the tech stack and improve cross-platform compatibility.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R4','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R4','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R4','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R4')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R4"><input type="text" placeholder="Add comment..." oninput="saveNote('R4',this.value)" /></div>
+    </div>
+  </div>
+
+  <!-- Page 5: Knowledge System -->
+  <div class="page" data-page="5" data-title="Knowledge System">
+    <h2>Knowledge System</h2>
+    <div class="stats-grid">
+      <div class="stat-card teal"><div class="num">16</div><div class="label">Challenges Solved</div></div>
+      <div class="stat-card amber"><div class="num">1</div><div class="label">Attempted (Unsolved)</div></div>
+      <div class="stat-card blue"><div class="num">15</div><div class="label">Speedrun Entries</div></div>
+      <div class="stat-card purple"><div class="num">15</div><div class="label">Technique Docs</div></div>
+      <div class="stat-card teal"><div class="num">8</div><div class="label">Challenge Writeups</div></div>
+      <div class="stat-card blue"><div class="num">7</div><div class="label">FTS5 Tables</div></div>
+    </div>
+
+    <h3>Category Coverage</h3>
+    <table class="comparison-table">
+      <tr><th>Category</th><th>Solved</th><th>Techniques</th><th>Writeups</th><th>Guide</th></tr>
+      <tr><td>Crypto</td><td>4</td><td>3</td><td>0</td><td><span class="tag tag-teal">Yes</span></td></tr>
+      <tr><td>Pwn</td><td>2</td><td>4</td><td>2</td><td><span class="tag tag-teal">Yes</span></td></tr>
+      <tr><td>Web</td><td>1</td><td>4</td><td>1</td><td><span class="tag tag-teal">Yes</span></td></tr>
+      <tr><td>Reversing</td><td>2</td><td>2</td><td>2</td><td><span class="tag tag-teal">Yes</span></td></tr>
+      <tr><td>AI/ML</td><td>1</td><td>0</td><td>1</td><td><span class="tag tag-teal">Yes</span></td></tr>
+      <tr><td>Web3</td><td>0</td><td>0</td><td>0</td><td><span class="tag tag-teal">Yes</span></td></tr>
+      <tr><td>Forensics</td><td>0</td><td>0</td><td>0</td><td><span class="tag tag-teal">Yes</span></td></tr>
+      <tr><td>Misc</td><td>1</td><td>0</td><td>1</td><td><span class="tag tag-teal">Yes</span></td></tr>
+      <tr><td>Multi</td><td>5</td><td>0</td><td>2</td><td><span class="tag tag-gray">N/A</span></td></tr>
+    </table>
+
+    <h3>FTS5 Knowledge Database Tables</h3>
+    <table class="comparison-table">
+      <tr><th>Table</th><th>Source</th><th>Indexed Fields</th></tr>
+      <tr><td>chunks</td><td>knowledge/techniques + challenges</td><td>source_path, heading, body</td></tr>
+      <tr><td>exploitdb</td><td>~/exploitdb/files_exploits.csv</td><td>edb_id, platform, description</td></tr>
+      <tr><td>nuclei</td><td>~/nuclei-templates/*.yaml</td><td>template_id, name, severity, tags</td></tr>
+      <tr><td>poc_github</td><td>~/PoC-in-GitHub/*.json</td><td>cve_id, description, github_url</td></tr>
+      <tr><td>external_techniques</td><td>PayloadsAllTheThings, HackTricks</td><td>source_path, heading, body</td></tr>
+      <tr><td>cisa_kev</td><td>~/cve-data/kev.json</td><td>cve_id, vendor, product, description</td></tr>
+      <tr><td>cve_db</td><td>~/cvelistV5/cves/*.json</td><td>cve_id, description, cvss_score</td></tr>
+    </table>
+
+    <div class="inline-rec" data-rec="R5">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R5</span>
+        <span class="inline-rec-title">Generate Crypto Writeups for 4 Solved Challenges</span>
+        <span class="inline-rec-pri pri-med">med</span>
+      </div>
+      <p class="inline-rec-desc">4 crypto challenges (RSA Quartet, Perfect RSA, Glitchy Sig, Not So Smart) are solved but only 1 has a dedicated writeup. The speedrun entries exist but detailed technique documentation is missing. Running learn.py extract-technique would capture reusable patterns.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R5','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R5','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R5','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R5')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R5"><input type="text" placeholder="Add comment..." oninput="saveNote('R5',this.value)" /></div>
+    </div>
+
+    <div class="inline-rec" data-rec="R6">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R6</span>
+        <span class="inline-rec-title">Add Web3 and Forensics Technique Docs</span>
+        <span class="inline-rec-pri pri-low">low</span>
+      </div>
+      <p class="inline-rec-desc">Web3 and Forensics categories have guides but zero technique documents and zero solved challenges. Adding foundational technique docs (reentrancy, flash loans, volatility workflow, pcap analysis) would prepare the framework for these categories.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R6','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R6','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R6','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R6')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R6"><input type="text" placeholder="Add comment..." oninput="saveNote('R6',this.value)" /></div>
+    </div>
+  </div>
+
+  <!-- Page 6: MCP & Templates -->
+  <div class="page" data-page="6" data-title="MCP & Templates">
+    <h2>MCP Servers &amp; Templates</h2>
+
+    <h3>Server Configuration (11 total)</h3>
+    <table class="comparison-table">
+      <tr><th>Server</th><th>Type</th><th>Transport</th><th>Tools</th></tr>
+      <tr><td>pwn-local</td><td><span class="tag tag-teal">Custom Python</span></td><td>stdio</td><td>checksec, readelf, objdump, ropgadget, run_solve</td></tr>
+      <tr><td>sage-helper</td><td><span class="tag tag-teal">Custom Python</span></td><td>stdio</td><td>execute_sage, list_bindings</td></tr>
+      <tr><td>solver-cryptominisat</td><td><span class="tag tag-teal">Custom Python</span></td><td>stdio</td><td>solve_cnf, solve_dimacs</td></tr>
+      <tr><td>solver-z3</td><td><span class="tag tag-blue">External</span></td><td>stdio</td><td>add/replace/delete/solve_model</td></tr>
+      <tr><td>solver-pysat</td><td><span class="tag tag-blue">External</span></td><td>stdio</td><td>add/replace/delete/solve_model</td></tr>
+      <tr><td>py-repl</td><td><span class="tag tag-blue">External</span></td><td>stdio</td><td>execute_python, install_package</td></tr>
+      <tr><td>filesystem</td><td><span class="tag tag-blue">External (npx)</span></td><td>stdio</td><td>File CRUD operations</td></tr>
+      <tr><td>github</td><td><span class="tag tag-blue">External (npx)</span></td><td>stdio</td><td>GitHub API access</td></tr>
+      <tr><td>docker</td><td><span class="tag tag-blue">External (npx)</span></td><td>stdio</td><td>Container management</td></tr>
+      <tr><td>ida-pro-mcp</td><td><span class="tag tag-amber">Conditional</span></td><td>stdio (HTTP RPC)</td><td>IDA Pro analysis (requires IDA running)</td></tr>
+      <tr><td>notion</td><td><span class="tag tag-purple">Remote</span></td><td>SSE</td><td>Notion integration</td></tr>
+    </table>
+
+    <h3>Solver Templates</h3>
+    <p>Two minimal templates: <code>solve.py</code> (crypto/rev/web3/forensics/ai/misc) and <code>exploit.py</code> (pwn/web). Both detect remote mode via HOST/PORT environment variables.</p>
+
+    <div class="inline-rec" data-rec="R7">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R7</span>
+        <span class="inline-rec-title">Enrich Solver Templates with Common Patterns</span>
+        <span class="inline-rec-pri pri-low">low</span>
+      </div>
+      <p class="inline-rec-desc">Templates are currently ~10 lines each with only HOST/PORT detection. Adding category-specific boilerplate (pwntools remote/process for exploit.py, argparse + flag extraction for solve.py) would reduce per-challenge setup time.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R7','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R7','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R7','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R7')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R7"><input type="text" placeholder="Add comment..." oninput="saveNote('R7',this.value)" /></div>
+    </div>
+  </div>
+
+  <!-- Page 7: Challenge Structure -->
+  <div class="page" data-page="7" data-title="Challenge Structure">
+    <h2>Challenge Structure</h2>
+
+    <h3>Inventory (18 Challenges)</h3>
+    <table class="comparison-table">
+      <tr><th>Challenge</th><th>Solver</th><th>meta.yaml</th><th>memory/</th><th>Variants</th></tr>
+      <tr><td>1-Weight_Overwrite</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+      <tr><td>Basic_CrackME</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+      <tr><td>ClusterRSA</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>solve2.py</td></tr>
+      <tr><td>ddalgak</td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+      <tr><td>Diatonic_Scale_Revenge</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>solve2.py, analyze_music.py</td></tr>
+      <tr><td>exestack</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+      <tr><td>gpt-marketplace</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>extract.py, batch_extract.py</td></tr>
+      <tr><td>Not_So_Smart</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>solve.sage</td></tr>
+      <tr><td>no_libc_revenge</td><td><span class="tag tag-amber">exploit.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+      <tr><td>On_Labor_and_Automation_2</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>reversal_map.md</td></tr>
+      <tr><td>patch</td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+      <tr><td>playing-with-login</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+      <tr><td>raone</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>Dockerfile, libc.so.6</td></tr>
+      <tr><td>Schnorsa</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-teal">Yes</span></td><td><span class="tag tag-teal">Yes</span></td><td>6 variant solvers</td></tr>
+      <tr><td>Small_Trouble</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+      <tr><td>superONNX</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td><span class="tag tag-amber">30+ variants</span></td></tr>
+      <tr><td>Times</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+      <tr><td>Timestamped_Secrets</td><td><span class="tag tag-teal">solve.py</span></td><td><span class="tag tag-red">-</span></td><td><span class="tag tag-teal">Yes</span></td><td>-</td></tr>
+    </table>
+
+    <div class="inline-rec" data-rec="R8">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R8</span>
+        <span class="inline-rec-title">Generate meta.yaml for All Challenges</span>
+        <span class="inline-rec-pri pri-high">high</span>
+      </div>
+      <p class="inline-rec-desc">Only 1/18 challenges (Schnorsa) has meta.yaml. The triage system and gate.ps1 validation depend on this file. A batch script to generate meta.yaml from existing challenge files would bring all challenges into compliance.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R8','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R8','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R8','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R8')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R8"><input type="text" placeholder="Add comment..." oninput="saveNote('R8',this.value)" /></div>
+    </div>
+
+    <div class="inline-rec" data-rec="R9">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R9</span>
+        <span class="inline-rec-title">Implement checkpoint.json Usage</span>
+        <span class="inline-rec-pri pri-med">med</span>
+      </div>
+      <p class="inline-rec-desc">Checkpoint protocol is documented in CLAUDE.md and state.py supports it, but 0/18 challenges have checkpoint.json files. This means agent state recovery (fake idle detection) isn't functioning as designed.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R9','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R9','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R9','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R9')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R9"><input type="text" placeholder="Add comment..." oninput="saveNote('R9',this.value)" /></div>
+    </div>
+  </div>
+
+  <!-- Page 8: Gap Analysis -->
+  <div class="page" data-page="8" data-title="Gap Analysis">
+    <h2>Gap Analysis</h2>
+
+    <div class="gap-item">
+      <div class="gap-title">Missing Agent Definitions</div>
+      <div class="gap-desc">3 agents referenced in ctf_pipeline.md lack .md definitions: <strong>trigger</strong> (pwn-unclear pipeline), <strong>analyst</strong> (web pipeline), <strong>exploiter</strong> (web pipeline). This makes 2 of 5 pipeline variants non-functional as designed.</div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-title">meta.yaml Coverage: 6%</div>
+      <div class="gap-desc">Only Schnorsa (1/18) has meta.yaml. Gate validation, triage, and run.ps1 all depend on this file. 94% of challenges bypass the designed validation chain.</div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-title">Checkpoint Protocol Not Activated</div>
+      <div class="gap-desc">0/18 challenges have checkpoint.json despite state.py supporting it. The documented fake-idle detection hook (check_completion.sh) has no data to work with.</div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-title">Memory Files Sparsely Populated</div>
+      <div class="gap-desc">memory/ directories exist in 100% of challenges but only ~22-44% have populated recon.md, strategy.md, and discoveries.md files. This limits knowledge retention from failed attempts.</div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-title">Crypto Writeup Gap</div>
+      <div class="gap-desc">4 crypto challenges solved, 0 dedicated writeups generated (only speedrun entries exist). Technique extraction is incomplete for the most-solved category.</div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-title">Web3 / Forensics Zero Coverage</div>
+      <div class="gap-desc">Category guides exist but no challenges attempted, no techniques documented, and no writeups generated. These categories are guide-only with no battle-tested patterns.</div>
+    </div>
+
+    <div class="inline-rec" data-rec="R10">
+      <div class="inline-rec-head">
+        <span class="inline-rec-id">R10</span>
+        <span class="inline-rec-title">Add Post-Scaffold Auto-Validation</span>
+        <span class="inline-rec-pri pri-med">med</span>
+      </div>
+      <p class="inline-rec-desc">The gap between scaffold.ps1 (which creates meta.yaml) and actual challenge folders (which lack it) suggests challenges are often set up manually. Adding a pre-solve hook that auto-generates meta.yaml if missing would close this gap.</p>
+      <div class="inline-rec-btns">
+        <button class="d-btn" data-action="accept" onclick="setDecision('R10','accept')">Accept</button>
+        <button class="d-btn" data-action="defer" onclick="setDecision('R10','defer')">Defer</button>
+        <button class="d-btn" data-action="reject" onclick="setDecision('R10','reject')">Reject</button>
+        <button class="d-btn d-btn-note" onclick="toggleNote('R10')">+ note</button>
+      </div>
+      <div class="inline-rec-note" id="note-R10"><input type="text" placeholder="Add comment..." oninput="saveNote('R10',this.value)" /></div>
+    </div>
+  </div>
+
+  <!-- Page 9: Priority Matrix -->
+  <div class="page" data-page="9" data-title="Priority Matrix">
+    <h2>Priority Matrix</h2>
+    <table class="comparison-table">
+      <tr><th>Priority</th><th>Item</th><th>Impact</th><th>Effort</th></tr>
+      <tr>
+        <td><span class="tag tag-red">P0</span></td>
+        <td>R1: Define missing agents (trigger, analyst, exploiter)</td>
+        <td>Enables 2 broken pipelines (pwn-unclear, web)</td>
+        <td>~2h (3 markdown files)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-red">P0</span></td>
+        <td>R8: Generate meta.yaml for all challenges</td>
+        <td>Unlocks triage + gate validation for 17 challenges</td>
+        <td>~30m (batch script)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-amber">P1</span></td>
+        <td>R9: Activate checkpoint.json in agent workflows</td>
+        <td>Enables state recovery + fake-idle detection</td>
+        <td>~1h (agent prompt updates)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-amber">P1</span></td>
+        <td>R2: Handoff format validation hook</td>
+        <td>Prevents silent handoff failures</td>
+        <td>~1h (shell hook)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-amber">P1</span></td>
+        <td>R10: Auto-generate meta.yaml on scaffold miss</td>
+        <td>Prevents future meta.yaml gaps</td>
+        <td>~30m (hook)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-blue">P2</span></td>
+        <td>R5: Generate crypto writeups</td>
+        <td>Captures 4 solved challenges' knowledge</td>
+        <td>~1h (learn.py runs)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-blue">P2</span></td>
+        <td>R3: Unified CLI entry point</td>
+        <td>Reduces 9 CLIs to 1</td>
+        <td>~3h (typer/click wrapper)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-gray">P3</span></td>
+        <td>R7: Enrich solver templates</td>
+        <td>Faster per-challenge setup</td>
+        <td>~1h (template expansion)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-gray">P3</span></td>
+        <td>R6: Web3/Forensics technique docs</td>
+        <td>Category preparedness</td>
+        <td>~2h (documentation)</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-gray">P3</span></td>
+        <td>R4: Consolidate PS1 to Python</td>
+        <td>Tech stack simplification</td>
+        <td>~4h (migration)</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Page 10: Decision Summary -->
+  <div class="page" data-page="10" data-title="Decision Summary">
+    <h2>Decision Summary</h2>
+    <div class="decision-summary">
+      <div class="stats-grid">
+        <div class="stat-card teal"><div class="num" id="summAccept">0</div><div class="label">Accepted</div></div>
+        <div class="stat-card amber"><div class="num" id="summDefer">0</div><div class="label">Deferred</div></div>
+        <div class="stat-card red"><div class="num" id="summReject">0</div><div class="label">Rejected</div></div>
+        <div class="stat-card blue"><div class="num" id="summPending">10</div><div class="label">Pending</div></div>
+      </div>
+      <div id="summaryTable"></div>
+      <div style="margin-top:20px;">
+        <button class="export-btn" onclick="exportJSON()">Export JSON</button>
+        <button class="export-btn" onclick="copyClipboard()">Copy to Clipboard</button>
+        <button class="export-btn" onclick="clearAll()">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="flash-save" id="flashSave">Saved</div>
+
+<script>
+// Storage
+const STORAGE_KEY='core-code-structure-analysis-decisions';
+function loadState(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}catch{return{}}}
+function saveState(s){localStorage.setItem(STORAGE_KEY,JSON.stringify(s));flashSave()}
+function flashSave(){const el=document.getElementById('flashSave');el.classList.add('visible');setTimeout(()=>el.classList.remove('visible'),1200)}
+
+// Pages
+let currentPage=1;
+const pages=document.querySelectorAll('.page');
+const totalPages=pages.length;
+
+function goToPage(n){
+  if(n<1||n>totalPages)return;
+  currentPage=n;
+  const page=pages[n-1];
+  pages.forEach(p=>p.classList.remove('active'));
+  page.classList.add('active');
+  document.getElementById('topBarTitle').textContent=`${n}. ${page.dataset.title}`;
+  document.getElementById('topBarCounter').textContent=`${n} / ${totalPages}`;
+  document.querySelectorAll('.sb-page').forEach((item,i)=>{
+    item.classList.remove('active');
+    if(i+1<n)item.classList.add('done');
+    else item.classList.remove('done');
+    if(i+1===n){item.classList.add('active');item.scrollIntoView({behavior:'smooth',block:'nearest'})}
+  });
+  document.querySelector('.main-area').scrollTo({top:0,behavior:'instant'});
+  if(n===totalPages)renderSummaryTable();
+}
+function prevPage(){goToPage(currentPage-1)}
+function nextPage(){goToPage(currentPage+1)}
+document.addEventListener('keydown',e=>{
+  if(['TEXTAREA','INPUT','SELECT'].includes(e.target.tagName))return;
+  if(e.key==='ArrowLeft')prevPage();
+  if(e.key==='ArrowRight')nextPage();
+});
+
+// Sidebar
+function initSidebar(){
+  const c=document.getElementById('sbPages');
+  pages.forEach((p,i)=>{
+    const pn=i+1;
+    const rc=p.querySelectorAll('.inline-rec').length;
+    const item=document.createElement('div');
+    item.className='sb-page';
+    item.addEventListener('click',()=>goToPage(pn));
+    item.innerHTML=`<div class="sb-dot"></div><span class="sb-page-label">${pn}. ${p.dataset.title}</span>${rc>0?`<span class="sb-badge pending" data-page="${pn}">0/${rc}</span>`:''}`;
+    c.appendChild(item);
+  });
+}
+
+// Decisions
+function setDecision(rec,action){
+  const s=loadState();
+  if(s[rec]?.action===action)delete s[rec].action;
+  else s[rec]={...s[rec],action};
+  saveState(s);renderDecisionButtons(rec);updateSidebarProgress();
+}
+function saveNote(rec,v){const s=loadState();s[rec]={...s[rec],note:v};saveState(s)}
+function toggleNote(rec){document.getElementById(`note-${rec}`).classList.toggle('visible')}
+function renderDecisionButtons(rec){
+  const s=loadState();const a=s[rec]?.action;
+  const card=document.querySelector(`.inline-rec[data-rec="${rec}"]`);
+  if(!card)return;
+  card.querySelectorAll('.d-btn[data-action]').forEach(b=>{
+    b.classList.remove('chosen-accept','chosen-defer','chosen-reject');
+    if(b.dataset.action===a)b.classList.add(`chosen-${a}`);
+  });
+}
+function renderAllDecisions(){
+  document.querySelectorAll('.inline-rec').forEach(card=>{
+    renderDecisionButtons(card.dataset.rec);
+    const s=loadState();const note=s[card.dataset.rec]?.note;
+    if(note){const inp=card.querySelector('input');if(inp)inp.value=note}
+  });
+}
+function updateSidebarProgress(){
+  const s=loadState();const recs=document.querySelectorAll('.inline-rec');
+  let ac=0,df=0,rj=0;
+  recs.forEach(r=>{const a=s[r.dataset.rec]?.action;if(a==='accept')ac++;if(a==='defer')df++;if(a==='reject')rj++});
+  document.getElementById('statAccept').textContent=ac;
+  document.getElementById('statDefer').textContent=df;
+  document.getElementById('statReject').textContent=rj;
+  const ans=ac+df+rj;const tot=recs.length;
+  document.getElementById('sbProgressText').textContent=`${ans} / ${tot}`;
+  document.getElementById('sbProgressFill').style.width=tot>0?`${(ans/tot)*100}%`:'0%';
+  pages.forEach((p,i)=>{
+    const pr=p.querySelectorAll('.inline-rec');if(pr.length===0)return;
+    let pa=0;pr.forEach(r=>{if(s[r.dataset.rec]?.action)pa++});
+    const badge=document.querySelector(`.sb-badge[data-page="${i+1}"]`);
+    if(badge){badge.textContent=`${pa}/${pr.length}`;badge.className=pa===pr.length?'sb-badge complete':'sb-badge pending'}
+  });
+  // Update summary page
+  document.getElementById('summAccept').textContent=ac;
+  document.getElementById('summDefer').textContent=df;
+  document.getElementById('summReject').textContent=rj;
+  document.getElementById('summPending').textContent=tot-ans;
+}
+
+// Summary
+function renderSummaryTable(){
+  const s=loadState();const recs=document.querySelectorAll('.inline-rec');
+  let html='<table class="comparison-table"><tr><th>ID</th><th>Title</th><th>Priority</th><th>Decision</th><th>Note</th></tr>';
+  recs.forEach(r=>{
+    const id=r.dataset.rec;
+    const title=r.querySelector('.inline-rec-title')?.textContent||'';
+    const pri=r.querySelector('.inline-rec-pri')?.textContent||'';
+    const action=s[id]?.action||'<span class="tag tag-gray">pending</span>';
+    const note=s[id]?.note||'';
+    const actionTag=s[id]?.action?`<span class="tag tag-${s[id].action==='accept'?'teal':s[id].action==='defer'?'amber':'red'}">${s[id].action}</span>`:action;
+    html+=`<tr><td>${id}</td><td>${title}</td><td>${pri}</td><td>${actionTag}</td><td style="font-size:11px;color:#8b8fa3">${note}</td></tr>`;
+  });
+  html+='</table>';
+  document.getElementById('summaryTable').innerHTML=html;
+}
+
+// Export
+function exportJSON(){
+  const s=loadState();
+  const blob=new Blob([JSON.stringify(s,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='code-structure-decisions.json';a.click();
+}
+function copyClipboard(){
+  const s=loadState();const recs=document.querySelectorAll('.inline-rec');
+  let txt='# Code Structure Analysis Decisions\n\n';
+  recs.forEach(r=>{
+    const id=r.dataset.rec;
+    const title=r.querySelector('.inline-rec-title')?.textContent||'';
+    const action=s[id]?.action||'pending';
+    const note=s[id]?.note||'';
+    txt+=`- ${id}: ${title} -> ${action}${note?` (${note})`:''}\n`;
+  });
+  navigator.clipboard.writeText(txt).then(()=>flashSave());
+}
+function clearAll(){
+  if(confirm('Clear all decisions?')){
+    localStorage.removeItem(STORAGE_KEY);
+    renderAllDecisions();updateSidebarProgress();
+  }
+}
+
+// Init
+document.addEventListener('DOMContentLoaded',()=>{
+  initSidebar();goToPage(1);renderAllDecisions();updateSidebarProgress();
+});
+</script>
+</body>
+</html>

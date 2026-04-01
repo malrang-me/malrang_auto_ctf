@@ -77,4 +77,5 @@ Missing ANY = under-constrained = wrong answer.
 - py-repl MCP (prototyping, gmpy2, pycryptodome)
 - pwntools (remote interaction)
 
+## Checkpoint (MANDATORY)At each phase transition, update checkpoint:```bashpython tools/checkpoint.py update <challenge_dir> --agent solver --phase <N> --phase-name <name> --status in_progress```On completion: `python tools/checkpoint.py complete <challenge_dir> --agent solver`On failure: `python tools/checkpoint.py fail <challenge_dir> --agent solver --error "<reason>"`
 ## Output: solve.py

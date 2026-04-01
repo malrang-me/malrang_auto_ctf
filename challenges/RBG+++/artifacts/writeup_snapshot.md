@@ -1,0 +1,2329 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - link "Sceleri's Blog" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e7]:
+        - img [ref=e8]
+        - text: Sceleri's Blog
+    - generic [ref=e10]:
+      - link "Home" [ref=e11] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e12]: Home
+      - link "Archive" [ref=e13] [cursor=pointer]:
+        - /url: /archive/
+        - generic [ref=e14]: Archive
+      - link "About" [ref=e15] [cursor=pointer]:
+        - /url: /about/
+        - generic [ref=e16]: About
+    - generic [ref=e17]:
+      - generic [ref=e19]:
+        - img
+        - textbox "Search" [ref=e20]
+      - region [ref=e22]:
+        - button "Light/Dark Mode" [ref=e23] [cursor=pointer]:
+          - img [ref=e25]
+          - img [ref=e28]
+          - img [ref=e31]
+        - menu "Scheme Switch":
+          - generic:
+            - menuitem "Light":
+              - img
+              - text: Light
+            - menuitem "Dark":
+              - img
+              - text: Dark
+            - menuitem "System":
+              - img
+              - text: System
+    - generic:
+      - link "Home":
+        - /url: /
+        - generic: Home
+        - img
+      - link "Archive":
+        - /url: /archive/
+        - generic: Archive
+        - img
+      - link "About":
+        - /url: /about/
+        - generic: About
+        - img
+    - generic [ref=e33]:
+      - generic:
+        - generic:
+          - generic:
+            - text: Theme Color
+            - button "Reset to Default":
+              - generic:
+                - img
+          - generic:
+            - generic: "265"
+        - generic:
+          - slider "Theme Color": "265"
+  - img "Blog Banner" [ref=e37]
+  - generic [ref=e38]:
+    - generic [ref=e39]:
+      - link "Visit image source" [ref=e40] [cursor=pointer]:
+        - /url: https://www.artstation.com/artwork/ZaLyWZ
+        - img [ref=e41]
+        - generic [ref=e43]: qing ying
+        - img [ref=e44]
+      - generic [ref=e46]:
+        - generic [ref=e48]:
+          - link "Go to About Page" [ref=e49] [cursor=pointer]:
+            - /url: /about/
+            - generic:
+              - img
+            - img "Author's Profile Avatar" [ref=e52]
+          - generic [ref=e53]:
+            - generic [ref=e54]: Sceleri
+            - generic [ref=e56]: A crypto enthusiast
+            - generic [ref=e57]:
+              - link "GitHub" [ref=e58] [cursor=pointer]:
+                - /url: https://github.com/unprintable123
+                - img [ref=e59]
+              - link "Twitter" [ref=e61] [cursor=pointer]:
+                - /url: https://x.com/sceleri_
+                - img [ref=e62]
+              - link "Discord" [ref=e64] [cursor=pointer]:
+                - /url: https://discord.com/users/953222712761909308
+                - img [ref=e65]
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - generic [ref=e69]: Categories
+            - link "View all posts in the Writeup category" [ref=e71] [cursor=pointer]:
+              - /url: /archive/category/Writeup/
+              - button "Writeup 7" [ref=e72]:
+                - generic [ref=e73]:
+                  - generic [ref=e74]: Writeup
+                  - generic [ref=e75]: "7"
+          - generic [ref=e76]:
+            - generic [ref=e77]: Tags
+            - generic [ref=e79]:
+              - link "View all posts with the Crypto tag" [ref=e80] [cursor=pointer]:
+                - /url: /archive/tag/Crypto/
+                - text: Crypto
+              - link "View all posts with the CTF tag" [ref=e81] [cursor=pointer]:
+                - /url: /archive/tag/CTF/
+                - text: CTF
+              - link "View all posts with the Math tag" [ref=e82] [cursor=pointer]:
+                - /url: /archive/tag/Math/
+                - text: Math
+              - link "View all posts with the Coppersmith tag" [ref=e83] [cursor=pointer]:
+                - /url: /archive/tag/Coppersmith/
+                - text: Coppersmith
+              - link "View all posts with the Isogeny tag" [ref=e84] [cursor=pointer]:
+                - /url: /archive/tag/Isogeny/
+                - text: Isogeny
+              - link "View all posts with the LLL tag" [ref=e85] [cursor=pointer]:
+                - /url: /archive/tag/LLL/
+                - text: LLL
+              - link "View all posts with the Modular Form tag" [ref=e86] [cursor=pointer]:
+                - /url: /archive/tag/Modular Form/
+                - text: Modular Form
+              - link "View all posts with the UOV tag" [ref=e87] [cursor=pointer]:
+                - /url: /archive/tag/UOV/
+                - text: UOV
+      - main [ref=e88]:
+        - generic [ref=e89]:
+          - generic [ref=e91]:
+            - generic [ref=e92]:
+              - generic [ref=e93]:
+                - img [ref=e95]
+                - generic [ref=e97]: 1393 words
+              - generic [ref=e98]:
+                - img [ref=e100]
+                - generic [ref=e102]: 7 minutes
+            - generic [ref=e104]: KalmarCTF 2026 Writeup - RBG+++
+            - generic [ref=e106]:
+              - generic [ref=e107]:
+                - img [ref=e109]
+                - generic [ref=e111]: 2026-03-30
+              - generic [ref=e112]:
+                - img [ref=e114]
+                - link "View all posts in the Writeup category" [ref=e117] [cursor=pointer]:
+                  - /url: /archive/category/Writeup/
+                  - text: Writeup
+              - generic [ref=e118]:
+                - img [ref=e120]
+                - generic [ref=e122]:
+                  - link "View all posts with the CTF tag" [ref=e123] [cursor=pointer]:
+                    - /url: /archive/tag/CTF/
+                    - text: CTF
+                  - generic [ref=e124]: /
+                  - link "View all posts with the Crypto tag" [ref=e125] [cursor=pointer]:
+                    - /url: /archive/tag/Crypto/
+                    - text: Crypto
+                  - generic [ref=e126]: /
+                  - link "View all posts with the LLL tag" [ref=e127] [cursor=pointer]:
+                    - /url: /archive/tag/LLL/
+                    - text: LLL
+            - article [ref=e129]:
+              - generic [ref=e130]:
+                - paragraph [ref=e131]:
+                  - text: This is a writeup for a difficult crypto challenge from KalmarCTF 2026 called RBG+++. Basically, it is an advanced version of lance-hard? from last year’s KalmarCTF, so make sure you have read
+                  - link "Neobeo’s writeup" [ref=e132] [cursor=pointer]:
+                    - /url: https://adib.au/2025/lance-hard/
+                  - text: for lance-hard? before starting this one.
+                - generic [ref=e133]:
+                  - 'heading "Description #" [level=2] [ref=e134]':
+                    - text: Description
+                    - link "#" [ref=e135] [cursor=pointer]:
+                      - /url: "#description"
+                  - blockquote [ref=e136]:
+                    - paragraph [ref=e137]: RBG sometimes stands for Random Bit Generator. I didn’t really like a challenge that was required to guess Dual_EC_DRBG.
+                    - paragraph [ref=e138]:
+                      - emphasis [ref=e139]:
+                        - text: This is a revenge challenge of
+                        - link "RBG" [ref=e140] [cursor=pointer]:
+                          - /url: https://github.com/soon-haari/my-ctf-challenges/tree/main/daily-alpacahack-2025-12-30
+                        - text: from Daily Alpacahack.
+                  - figure [ref=e142]:
+                    - group [ref=e143]:
+                      - generic "chall.py" [ref=e144] [cursor=pointer]:
+                        - generic [ref=e147]: chall.py
+                      - text: python
+                - generic [ref=e148]:
+                  - 'heading "Analysis #" [level=2] [ref=e149]':
+                    - text: Analysis
+                    - link "#" [ref=e150] [cursor=pointer]:
+                      - /url: "#analysis"
+                  - paragraph [ref=e151]:
+                    - text: The challenge first gives us a modulus
+                    - generic [ref=e152]:
+                      - math [ref=e154]:
+                        - generic [ref=e157]: "N"
+                      - generic [ref=e159]: "N"
+                    - text: which is a product of two 137-bit primes. After that, it generates 136 pairs of
+                    - generic [ref=e160]:
+                      - math [ref=e162]:
+                        - generic [ref=e164]:
+                          - generic [ref=e165]: e
+                          - generic [ref=e166]: ","
+                          - generic [ref=e167]: r
+                      - generic [ref=e169]: e, r
+                    - text: ", where"
+                    - generic [ref=e170]:
+                      - math [ref=e172]:
+                        - generic [ref=e174]:
+                          - generic [ref=e175]: r
+                          - generic [ref=e176]: =
+                          - generic [ref=e177]:
+                            - generic [ref=e178]: m
+                            - generic [ref=e179]: e
+                          - generic [ref=e180]: +
+                          - generic [ref=e181]:
+                            - generic [ref=e182]: m
+                            - generic [ref=e183]:
+                              - generic [ref=e184]: e
+                              - generic [ref=e185]: ′
+                          - generic [ref=e186]: (
+                          - generic [ref=e187]:
+                            - generic [ref=e188]: m
+                            - generic [ref=e189]: o
+                            - generic [ref=e190]: d
+                          - generic [ref=e191]: "N"
+                          - generic [ref=e192]: )
+                      - generic [ref=e193]:
+                        - generic [ref=e194]: r =
+                        - generic [ref=e195]:
+                          - generic [ref=e196]:
+                            - text: m
+                            - generic [ref=e201]: e
+                          - text: +
+                        - generic [ref=e203]:
+                          - text: m
+                          - generic [ref=e210]:
+                            - text: e
+                            - generic [ref=e216]: ′
+                        - generic [ref=e217]:
+                          - text: (
+                          - generic [ref=e219]: mod
+                          - text: N)
+                    - text: and
+                    - generic [ref=e220]:
+                      - math [ref=e222]:
+                        - generic [ref=e224]:
+                          - generic [ref=e225]:
+                            - generic [ref=e226]: e
+                            - generic [ref=e227]: ′
+                          - generic [ref=e228]: =
+                          - generic [ref=e229]: "3"
+                          - generic [ref=e230]: e
+                          - generic [ref=e231]: +
+                          - generic [ref=e232]: "1337"
+                          - generic [ref=e233]: (
+                          - generic [ref=e234]:
+                            - generic [ref=e235]: m
+                            - generic [ref=e236]: o
+                            - generic [ref=e237]: d
+                          - generic [ref=e238]: "N"
+                          - generic [ref=e239]: )
+                      - generic [ref=e240]:
+                        - generic [ref=e241]:
+                          - generic [ref=e242]:
+                            - text: e
+                            - generic [ref=e248]: ′
+                          - text: =
+                        - generic [ref=e249]: 3e +
+                        - generic [ref=e250]: "1337"
+                        - generic [ref=e251]:
+                          - text: (
+                          - generic [ref=e253]: mod
+                          - text: N)
+                    - text: .
+                  - paragraph [ref=e254]:
+                    - text: It is obvious that the modulus
+                    - generic [ref=e255]:
+                      - math [ref=e257]:
+                        - generic [ref=e260]: "N"
+                      - generic [ref=e262]: "N"
+                    - text: is not large enough, and we can easily factor it to get the two primes. The main problem is that we can’t directly find the roots of
+                    - generic [ref=e263]:
+                      - math [ref=e265]:
+                        - generic [ref=e267]:
+                          - generic [ref=e268]: r
+                          - generic [ref=e269]: =
+                          - generic [ref=e270]:
+                            - generic [ref=e271]: m
+                            - generic [ref=e272]: e
+                          - generic [ref=e273]: +
+                          - generic [ref=e274]:
+                            - generic [ref=e275]: m
+                            - generic [ref=e276]:
+                              - generic [ref=e277]: e
+                              - generic [ref=e278]: ′
+                          - generic [ref=e279]: (
+                          - generic [ref=e280]:
+                            - generic [ref=e281]: m
+                            - generic [ref=e282]: o
+                            - generic [ref=e283]: d
+                          - generic [ref=e284]: "N"
+                          - generic [ref=e285]: )
+                      - generic [ref=e286]:
+                        - generic [ref=e287]: r =
+                        - generic [ref=e288]:
+                          - generic [ref=e289]:
+                            - text: m
+                            - generic [ref=e294]: e
+                          - text: +
+                        - generic [ref=e296]:
+                          - text: m
+                          - generic [ref=e303]:
+                            - text: e
+                            - generic [ref=e309]: ′
+                        - generic [ref=e310]:
+                          - text: (
+                          - generic [ref=e312]: mod
+                          - text: N)
+                    - text: even if we know the factorization of
+                    - generic [ref=e313]:
+                      - math [ref=e315]:
+                        - generic [ref=e318]: "N"
+                      - generic [ref=e320]: "N"
+                    - text: because
+                    - generic [ref=e321]:
+                      - math [ref=e323]:
+                        - generic [ref=e326]: e
+                      - generic [ref=e328]: e
+                    - text: is too large.
+                  - paragraph [ref=e329]:
+                    - text: Let’s can first try to simplify the equation. Since
+                    - generic [ref=e330]:
+                      - math [ref=e332]:
+                        - generic [ref=e335]:
+                          - generic [ref=e336]: e
+                          - generic [ref=e337]: ′
+                      - generic [ref=e340]:
+                        - text: e
+                        - generic [ref=e346]: ′
+                    - text: is almost the triple of
+                    - generic [ref=e347]:
+                      - math [ref=e349]:
+                        - generic [ref=e352]: e
+                      - generic [ref=e354]: e
+                    - text: ", we can set"
+                    - generic [ref=e355]:
+                      - math [ref=e357]:
+                        - generic [ref=e359]:
+                          - generic [ref=e360]: x
+                          - generic [ref=e361]: =
+                          - generic [ref=e362]:
+                            - generic [ref=e363]: m
+                            - generic [ref=e364]: e
+                      - generic [ref=e365]:
+                        - generic [ref=e366]: x =
+                        - generic [ref=e368]:
+                          - text: m
+                          - generic [ref=e373]: e
+                    - text: . If
+                    - generic [ref=e374]:
+                      - math [ref=e376]:
+                        - generic [ref=e378]:
+                          - generic [ref=e379]: e
+                          - generic [ref=e380]: <
+                          - generic [ref=e381]:
+                            - generic [ref=e382]: "N"
+                            - generic [ref=e383]: "3"
+                      - generic [ref=e384]:
+                        - generic [ref=e385]: e <
+                        - generic [ref=e391]:
+                          - generic [ref=e393]: "3"
+                          - generic [ref=e396]: "N"
+                    - text: ", then we get"
+                  - generic [ref=e401]:
+                    - math [ref=e403]:
+                      - generic [ref=e405]:
+                        - generic [ref=e406]: x
+                        - generic [ref=e407]: +
+                        - generic [ref=e408]:
+                          - generic [ref=e409]: x
+                          - generic [ref=e410]: "3"
+                        - generic [ref=e411]:
+                          - generic [ref=e412]: m
+                          - generic [ref=e413]: "1337"
+                        - generic [ref=e414]: ≡
+                        - generic [ref=e415]: r
+                        - generic [ref=e416]: (
+                        - generic [ref=e417]:
+                          - generic [ref=e418]: m
+                          - generic [ref=e419]: o
+                          - generic [ref=e420]: d
+                        - generic [ref=e421]: "N"
+                        - generic [ref=e422]: )
+                    - generic [ref=e423]:
+                      - generic [ref=e424]: x +
+                      - generic [ref=e425]:
+                        - generic [ref=e426]:
+                          - text: x
+                          - generic [ref=e431]: "3"
+                        - generic [ref=e432]:
+                          - text: m
+                          - generic [ref=e438]: "1337"
+                        - text: ≡
+                      - generic [ref=e439]: r
+                      - generic [ref=e440]:
+                        - text: (
+                        - generic [ref=e442]: mod
+                        - text: N)
+                  - paragraph [ref=e443]:
+                    - text: Although
+                    - generic [ref=e444]:
+                      - math [ref=e446]:
+                        - generic [ref=e449]:
+                          - generic [ref=e450]: m
+                          - generic [ref=e451]: "1337"
+                      - generic [ref=e454]:
+                        - text: m
+                        - generic [ref=e460]: "1337"
+                    - text: is still unknown, it is a constant across all pairs. If we can find another relation between these equations, we can cancel out some variables and get a “low” degree univariate equation.
+                  - paragraph [ref=e461]:
+                    - text: But we don’t want
+                    - generic [ref=e462]:
+                      - math [ref=e464]:
+                        - generic [ref=e466]:
+                          - generic [ref=e467]: z
+                          - generic [ref=e468]: =
+                          - generic [ref=e469]:
+                            - generic [ref=e470]: m
+                            - generic [ref=e471]: "1337"
+                      - generic [ref=e472]:
+                        - generic [ref=e473]: z =
+                        - generic [ref=e475]:
+                          - text: m
+                          - generic [ref=e481]: "1337"
+                    - text: to be the coefficient of
+                    - generic [ref=e482]:
+                      - math [ref=e484]:
+                        - generic [ref=e487]:
+                          - generic [ref=e488]: x
+                          - generic [ref=e489]: "3"
+                      - generic [ref=e492]:
+                        - text: x
+                        - generic [ref=e497]: "3"
+                    - text: because it is annoying to handle a non-monic polynomial. So Let’s first do some arrangements. Let
+                    - generic [ref=e498]:
+                      - math [ref=e500]:
+                        - generic [ref=e502]:
+                          - generic [ref=e503]: "N"
+                          - generic [ref=e504]: <
+                          - generic [ref=e505]: "3"
+                          - generic [ref=e506]: ∗
+                          - generic [ref=e507]: e
+                          - generic [ref=e508]: +
+                          - generic [ref=e509]: "1337"
+                          - generic [ref=e510]: <
+                          - generic [ref=e511]: "2"
+                          - generic [ref=e512]: ∗
+                          - generic [ref=e513]: "N"
+                      - generic [ref=e514]:
+                        - generic [ref=e515]: N <
+                        - generic [ref=e516]: 3 ∗
+                        - generic [ref=e517]: e +
+                        - generic [ref=e518]: 1337 <
+                        - generic [ref=e519]: 2 ∗
+                        - generic [ref=e520]: "N"
+                    - text: ", we have"
+                  - generic [ref=e522]:
+                    - math [ref=e524]:
+                      - generic [ref=e526]:
+                        - generic [ref=e527]:
+                          - generic [ref=e528]: m
+                          - generic [ref=e529]: e
+                        - generic [ref=e530]: +
+                        - generic [ref=e531]:
+                          - generic [ref=e532]: m
+                          - generic [ref=e533]:
+                            - generic [ref=e534]: "3"
+                            - generic [ref=e535]: e
+                            - generic [ref=e536]: +
+                            - generic [ref=e537]: "1337"
+                            - generic [ref=e538]: −
+                            - generic [ref=e539]: "N"
+                        - generic [ref=e540]: ≡
+                        - generic [ref=e541]: r
+                        - generic [ref=e542]: (
+                        - generic [ref=e543]:
+                          - generic [ref=e544]: m
+                          - generic [ref=e545]: o
+                          - generic [ref=e546]: d
+                        - generic [ref=e547]: "N"
+                        - generic [ref=e548]: )
+                    - generic [ref=e549]:
+                      - generic [ref=e550]:
+                        - generic [ref=e551]:
+                          - text: m
+                          - generic [ref=e556]: e
+                        - text: +
+                      - generic [ref=e557]:
+                        - generic [ref=e558]:
+                          - text: m
+                          - generic [ref=e564]: 3e+1337−N
+                        - text: ≡
+                      - generic [ref=e565]: r
+                      - generic [ref=e566]:
+                        - text: (
+                        - generic [ref=e568]: mod
+                        - text: N)
+                  - paragraph [ref=e569]: which is equivalent to
+                  - generic [ref=e571]:
+                    - math [ref=e573]:
+                      - generic [ref=e575]:
+                        - generic [ref=e576]:
+                          - generic [ref=e577]: m
+                          - generic [ref=e578]:
+                            - generic [ref=e579]: e
+                            - generic [ref=e580]: +
+                            - generic [ref=e581]: (
+                            - generic [ref=e582]: "1337"
+                            - generic [ref=e583]: −
+                            - generic [ref=e584]: "N"
+                            - generic [ref=e585]: )
+                            - generic [ref=e586]: /
+                            - generic [ref=e587]: "2"
+                        - generic [ref=e588]: +
+                        - generic [ref=e589]:
+                          - generic [ref=e590]: m
+                          - generic [ref=e591]:
+                            - generic [ref=e592]: "3"
+                            - generic [ref=e593]: (
+                            - generic [ref=e594]: e
+                            - generic [ref=e595]: +
+                            - generic [ref=e596]: (
+                            - generic [ref=e597]: "1337"
+                            - generic [ref=e598]: −
+                            - generic [ref=e599]: "N"
+                            - generic [ref=e600]: )
+                            - generic [ref=e601]: /
+                            - generic [ref=e602]: "2"
+                            - generic [ref=e603]: )
+                        - generic [ref=e604]: ≡
+                        - generic [ref=e605]: r
+                        - generic [ref=e606]: ⋅
+                        - generic [ref=e607]:
+                          - generic [ref=e608]: m
+                          - generic [ref=e609]:
+                            - generic [ref=e610]: (
+                            - generic [ref=e611]: "1337"
+                            - generic [ref=e612]: −
+                            - generic [ref=e613]: "N"
+                            - generic [ref=e614]: )
+                            - generic [ref=e615]: /
+                            - generic [ref=e616]: "2"
+                        - generic [ref=e617]: (
+                        - generic [ref=e618]:
+                          - generic [ref=e619]: m
+                          - generic [ref=e620]: o
+                          - generic [ref=e621]: d
+                        - generic [ref=e622]: "N"
+                        - generic [ref=e623]: )
+                    - generic [ref=e624]:
+                      - generic [ref=e625]:
+                        - generic [ref=e626]:
+                          - text: m
+                          - generic [ref=e632]: e+(1337−N)/2
+                        - text: +
+                      - generic [ref=e633]:
+                        - generic [ref=e634]:
+                          - text: m
+                          - generic [ref=e640]: 3(e+(1337−N)/2)
+                        - text: ≡
+                      - generic [ref=e641]: r ⋅
+                      - generic [ref=e643]:
+                        - text: m
+                        - generic [ref=e649]: (1337−N)/2
+                      - generic [ref=e650]:
+                        - text: (
+                        - generic [ref=e652]: mod
+                        - text: N)
+                  - paragraph [ref=e653]:
+                    - text: Now we can set
+                    - generic [ref=e654]:
+                      - math [ref=e656]:
+                        - generic [ref=e658]:
+                          - generic [ref=e659]: x
+                          - generic [ref=e660]: =
+                          - generic [ref=e661]:
+                            - generic [ref=e662]: m
+                            - generic [ref=e663]:
+                              - generic [ref=e664]: e
+                              - generic [ref=e665]: +
+                              - generic [ref=e666]: (
+                              - generic [ref=e667]: "1337"
+                              - generic [ref=e668]: −
+                              - generic [ref=e669]: "N"
+                              - generic [ref=e670]: )
+                              - generic [ref=e671]: /
+                              - generic [ref=e672]: "2"
+                      - generic [ref=e673]:
+                        - generic [ref=e674]: x =
+                        - generic [ref=e676]:
+                          - text: m
+                          - generic [ref=e682]: e+(1337−N)/2
+                    - text: and
+                    - generic [ref=e683]:
+                      - math [ref=e685]:
+                        - generic [ref=e687]:
+                          - generic [ref=e688]: z
+                          - generic [ref=e689]: =
+                          - generic [ref=e690]:
+                            - generic [ref=e691]: m
+                            - generic [ref=e692]:
+                              - generic [ref=e693]: (
+                              - generic [ref=e694]: "1337"
+                              - generic [ref=e695]: −
+                              - generic [ref=e696]: "N"
+                              - generic [ref=e697]: )
+                              - generic [ref=e698]: /
+                              - generic [ref=e699]: "2"
+                      - generic [ref=e700]:
+                        - generic [ref=e701]: z =
+                        - generic [ref=e703]:
+                          - text: m
+                          - generic [ref=e709]: (1337−N)/2
+                    - text: ", then it becomes"
+                    - generic [ref=e710]:
+                      - math [ref=e712]:
+                        - generic [ref=e714]:
+                          - generic [ref=e715]:
+                            - generic [ref=e716]: x
+                            - generic [ref=e717]: "3"
+                          - generic [ref=e718]: +
+                          - generic [ref=e719]: x
+                          - generic [ref=e720]: ≡
+                          - generic [ref=e721]: r
+                          - generic [ref=e722]: ⋅
+                          - generic [ref=e723]: z
+                          - generic [ref=e724]: (
+                          - generic [ref=e725]:
+                            - generic [ref=e726]: m
+                            - generic [ref=e727]: o
+                            - generic [ref=e728]: d
+                          - generic [ref=e729]: "N"
+                          - generic [ref=e730]: )
+                      - generic [ref=e731]:
+                        - generic [ref=e732]:
+                          - generic [ref=e733]:
+                            - text: x
+                            - generic [ref=e738]: "3"
+                          - text: +
+                        - generic [ref=e739]: x ≡
+                        - generic [ref=e740]: r ⋅
+                        - generic [ref=e741]: z
+                        - generic [ref=e742]:
+                          - text: (
+                          - generic [ref=e744]: mod
+                          - text: N)
+                    - text: . We can solve the equations seperately on
+                    - generic [ref=e745]:
+                      - math [ref=e747]:
+                        - generic [ref=e749]:
+                          - generic [ref=e750]:
+                            - generic [ref=e751]: m
+                            - generic [ref=e752]: o
+                            - generic [ref=e753]: d
+                          - generic [ref=e754]: p
+                      - generic [ref=e757]:
+                        - generic [ref=e759]: mod
+                        - text: p
+                    - text: and
+                    - generic [ref=e760]:
+                      - math [ref=e762]:
+                        - generic [ref=e764]:
+                          - generic [ref=e765]:
+                            - generic [ref=e766]: m
+                            - generic [ref=e767]: o
+                            - generic [ref=e768]: d
+                          - generic [ref=e769]: q
+                      - generic [ref=e772]:
+                        - generic [ref=e774]: mod
+                        - text: q
+                    - text: to reduce the degree complexity.
+                  - paragraph [ref=e775]:
+                    - text: Similar to lance-hard?, the first step is to find small coefficients relations between
+                    - generic [ref=e776]:
+                      - math [ref=e778]:
+                        - generic [ref=e781]:
+                          - generic [ref=e782]: m
+                          - generic [ref=e783]: e
+                      - generic [ref=e786]:
+                        - text: m
+                        - generic [ref=e791]: e
+                    - text: ‘s.
+                  - generic [ref=e792]:
+                    - 'heading "Finding small relations #" [level=3] [ref=e793]':
+                      - text: Finding small relations
+                      - link "#" [ref=e794] [cursor=pointer]:
+                        - /url: "#finding-small-relations"
+                    - paragraph [ref=e795]:
+                      - text: Since
+                      - generic [ref=e796]:
+                        - math [ref=e798]:
+                          - generic [ref=e800]:
+                            - generic [ref=e801]:
+                              - generic [ref=e802]: m
+                              - generic [ref=e803]:
+                                - generic [ref=e804]: p
+                                - generic [ref=e805]: −
+                                - generic [ref=e806]: "1"
+                            - generic [ref=e807]: ≡
+                            - generic [ref=e808]: "1"
+                            - generic [ref=e809]: (
+                            - generic [ref=e810]:
+                              - generic [ref=e811]: m
+                              - generic [ref=e812]: o
+                              - generic [ref=e813]: d
+                            - generic [ref=e814]: p
+                            - generic [ref=e815]: )
+                        - generic [ref=e816]:
+                          - generic [ref=e817]:
+                            - generic [ref=e818]:
+                              - text: m
+                              - generic [ref=e824]: p−1
+                            - text: ≡
+                          - generic [ref=e825]: "1"
+                          - generic [ref=e826]:
+                            - text: (
+                            - generic [ref=e828]: mod
+                            - text: p)
+                      - text: ", we can use LLL to find"
+                      - generic [ref=e829]:
+                        - math [ref=e831]:
+                          - generic [ref=e833]:
+                            - generic [ref=e834]:
+                              - generic [ref=e835]: ∑
+                              - generic [ref=e836]:
+                                - generic [ref=e837]: i
+                                - generic [ref=e838]: =
+                                - generic [ref=e839]: "1"
+                              - generic [ref=e840]: k
+                            - generic [ref=e841]:
+                              - generic [ref=e842]: c
+                              - generic [ref=e843]: i
+                            - generic [ref=e844]:
+                              - generic [ref=e845]: e
+                              - generic [ref=e846]: i
+                            - generic [ref=e847]: ≡
+                            - generic [ref=e848]: "0"
+                            - generic [ref=e849]: (
+                            - generic [ref=e850]:
+                              - generic [ref=e851]: m
+                              - generic [ref=e852]: o
+                              - generic [ref=e853]: d
+                            - generic [ref=e854]: p
+                            - generic [ref=e855]: −
+                            - generic [ref=e856]: "1"
+                            - generic [ref=e857]: )
+                        - generic [ref=e858]:
+                          - generic [ref=e859]:
+                            - generic [ref=e860]:
+                              - text: ∑
+                              - generic [ref=e864]:
+                                - generic [ref=e866]: i=1
+                                - generic [ref=e867]: k
+                            - generic [ref=e871]:
+                              - text: c
+                              - generic [ref=e876]: i
+                            - generic [ref=e880]:
+                              - text: e
+                              - generic [ref=e885]: i
+                            - text: ≡
+                          - generic [ref=e889]: "0"
+                          - generic [ref=e890]:
+                            - text: (
+                            - generic [ref=e892]: mod
+                            - text: p −
+                          - generic [ref=e893]: 1)
+                      - text: with small
+                      - generic [ref=e894]:
+                        - math [ref=e896]:
+                          - generic [ref=e899]:
+                            - generic [ref=e900]: c
+                            - generic [ref=e901]: i
+                        - generic [ref=e904]:
+                          - text: c
+                          - generic [ref=e909]: i
+                      - text: ‘s. Thus we get
+                    - generic [ref=e914]:
+                      - math [ref=e916]:
+                        - generic [ref=e918]:
+                          - generic [ref=e919]:
+                            - generic [ref=e920]: ∏
+                            - generic [ref=e921]:
+                              - generic [ref=e922]: i
+                              - generic [ref=e923]: =
+                              - generic [ref=e924]: "1"
+                            - generic [ref=e925]: k
+                          - generic [ref=e926]: (
+                          - generic [ref=e927]:
+                            - generic [ref=e928]: m
+                            - generic [ref=e929]:
+                              - generic [ref=e930]: e
+                              - generic [ref=e931]: i
+                          - generic [ref=e932]:
+                            - generic [ref=e933]: )
+                            - generic [ref=e934]:
+                              - generic [ref=e935]: c
+                              - generic [ref=e936]: i
+                          - generic [ref=e937]: ≡
+                          - generic [ref=e938]: "1"
+                          - generic [ref=e939]: (
+                          - generic [ref=e940]:
+                            - generic [ref=e941]: m
+                            - generic [ref=e942]: o
+                            - generic [ref=e943]: d
+                          - generic [ref=e944]: p
+                          - generic [ref=e945]: )
+                      - generic [ref=e946]:
+                        - generic [ref=e947]:
+                          - generic [ref=e951]:
+                            - generic [ref=e953]: i=1
+                            - generic [ref=e954]: ∏
+                            - generic [ref=e955]: k
+                          - text: (
+                          - generic [ref=e959]:
+                            - text: m
+                            - generic [ref=e966]:
+                              - text: e
+                              - generic [ref=e971]: i
+                          - generic [ref=e975]:
+                            - text: )
+                            - generic [ref=e982]:
+                              - text: c
+                              - generic [ref=e987]: i
+                          - text: ≡
+                        - generic [ref=e991]: "1"
+                        - generic [ref=e992]:
+                          - text: (
+                          - generic [ref=e994]: mod
+                          - text: p)
+                    - paragraph [ref=e995]:
+                      - text: In addition, we can also add
+                      - generic [ref=e996]:
+                        - math [ref=e998]:
+                          - generic [ref=e1001]: z
+                        - generic [ref=e1003]: z
+                      - text: to the LLL because
+                      - generic [ref=e1004]:
+                        - math [ref=e1006]:
+                          - generic [ref=e1008]:
+                            - generic [ref=e1009]: z
+                            - generic [ref=e1010]: =
+                            - generic [ref=e1011]:
+                              - generic [ref=e1012]: m
+                              - generic [ref=e1013]:
+                                - generic [ref=e1014]: (
+                                - generic [ref=e1015]: "1337"
+                                - generic [ref=e1016]: −
+                                - generic [ref=e1017]: "N"
+                                - generic [ref=e1018]: )
+                                - generic [ref=e1019]: /
+                                - generic [ref=e1020]: "2"
+                        - generic [ref=e1021]:
+                          - generic [ref=e1022]: z =
+                          - generic [ref=e1024]:
+                            - text: m
+                            - generic [ref=e1030]: (1337−N)/2
+                      - text: is also a power of
+                      - generic [ref=e1031]:
+                        - math [ref=e1033]:
+                          - generic [ref=e1036]: m
+                        - generic [ref=e1038]: m
+                      - text: . Then the equation becomes
+                    - generic [ref=e1040]:
+                      - math [ref=e1042]:
+                        - generic [ref=e1044]:
+                          - generic [ref=e1045]:
+                            - generic [ref=e1046]: ∏
+                            - generic [ref=e1047]:
+                              - generic [ref=e1048]: i
+                              - generic [ref=e1049]: =
+                              - generic [ref=e1050]: "1"
+                            - generic [ref=e1051]: k
+                          - generic [ref=e1052]: (
+                          - generic [ref=e1053]:
+                            - generic [ref=e1054]: m
+                            - generic [ref=e1055]:
+                              - generic [ref=e1056]: e
+                              - generic [ref=e1057]: i
+                          - generic [ref=e1058]:
+                            - generic [ref=e1059]: )
+                            - generic [ref=e1060]:
+                              - generic [ref=e1061]: c
+                              - generic [ref=e1062]: i
+                          - generic [ref=e1063]: ⋅
+                          - generic [ref=e1064]:
+                            - generic [ref=e1065]: z
+                            - generic [ref=e1066]: c
+                          - generic [ref=e1067]: ≡
+                          - generic [ref=e1068]: "1"
+                          - generic [ref=e1069]: (
+                          - generic [ref=e1070]:
+                            - generic [ref=e1071]: m
+                            - generic [ref=e1072]: o
+                            - generic [ref=e1073]: d
+                          - generic [ref=e1074]: p
+                          - generic [ref=e1075]: )
+                      - generic [ref=e1076]:
+                        - generic [ref=e1077]:
+                          - generic [ref=e1081]:
+                            - generic [ref=e1083]: i=1
+                            - generic [ref=e1084]: ∏
+                            - generic [ref=e1085]: k
+                          - text: (
+                          - generic [ref=e1089]:
+                            - text: m
+                            - generic [ref=e1096]:
+                              - text: e
+                              - generic [ref=e1101]: i
+                          - generic [ref=e1105]:
+                            - text: )
+                            - generic [ref=e1112]:
+                              - text: c
+                              - generic [ref=e1117]: i
+                          - text: ⋅
+                        - generic [ref=e1121]:
+                          - generic [ref=e1122]:
+                            - text: z
+                            - generic [ref=e1127]: c
+                          - text: ≡
+                        - generic [ref=e1128]: "1"
+                        - generic [ref=e1129]:
+                          - text: (
+                          - generic [ref=e1131]: mod
+                          - text: p)
+                    - paragraph [ref=e1132]:
+                      - text: We can heuristically guess the degree of the final polynomial is proportional to
+                      - generic [ref=e1133]:
+                        - math [ref=e1135]:
+                          - generic [ref=e1137]:
+                            - generic [ref=e1138]:
+                              - generic [ref=e1139]: "3"
+                              - generic [ref=e1140]: k
+                            - generic [ref=e1141]: ∑
+                            - generic [ref=e1142]: ∣
+                            - generic [ref=e1143]:
+                              - generic [ref=e1144]: c
+                              - generic [ref=e1145]: i
+                            - generic [ref=e1146]: ∣
+                        - generic [ref=e1148]:
+                          - generic [ref=e1149]:
+                            - text: "3"
+                            - generic [ref=e1154]: k
+                          - text: ∑ ∣
+                          - generic [ref=e1155]:
+                            - text: c
+                            - generic [ref=e1160]: i
+                          - text: ∣
+                      - text: . After some experiments, the best parameters are
+                      - generic [ref=e1164]:
+                        - math [ref=e1166]:
+                          - generic [ref=e1168]:
+                            - generic [ref=e1169]: k
+                            - generic [ref=e1170]: =
+                            - generic [ref=e1171]: "8"
+                        - generic [ref=e1172]:
+                          - generic [ref=e1173]: k =
+                          - generic [ref=e1174]: "8"
+                      - text: and there’s exactly 4 positive
+                      - generic [ref=e1175]:
+                        - math [ref=e1177]:
+                          - generic [ref=e1180]:
+                            - generic [ref=e1181]: c
+                            - generic [ref=e1182]: i
+                        - generic [ref=e1185]:
+                          - text: c
+                          - generic [ref=e1190]: i
+                      - text: ‘s and 4 negative
+                      - generic [ref=e1194]:
+                        - math [ref=e1196]:
+                          - generic [ref=e1199]:
+                            - generic [ref=e1200]: c
+                            - generic [ref=e1201]: i
+                        - generic [ref=e1204]:
+                          - text: c
+                          - generic [ref=e1209]: i
+                      - text: ‘s, which balances the degree on both sides.
+                  - generic [ref=e1213]:
+                    - 'heading "Reduce to univariate polynomial #" [level=3] [ref=e1214]':
+                      - text: Reduce to univariate polynomial
+                      - link "#" [ref=e1215] [cursor=pointer]:
+                        - /url: "#reduce-to-univariate-polynomial"
+                    - paragraph [ref=e1216]:
+                      - text: Now we have 8 equations of
+                      - generic [ref=e1217]:
+                        - math [ref=e1219]:
+                          - generic [ref=e1221]:
+                            - generic [ref=e1222]:
+                              - generic [ref=e1223]: x
+                              - generic [ref=e1224]: "3"
+                            - generic [ref=e1225]: +
+                            - generic [ref=e1226]: x
+                            - generic [ref=e1227]: ≡
+                            - generic [ref=e1228]: r
+                            - generic [ref=e1229]: ⋅
+                            - generic [ref=e1230]: z
+                            - generic [ref=e1231]: (
+                            - generic [ref=e1232]:
+                              - generic [ref=e1233]: m
+                              - generic [ref=e1234]: o
+                              - generic [ref=e1235]: d
+                            - generic [ref=e1236]: p
+                            - generic [ref=e1237]: )
+                        - generic [ref=e1238]:
+                          - generic [ref=e1239]:
+                            - generic [ref=e1240]:
+                              - text: x
+                              - generic [ref=e1245]: "3"
+                            - text: +
+                          - generic [ref=e1246]: x ≡
+                          - generic [ref=e1247]: r ⋅
+                          - generic [ref=e1248]: z
+                          - generic [ref=e1249]:
+                            - text: (
+                            - generic [ref=e1251]: mod
+                            - text: p)
+                      - text: and one equation of the products of
+                      - generic [ref=e1252]:
+                        - math [ref=e1254]:
+                          - generic [ref=e1256]:
+                            - generic [ref=e1257]:
+                              - generic [ref=e1258]: x
+                              - generic [ref=e1259]: i
+                            - generic [ref=e1260]: =
+                            - generic [ref=e1261]:
+                              - generic [ref=e1262]: m
+                              - generic [ref=e1263]:
+                                - generic [ref=e1264]: e
+                                - generic [ref=e1265]: i
+                        - generic [ref=e1266]:
+                          - generic [ref=e1267]:
+                            - generic [ref=e1268]:
+                              - text: x
+                              - generic [ref=e1273]: i
+                            - text: =
+                          - generic [ref=e1278]:
+                            - text: m
+                            - generic [ref=e1285]:
+                              - text: e
+                              - generic [ref=e1290]: i
+                      - text: and
+                      - generic [ref=e1294]:
+                        - math [ref=e1296]:
+                          - generic [ref=e1299]: z
+                        - generic [ref=e1301]: z
+                      - text: .
+                    - paragraph [ref=e1302]:
+                      - text: A straightforward way is to use resultant to eliminate
+                      - generic [ref=e1303]:
+                        - math [ref=e1305]:
+                          - generic [ref=e1308]:
+                            - generic [ref=e1309]: x
+                            - generic [ref=e1310]: i
+                        - generic [ref=e1313]:
+                          - text: x
+                          - generic [ref=e1318]: i
+                      - text: and get a univariate polynomial in
+                      - generic [ref=e1322]:
+                        - math [ref=e1324]:
+                          - generic [ref=e1327]: z
+                        - generic [ref=e1329]: z
+                      - text: . However, the computation of resultant is very expensive, and the degree of final polynomial will explode very fast. By our previous heuristic guess, the degree will be about
+                      - generic [ref=e1330]:
+                        - math [ref=e1332]:
+                          - generic [ref=e1335]:
+                            - generic [ref=e1336]: "2"
+                            - generic [ref=e1337]: "28"
+                        - generic [ref=e1340]:
+                          - text: "2"
+                          - generic [ref=e1346]: "28"
+                      - text: ", which is impossible to compute. So we need to be more careful about how to eliminate variables."
+                    - paragraph [ref=e1347]:
+                      - text: Remember that we have 4 positive
+                      - generic [ref=e1348]:
+                        - math [ref=e1350]:
+                          - generic [ref=e1353]:
+                            - generic [ref=e1354]: c
+                            - generic [ref=e1355]: i
+                        - generic [ref=e1358]:
+                          - text: c
+                          - generic [ref=e1363]: i
+                      - text: ‘s and 4 negative
+                      - generic [ref=e1367]:
+                        - math [ref=e1369]:
+                          - generic [ref=e1372]:
+                            - generic [ref=e1373]: c
+                            - generic [ref=e1374]: i
+                        - generic [ref=e1377]:
+                          - text: c
+                          - generic [ref=e1382]: i
+                      - text: ‘s, we can rewrite the product relation as
+                    - generic [ref=e1387]:
+                      - math [ref=e1389]:
+                        - generic [ref=e1391]:
+                          - generic [ref=e1392]:
+                            - generic [ref=e1395]: t
+                            - generic [ref=e1398]:
+                              - generic [ref=e1399]: ≡
+                              - generic [ref=e1400]:
+                                - generic [ref=e1401]: ∏
+                                - generic [ref=e1402]:
+                                  - generic [ref=e1403]: i
+                                  - generic [ref=e1404]: =
+                                  - generic [ref=e1405]: "1"
+                                - generic [ref=e1406]: "4"
+                              - generic [ref=e1407]: (
+                              - generic [ref=e1408]:
+                                - generic [ref=e1409]: m
+                                - generic [ref=e1410]:
+                                  - generic [ref=e1411]: e
+                                  - generic [ref=e1412]: i
+                              - generic [ref=e1413]:
+                                - generic [ref=e1414]: )
+                                - generic [ref=e1415]:
+                                  - generic [ref=e1416]: c
+                                  - generic [ref=e1417]: i
+                              - generic [ref=e1418]: ⋅
+                              - generic [ref=e1419]:
+                                - generic [ref=e1420]: z
+                                - generic [ref=e1421]: c
+                              - generic [ref=e1422]: (
+                              - generic [ref=e1423]:
+                                - generic [ref=e1424]: m
+                                - generic [ref=e1425]: o
+                                - generic [ref=e1426]: d
+                              - generic [ref=e1427]: p
+                              - generic [ref=e1428]: )
+                          - generic [ref=e1429]:
+                            - generic [ref=e1432]: t
+                            - generic [ref=e1435]:
+                              - generic [ref=e1436]: ≡
+                              - generic [ref=e1437]:
+                                - generic [ref=e1438]: ∏
+                                - generic [ref=e1439]:
+                                  - generic [ref=e1440]: i
+                                  - generic [ref=e1441]: =
+                                  - generic [ref=e1442]: "5"
+                                - generic [ref=e1443]: "8"
+                              - generic [ref=e1444]: (
+                              - generic [ref=e1445]:
+                                - generic [ref=e1446]: m
+                                - generic [ref=e1447]:
+                                  - generic [ref=e1448]: e
+                                  - generic [ref=e1449]: i
+                              - generic [ref=e1450]:
+                                - generic [ref=e1451]: )
+                                - generic [ref=e1452]:
+                                  - generic [ref=e1453]: −
+                                  - generic [ref=e1454]:
+                                    - generic [ref=e1455]: c
+                                    - generic [ref=e1456]: i
+                              - generic [ref=e1457]: (
+                              - generic [ref=e1458]:
+                                - generic [ref=e1459]: m
+                                - generic [ref=e1460]: o
+                                - generic [ref=e1461]: d
+                              - generic [ref=e1462]: p
+                              - generic [ref=e1463]: )
+                      - generic [ref=e1467]:
+                        - generic [ref=e1471]:
+                          - generic [ref=e1472]: t
+                          - generic [ref=e1473]: t
+                        - generic [ref=e1480]:
+                          - generic [ref=e1481]:
+                            - text: ≡
+                            - generic [ref=e1485]:
+                              - generic [ref=e1487]: i=1
+                              - generic [ref=e1488]: ∏
+                              - generic [ref=e1489]: "4"
+                            - text: (
+                            - generic [ref=e1493]:
+                              - text: m
+                              - generic [ref=e1500]:
+                                - text: e
+                                - generic [ref=e1505]: i
+                            - generic [ref=e1509]:
+                              - text: )
+                              - generic [ref=e1516]:
+                                - text: c
+                                - generic [ref=e1521]: i
+                            - text: ⋅
+                            - generic [ref=e1525]:
+                              - text: z
+                              - generic [ref=e1530]: c
+                            - text: (
+                            - generic [ref=e1532]: mod
+                            - text: p)
+                          - generic [ref=e1533]:
+                            - text: ≡
+                            - generic [ref=e1537]:
+                              - generic [ref=e1539]: i=5
+                              - generic [ref=e1540]: ∏
+                              - generic [ref=e1541]: "8"
+                            - text: (
+                            - generic [ref=e1545]:
+                              - text: m
+                              - generic [ref=e1552]:
+                                - text: e
+                                - generic [ref=e1557]: i
+                            - generic [ref=e1561]:
+                              - text: )
+                              - generic [ref=e1567]:
+                                - text: −
+                                - generic [ref=e1568]:
+                                  - text: c
+                                  - generic [ref=e1573]: i
+                            - text: (
+                            - generic [ref=e1578]: mod
+                            - text: p)
+                    - paragraph [ref=e1582]:
+                      - text: For each part, we first reduce it into a bivariate polynomial of
+                      - generic [ref=e1583]:
+                        - math [ref=e1585]:
+                          - generic [ref=e1588]: t
+                        - generic [ref=e1590]: t
+                      - text: and
+                      - generic [ref=e1591]:
+                        - math [ref=e1593]:
+                          - generic [ref=e1596]: z
+                        - generic [ref=e1598]: z
+                      - text: ", then use a resultant to eliminate"
+                      - generic [ref=e1599]:
+                        - math [ref=e1601]:
+                          - generic [ref=e1604]: t
+                        - generic [ref=e1606]: t
+                      - text: and get the final result.
+                  - generic [ref=e1607]:
+                    - 'heading "Algebraic Number Tricks #" [level=3] [ref=e1608]':
+                      - text: Algebraic Number Tricks
+                      - link "#" [ref=e1609] [cursor=pointer]:
+                        - /url: "#algebraic-number-tricks"
+                    - paragraph [ref=e1610]:
+                      - text: As we already know that
+                      - generic [ref=e1611]:
+                        - math [ref=e1613]:
+                          - generic [ref=e1615]:
+                            - generic [ref=e1616]:
+                              - generic [ref=e1617]: x
+                              - generic [ref=e1618]: i
+                              - generic [ref=e1619]: "3"
+                            - generic [ref=e1620]: +
+                            - generic [ref=e1621]:
+                              - generic [ref=e1622]: x
+                              - generic [ref=e1623]: i
+                            - generic [ref=e1624]: ≡
+                            - generic [ref=e1625]:
+                              - generic [ref=e1626]: r
+                              - generic [ref=e1627]: i
+                            - generic [ref=e1628]: ⋅
+                            - generic [ref=e1629]: z
+                            - generic [ref=e1630]: (
+                            - generic [ref=e1631]:
+                              - generic [ref=e1632]: m
+                              - generic [ref=e1633]: o
+                              - generic [ref=e1634]: d
+                            - generic [ref=e1635]: p
+                            - generic [ref=e1636]: )
+                        - generic [ref=e1637]:
+                          - generic [ref=e1638]:
+                            - generic [ref=e1639]:
+                              - text: x
+                              - generic [ref=e1643]:
+                                - generic [ref=e1644]: i
+                                - generic [ref=e1645]: "3"
+                            - text: +
+                          - generic [ref=e1649]:
+                            - generic [ref=e1650]:
+                              - text: x
+                              - generic [ref=e1655]: i
+                            - text: ≡
+                          - generic [ref=e1659]:
+                            - generic [ref=e1660]:
+                              - text: r
+                              - generic [ref=e1665]: i
+                            - text: ⋅
+                          - generic [ref=e1669]: z
+                          - generic [ref=e1670]:
+                            - text: (
+                            - generic [ref=e1672]: mod
+                            - text: p)
+                      - text: ", we can think of it as an “algebraic number over"
+                      - generic [ref=e1673]:
+                        - math [ref=e1675]:
+                          - generic [ref=e1677]:
+                            - generic [ref=e1678]:
+                              - generic [ref=e1679]: F
+                              - generic [ref=e1680]: p
+                            - generic [ref=e1681]: "["
+                            - generic [ref=e1682]: z
+                            - generic [ref=e1683]: "]"
+                        - generic [ref=e1685]:
+                          - generic [ref=e1686]:
+                            - text: F
+                            - generic [ref=e1691]: p
+                          - text: "[z]"
+                      - text: ”
+                      - superscript [ref=e1695]:
+                        - link "1" [ref=e1696] [cursor=pointer]:
+                          - /url: "#user-content-fn-1"
+                    - paragraph [ref=e1697]:
+                      - text: A famous result about algebraic numbers is that the sum, product of algebraic numbers is still an algebraic number. Similarly, we can do the same thing in our case, which means
+                      - generic [ref=e1698]:
+                        - math [ref=e1700]:
+                          - generic [ref=e1703]: t
+                        - generic [ref=e1705]: t
+                      - text: is also an algebraic number over
+                      - generic [ref=e1706]:
+                        - math [ref=e1708]:
+                          - generic [ref=e1710]:
+                            - generic [ref=e1711]:
+                              - generic [ref=e1712]: F
+                              - generic [ref=e1713]: p
+                            - generic [ref=e1714]: "["
+                            - generic [ref=e1715]: z
+                            - generic [ref=e1716]: "]"
+                        - generic [ref=e1718]:
+                          - generic [ref=e1719]:
+                            - text: F
+                            - generic [ref=e1724]: p
+                          - text: "[z]"
+                      - text: .
+                    - blockquote [ref=e1728]:
+                      - paragraph [ref=e1729]:
+                        - mark [ref=e1730]: Prop.
+                        - text: For a degree
+                        - generic [ref=e1731]:
+                          - math [ref=e1733]:
+                            - generic [ref=e1736]: d
+                          - generic [ref=e1738]: d
+                        - text: algebraic number
+                        - generic [ref=e1739]:
+                          - math [ref=e1741]:
+                            - generic [ref=e1743]:
+                              - generic [ref=e1744]: f
+                              - generic [ref=e1745]: (
+                              - generic [ref=e1746]: α
+                              - generic [ref=e1747]: )
+                              - generic [ref=e1748]: =
+                              - generic [ref=e1749]: "0"
+                          - generic [ref=e1750]:
+                            - generic [ref=e1751]: f(α) =
+                            - generic [ref=e1752]: "0"
+                        - text: over
+                        - generic [ref=e1753]:
+                          - math [ref=e1755]:
+                            - generic [ref=e1757]:
+                              - generic [ref=e1758]:
+                                - generic [ref=e1759]: F
+                                - generic [ref=e1760]: p
+                              - generic [ref=e1761]: "["
+                              - generic [ref=e1762]: z
+                              - generic [ref=e1763]: "]"
+                          - generic [ref=e1765]:
+                            - generic [ref=e1766]:
+                              - text: F
+                              - generic [ref=e1771]: p
+                            - text: "[z]"
+                        - text: ","
+                        - generic [ref=e1775]:
+                          - math [ref=e1777]:
+                            - generic [ref=e1779]:
+                              - generic [ref=e1780]: t
+                              - generic [ref=e1781]: =
+                              - generic [ref=e1782]:
+                                - generic [ref=e1783]: α
+                                - generic [ref=e1784]: k
+                          - generic [ref=e1785]:
+                            - generic [ref=e1786]: t =
+                            - generic [ref=e1788]:
+                              - text: α
+                              - generic [ref=e1793]: k
+                        - text: is also a degree
+                        - generic [ref=e1794]:
+                          - math [ref=e1796]:
+                            - generic [ref=e1799]: d
+                          - generic [ref=e1801]: d
+                        - text: algebraic number.
+                    - paragraph [ref=e1802]:
+                      - text: Let
+                      - generic [ref=e1803]:
+                        - math [ref=e1805]:
+                          - generic [ref=e1808]: M
+                        - generic [ref=e1810]: M
+                      - text: be the companion matrix of
+                      - generic [ref=e1811]:
+                        - math [ref=e1813]:
+                          - generic [ref=e1816]: f
+                        - generic [ref=e1818]: f
+                      - text: ", then"
+                      - generic [ref=e1819]:
+                        - math [ref=e1821]:
+                          - generic [ref=e1824]: α
+                        - generic [ref=e1826]: α
+                      - text: is the eigenvalue of
+                      - generic [ref=e1827]:
+                        - math [ref=e1829]:
+                          - generic [ref=e1832]: M
+                        - generic [ref=e1834]: M
+                      - text: . Thus
+                      - generic [ref=e1835]:
+                        - math [ref=e1837]:
+                          - generic [ref=e1839]:
+                            - generic [ref=e1840]: t
+                            - generic [ref=e1841]: =
+                            - generic [ref=e1842]:
+                              - generic [ref=e1843]: α
+                              - generic [ref=e1844]: k
+                        - generic [ref=e1845]:
+                          - generic [ref=e1846]: t =
+                          - generic [ref=e1848]:
+                            - text: α
+                            - generic [ref=e1853]: k
+                      - text: is the eigenvalue of
+                      - generic [ref=e1854]:
+                        - math [ref=e1856]:
+                          - generic [ref=e1859]:
+                            - generic [ref=e1860]: M
+                            - generic [ref=e1861]: k
+                        - generic [ref=e1864]:
+                          - text: M
+                          - generic [ref=e1869]: k
+                      - text: ", whose characteristic polynomial is degree"
+                      - generic [ref=e1870]:
+                        - math [ref=e1872]:
+                          - generic [ref=e1875]: d
+                        - generic [ref=e1877]: d
+                      - text: and has
+                      - generic [ref=e1878]:
+                        - math [ref=e1880]:
+                          - generic [ref=e1883]: t
+                        - generic [ref=e1885]: t
+                      - text: as a root.
+                    - blockquote [ref=e1886]:
+                      - paragraph [ref=e1887]:
+                        - mark [ref=e1888]: Prop.
+                        - text: For two algebraic numbers
+                        - generic [ref=e1889]:
+                          - math [ref=e1891]:
+                            - generic [ref=e1893]:
+                              - generic [ref=e1894]: f
+                              - generic [ref=e1895]: (
+                              - generic [ref=e1896]: α
+                              - generic [ref=e1897]: )
+                              - generic [ref=e1898]: =
+                              - generic [ref=e1899]: "0"
+                          - generic [ref=e1900]:
+                            - generic [ref=e1901]: f(α) =
+                            - generic [ref=e1902]: "0"
+                        - text: and
+                        - generic [ref=e1903]:
+                          - math [ref=e1905]:
+                            - generic [ref=e1907]:
+                              - generic [ref=e1908]: g
+                              - generic [ref=e1909]: (
+                              - generic [ref=e1910]: β
+                              - generic [ref=e1911]: )
+                              - generic [ref=e1912]: =
+                              - generic [ref=e1913]: "0"
+                          - generic [ref=e1914]:
+                            - generic [ref=e1915]: g(β) =
+                            - generic [ref=e1916]: "0"
+                        - text: over
+                        - generic [ref=e1917]:
+                          - math [ref=e1919]:
+                            - generic [ref=e1921]:
+                              - generic [ref=e1922]:
+                                - generic [ref=e1923]: F
+                                - generic [ref=e1924]: p
+                              - generic [ref=e1925]: "["
+                              - generic [ref=e1926]: z
+                              - generic [ref=e1927]: "]"
+                          - generic [ref=e1929]:
+                            - generic [ref=e1930]:
+                              - text: F
+                              - generic [ref=e1935]: p
+                            - text: "[z]"
+                        - text: ","
+                        - generic [ref=e1939]:
+                          - math [ref=e1941]:
+                            - generic [ref=e1943]:
+                              - generic [ref=e1944]: t
+                              - generic [ref=e1945]: =
+                              - generic [ref=e1946]: α
+                              - generic [ref=e1947]: ⋅
+                              - generic [ref=e1948]: β
+                          - generic [ref=e1949]:
+                            - generic [ref=e1950]: t =
+                            - generic [ref=e1951]: α ⋅
+                            - generic [ref=e1952]: β
+                        - text: is also an algebraic number with degree
+                        - generic [ref=e1953]:
+                          - math [ref=e1955]:
+                            - generic [ref=e1957]:
+                              - generic [ref=e1958]: deg
+                              - generic: ⁡
+                              - generic [ref=e1959]: f
+                              - generic [ref=e1960]: ⋅
+                              - generic [ref=e1961]: deg
+                              - generic: ⁡
+                              - generic [ref=e1962]: g
+                          - generic [ref=e1963]:
+                            - generic [ref=e1964]:
+                              - generic [ref=e1965]: deg
+                              - text: f ⋅
+                            - generic [ref=e1966]:
+                              - generic [ref=e1967]: deg
+                              - text: g
+                        - text: .
+                    - paragraph [ref=e1968]:
+                      - text: Let the roots of
+                      - generic [ref=e1969]:
+                        - math [ref=e1971]:
+                          - generic [ref=e1974]: f
+                        - generic [ref=e1976]: f
+                      - text: be
+                      - generic [ref=e1977]:
+                        - math [ref=e1979]:
+                          - generic [ref=e1981]:
+                            - generic [ref=e1982]:
+                              - generic [ref=e1983]: α
+                              - generic [ref=e1984]: "1"
+                            - generic [ref=e1985]: ","
+                            - generic [ref=e1986]:
+                              - generic [ref=e1987]: α
+                              - generic [ref=e1988]: "2"
+                            - generic [ref=e1989]: ","
+                            - generic [ref=e1990]: .
+                            - generic [ref=e1991]: .
+                            - generic [ref=e1992]: .
+                            - generic [ref=e1993]: ","
+                            - generic [ref=e1994]:
+                              - generic [ref=e1995]: α
+                              - generic [ref=e1996]: m
+                        - generic [ref=e1998]:
+                          - generic [ref=e1999]:
+                            - text: α
+                            - generic [ref=e2004]: "1"
+                          - text: ","
+                          - generic [ref=e2008]:
+                            - text: α
+                            - generic [ref=e2013]: "2"
+                          - text: ", ...,"
+                          - generic [ref=e2017]:
+                            - text: α
+                            - generic [ref=e2022]: m
+                      - text: and the roots of
+                      - generic [ref=e2026]:
+                        - math [ref=e2028]:
+                          - generic [ref=e2031]: g
+                        - generic [ref=e2033]: g
+                      - text: be
+                      - generic [ref=e2034]:
+                        - math [ref=e2036]:
+                          - generic [ref=e2038]:
+                            - generic [ref=e2039]:
+                              - generic [ref=e2040]: β
+                              - generic [ref=e2041]: "1"
+                            - generic [ref=e2042]: ","
+                            - generic [ref=e2043]:
+                              - generic [ref=e2044]: β
+                              - generic [ref=e2045]: "2"
+                            - generic [ref=e2046]: ","
+                            - generic [ref=e2047]: .
+                            - generic [ref=e2048]: .
+                            - generic [ref=e2049]: .
+                            - generic [ref=e2050]: ","
+                            - generic [ref=e2051]:
+                              - generic [ref=e2052]: β
+                              - generic [ref=e2053]: "n"
+                        - generic [ref=e2055]:
+                          - generic [ref=e2056]:
+                            - text: β
+                            - generic [ref=e2061]: "1"
+                          - text: ","
+                          - generic [ref=e2065]:
+                            - text: β
+                            - generic [ref=e2070]: "2"
+                          - text: ", ...,"
+                          - generic [ref=e2074]:
+                            - text: β
+                            - generic [ref=e2079]: "n"
+                      - text: .
+                      - superscript [ref=e2083]:
+                        - link "2" [ref=e2084] [cursor=pointer]:
+                          - /url: "#user-content-fn-2"
+                      - text: Then the polynomial
+                      - generic [ref=e2085]:
+                        - math [ref=e2087]:
+                          - generic [ref=e2089]:
+                            - generic [ref=e2090]:
+                              - generic [ref=e2091]: ∏
+                              - generic [ref=e2092]:
+                                - generic [ref=e2093]: i
+                                - generic [ref=e2094]: j
+                            - generic [ref=e2095]: (
+                            - generic [ref=e2096]: x
+                            - generic [ref=e2097]: −
+                            - generic [ref=e2098]:
+                              - generic [ref=e2099]: α
+                              - generic [ref=e2100]: i
+                            - generic [ref=e2101]:
+                              - generic [ref=e2102]: β
+                              - generic [ref=e2103]: j
+                            - generic [ref=e2104]: )
+                        - generic [ref=e2105]:
+                          - generic [ref=e2106]:
+                            - generic [ref=e2107]:
+                              - text: ∏
+                              - generic [ref=e2113]: ij
+                            - text: (x −
+                          - generic [ref=e2117]:
+                            - generic [ref=e2118]:
+                              - text: α
+                              - generic [ref=e2123]: i
+                            - generic [ref=e2127]:
+                              - text: β
+                              - generic [ref=e2132]: j
+                            - text: )
+                      - text: has
+                      - generic [ref=e2136]:
+                        - math [ref=e2138]:
+                          - generic [ref=e2141]: t
+                        - generic [ref=e2143]: t
+                      - text: as a root and the degree is
+                      - generic [ref=e2144]:
+                        - math [ref=e2146]:
+                          - generic [ref=e2148]:
+                            - generic [ref=e2149]: m
+                            - generic [ref=e2150]: "n"
+                        - generic [ref=e2152]: mn
+                      - text: .
+                    - paragraph [ref=e2153]:
+                      - text: Note that the coefficients of
+                      - generic [ref=e2154]:
+                        - math [ref=e2156]:
+                          - generic [ref=e2158]:
+                            - generic [ref=e2159]:
+                              - generic [ref=e2160]: ∏
+                              - generic [ref=e2161]:
+                                - generic [ref=e2162]: i
+                                - generic [ref=e2163]: j
+                            - generic [ref=e2164]: (
+                            - generic [ref=e2165]: x
+                            - generic [ref=e2166]: −
+                            - generic [ref=e2167]:
+                              - generic [ref=e2168]: α
+                              - generic [ref=e2169]: i
+                            - generic [ref=e2170]:
+                              - generic [ref=e2171]: β
+                              - generic [ref=e2172]: j
+                            - generic [ref=e2173]: )
+                        - generic [ref=e2174]:
+                          - generic [ref=e2175]:
+                            - generic [ref=e2176]:
+                              - text: ∏
+                              - generic [ref=e2182]: ij
+                            - text: (x −
+                          - generic [ref=e2186]:
+                            - generic [ref=e2187]:
+                              - text: α
+                              - generic [ref=e2192]: i
+                            - generic [ref=e2196]:
+                              - text: β
+                              - generic [ref=e2201]: j
+                            - text: )
+                      - text: are still in the field
+                      - generic [ref=e2205]:
+                        - math [ref=e2207]:
+                          - generic [ref=e2209]:
+                            - generic [ref=e2210]:
+                              - generic [ref=e2211]: F
+                              - generic [ref=e2212]: p
+                            - generic [ref=e2213]: "["
+                            - generic [ref=e2214]: z
+                            - generic [ref=e2215]: "]"
+                        - generic [ref=e2217]:
+                          - generic [ref=e2218]:
+                            - text: F
+                            - generic [ref=e2223]: p
+                          - text: "[z]"
+                      - text: because they are symmetric polynomials of
+                      - generic [ref=e2227]:
+                        - math [ref=e2229]:
+                          - generic [ref=e2232]:
+                            - generic [ref=e2233]: α
+                            - generic [ref=e2234]: i
+                        - generic [ref=e2237]:
+                          - text: α
+                          - generic [ref=e2242]: i
+                      - text: ‘s and
+                      - generic [ref=e2246]:
+                        - math [ref=e2248]:
+                          - generic [ref=e2251]:
+                            - generic [ref=e2252]: β
+                            - generic [ref=e2253]: j
+                        - generic [ref=e2256]:
+                          - text: β
+                          - generic [ref=e2261]: j
+                      - text: ‘s, thus it can be computed by the elementary symmetric polynomials, which is exactly the coefficients of
+                      - generic [ref=e2265]:
+                        - math [ref=e2267]:
+                          - generic [ref=e2270]: f
+                        - generic [ref=e2272]: f
+                      - text: and
+                      - generic [ref=e2273]:
+                        - math [ref=e2275]:
+                          - generic [ref=e2278]: g
+                        - generic [ref=e2280]: g
+                      - text: .
+                    - paragraph [ref=e2281]:
+                      - text: Now I’ll introduce an efficient way to compute the coefficients of
+                      - generic [ref=e2282]:
+                        - math [ref=e2284]:
+                          - generic [ref=e2286]:
+                            - generic [ref=e2287]:
+                              - generic [ref=e2288]: ∏
+                              - generic [ref=e2289]:
+                                - generic [ref=e2290]: i
+                                - generic [ref=e2291]: j
+                            - generic [ref=e2292]: (
+                            - generic [ref=e2293]: x
+                            - generic [ref=e2294]: −
+                            - generic [ref=e2295]:
+                              - generic [ref=e2296]: α
+                              - generic [ref=e2297]: i
+                            - generic [ref=e2298]:
+                              - generic [ref=e2299]: β
+                              - generic [ref=e2300]: j
+                            - generic [ref=e2301]: )
+                        - generic [ref=e2302]:
+                          - generic [ref=e2303]:
+                            - generic [ref=e2304]:
+                              - text: ∏
+                              - generic [ref=e2310]: ij
+                            - text: (x −
+                          - generic [ref=e2314]:
+                            - generic [ref=e2315]:
+                              - text: α
+                              - generic [ref=e2320]: i
+                            - generic [ref=e2324]:
+                              - text: β
+                              - generic [ref=e2329]: j
+                            - text: )
+                      - text: .
+                    - blockquote [ref=e2333]:
+                      - paragraph [ref=e2334]:
+                        - mark [ref=e2335]: Def.
+                        - text: The power sums are defined as
+                        - generic [ref=e2336]:
+                          - math [ref=e2338]:
+                            - generic [ref=e2340]:
+                              - generic [ref=e2341]:
+                                - generic [ref=e2342]: p
+                                - generic [ref=e2343]: k
+                              - generic [ref=e2344]: =
+                              - generic [ref=e2345]:
+                                - generic [ref=e2346]: ∑
+                                - generic [ref=e2347]:
+                                  - generic [ref=e2348]: i
+                                  - generic [ref=e2349]: =
+                                  - generic [ref=e2350]: "1"
+                                - generic [ref=e2351]: m
+                              - generic [ref=e2352]:
+                                - generic [ref=e2353]: α
+                                - generic [ref=e2354]: i
+                                - generic [ref=e2355]: k
+                          - generic [ref=e2356]:
+                            - generic [ref=e2357]:
+                              - generic [ref=e2358]:
+                                - text: p
+                                - generic [ref=e2363]: k
+                              - text: =
+                            - generic [ref=e2367]:
+                              - generic [ref=e2368]:
+                                - text: ∑
+                                - generic [ref=e2372]:
+                                  - generic [ref=e2374]: i=1
+                                  - generic [ref=e2375]: m
+                              - generic [ref=e2379]:
+                                - text: α
+                                - generic [ref=e2383]:
+                                  - generic [ref=e2384]: i
+                                  - generic [ref=e2385]: k
+                        - text: and
+                        - generic [ref=e2389]:
+                          - math [ref=e2391]:
+                            - generic [ref=e2393]:
+                              - generic [ref=e2394]:
+                                - generic [ref=e2395]: q
+                                - generic [ref=e2396]: k
+                              - generic [ref=e2397]: =
+                              - generic [ref=e2398]:
+                                - generic [ref=e2399]: ∑
+                                - generic [ref=e2400]:
+                                  - generic [ref=e2401]: j
+                                  - generic [ref=e2402]: =
+                                  - generic [ref=e2403]: "1"
+                                - generic [ref=e2404]: "n"
+                              - generic [ref=e2405]:
+                                - generic [ref=e2406]: β
+                                - generic [ref=e2407]: j
+                                - generic [ref=e2408]: k
+                          - generic [ref=e2409]:
+                            - generic [ref=e2410]:
+                              - generic [ref=e2411]:
+                                - text: q
+                                - generic [ref=e2416]: k
+                              - text: =
+                            - generic [ref=e2420]:
+                              - generic [ref=e2421]:
+                                - text: ∑
+                                - generic [ref=e2425]:
+                                  - generic [ref=e2427]: j=1
+                                  - generic [ref=e2428]: "n"
+                              - generic [ref=e2432]:
+                                - text: β
+                                - generic [ref=e2436]:
+                                  - generic [ref=e2437]: j
+                                  - generic [ref=e2438]: k
+                        - text: .
+                    - paragraph [ref=e2442]: Clearly,
+                    - generic [ref=e2444]:
+                      - math [ref=e2446]:
+                        - generic [ref=e2448]:
+                          - generic [ref=e2449]:
+                            - generic [ref=e2450]: ∑
+                            - generic [ref=e2451]:
+                              - generic [ref=e2452]: i
+                              - generic [ref=e2453]: j
+                          - generic [ref=e2454]: (
+                          - generic [ref=e2455]:
+                            - generic [ref=e2456]: α
+                            - generic [ref=e2457]: i
+                          - generic [ref=e2458]:
+                            - generic [ref=e2459]: β
+                            - generic [ref=e2460]: j
+                          - generic [ref=e2461]:
+                            - generic [ref=e2462]: )
+                            - generic [ref=e2463]: k
+                          - generic [ref=e2464]: =
+                          - generic [ref=e2465]:
+                            - generic [ref=e2466]: ∑
+                            - generic [ref=e2467]:
+                              - generic [ref=e2468]: i
+                              - generic [ref=e2469]: =
+                              - generic [ref=e2470]: "1"
+                            - generic [ref=e2471]: m
+                          - generic [ref=e2472]:
+                            - generic [ref=e2473]: α
+                            - generic [ref=e2474]: i
+                            - generic [ref=e2475]: k
+                          - generic [ref=e2476]: ⋅
+                          - generic [ref=e2477]:
+                            - generic [ref=e2478]: ∑
+                            - generic [ref=e2479]:
+                              - generic [ref=e2480]: j
+                              - generic [ref=e2481]: =
+                              - generic [ref=e2482]: "1"
+                            - generic [ref=e2483]: "n"
+                          - generic [ref=e2484]:
+                            - generic [ref=e2485]: β
+                            - generic [ref=e2486]: j
+                            - generic [ref=e2487]: k
+                          - generic [ref=e2488]: =
+                          - generic [ref=e2489]:
+                            - generic [ref=e2490]: p
+                            - generic [ref=e2491]: k
+                          - generic [ref=e2492]: ⋅
+                          - generic [ref=e2493]:
+                            - generic [ref=e2494]: q
+                            - generic [ref=e2495]: k
+                      - generic [ref=e2496]:
+                        - generic [ref=e2497]:
+                          - generic [ref=e2501]:
+                            - generic [ref=e2503]: ij
+                            - generic [ref=e2504]: ∑
+                          - text: (
+                          - generic [ref=e2508]:
+                            - text: α
+                            - generic [ref=e2513]: i
+                          - generic [ref=e2517]:
+                            - text: β
+                            - generic [ref=e2522]: j
+                          - generic [ref=e2526]:
+                            - text: )
+                            - generic [ref=e2531]: k
+                          - text: =
+                        - generic [ref=e2532]:
+                          - generic [ref=e2536]:
+                            - generic [ref=e2538]: i=1
+                            - generic [ref=e2539]: ∑
+                            - generic [ref=e2540]: m
+                          - generic [ref=e2544]:
+                            - text: α
+                            - generic [ref=e2548]:
+                              - generic [ref=e2549]: i
+                              - generic [ref=e2550]: k
+                          - text: ⋅
+                        - generic [ref=e2554]:
+                          - generic [ref=e2558]:
+                            - generic [ref=e2560]: j=1
+                            - generic [ref=e2561]: ∑
+                            - generic [ref=e2562]: "n"
+                          - generic [ref=e2566]:
+                            - text: β
+                            - generic [ref=e2570]:
+                              - generic [ref=e2571]: j
+                              - generic [ref=e2572]: k
+                          - text: =
+                        - generic [ref=e2576]:
+                          - generic [ref=e2577]:
+                            - text: p
+                            - generic [ref=e2582]: k
+                          - text: ⋅
+                        - generic [ref=e2587]:
+                          - text: q
+                          - generic [ref=e2592]: k
+                    - paragraph [ref=e2596]:
+                      - text: On the other hand, we can quickly convert elementary symmetric polynomials from and to power sums using Newton’s identities. Therefore, we can compute the coefficients of
+                      - generic [ref=e2597]:
+                        - math [ref=e2599]:
+                          - generic [ref=e2601]:
+                            - generic [ref=e2602]:
+                              - generic [ref=e2603]: ∏
+                              - generic [ref=e2604]:
+                                - generic [ref=e2605]: i
+                                - generic [ref=e2606]: j
+                            - generic [ref=e2607]: (
+                            - generic [ref=e2608]: x
+                            - generic [ref=e2609]: −
+                            - generic [ref=e2610]:
+                              - generic [ref=e2611]: α
+                              - generic [ref=e2612]: i
+                            - generic [ref=e2613]:
+                              - generic [ref=e2614]: β
+                              - generic [ref=e2615]: j
+                            - generic [ref=e2616]: )
+                        - generic [ref=e2617]:
+                          - generic [ref=e2618]:
+                            - generic [ref=e2619]:
+                              - text: ∏
+                              - generic [ref=e2625]: ij
+                            - text: (x −
+                          - generic [ref=e2629]:
+                            - generic [ref=e2630]:
+                              - text: α
+                              - generic [ref=e2635]: i
+                            - generic [ref=e2639]:
+                              - text: β
+                              - generic [ref=e2644]: j
+                            - text: )
+                      - text: in
+                      - generic [ref=e2648]:
+                        - math [ref=e2650]:
+                          - generic [ref=e2652]:
+                            - generic [ref=e2653]: O
+                            - generic [ref=e2654]: (
+                            - generic [ref=e2655]: m
+                            - generic [ref=e2656]: "n"
+                            - generic [ref=e2657]: )
+                        - generic [ref=e2659]: O(mn)
+                      - text: time. Since we only consider
+                      - generic [ref=e2660]:
+                        - math [ref=e2662]:
+                          - generic [ref=e2664]:
+                            - generic [ref=e2665]: m
+                            - generic [ref=e2666]: ","
+                            - generic [ref=e2667]: "n"
+                            - generic [ref=e2668]: ≤
+                            - generic [ref=e2669]: "9"
+                        - generic [ref=e2670]:
+                          - generic [ref=e2671]: m, n ≤
+                          - generic [ref=e2672]: "9"
+                      - text: ", this is much more efficient than any other fancy methods."
+                  - generic [ref=e2673]:
+                    - 'heading "Exact degree prediction #" [level=3] [ref=e2674]':
+                      - text: Exact degree prediction
+                      - link "#" [ref=e2675] [cursor=pointer]:
+                        - /url: "#exact-degree-prediction"
+                    - paragraph [ref=e2676]:
+                      - text: Now we have a way to compute the polynomial of
+                      - generic [ref=e2677]:
+                        - math [ref=e2679]:
+                          - generic [ref=e2682]: t
+                        - generic [ref=e2684]: t
+                      - text: without computing any resultant. The final polynomial of
+                      - generic [ref=e2685]:
+                        - math [ref=e2687]:
+                          - generic [ref=e2690]: t
+                        - generic [ref=e2692]: t
+                      - text: and
+                      - generic [ref=e2693]:
+                        - math [ref=e2695]:
+                          - generic [ref=e2698]: z
+                        - generic [ref=e2700]: z
+                      - text: is a degree 81 polynomial for
+                      - generic [ref=e2701]:
+                        - math [ref=e2703]:
+                          - generic [ref=e2706]: t
+                        - generic [ref=e2708]: t
+                      - text: with thousands degree for
+                      - generic [ref=e2709]:
+                        - math [ref=e2711]:
+                          - generic [ref=e2714]: z
+                        - generic [ref=e2716]: z
+                      - text: ", which is still impossible to compute resultant."
+                    - paragraph [ref=e2717]:
+                      - text: Again, we can use the trick in lance-hard? to map
+                      - generic [ref=e2718]:
+                        - math [ref=e2720]:
+                          - generic [ref=e2722]:
+                            - generic [ref=e2723]:
+                              - generic [ref=e2724]: F
+                              - generic [ref=e2725]: p
+                            - generic [ref=e2726]: "["
+                            - generic [ref=e2727]: z
+                            - generic [ref=e2728]: "]"
+                        - generic [ref=e2730]:
+                          - generic [ref=e2731]:
+                            - text: F
+                            - generic [ref=e2736]: p
+                          - text: "[z]"
+                      - text: to
+                      - generic [ref=e2740]:
+                        - math [ref=e2742]:
+                          - generic [ref=e2745]:
+                            - generic [ref=e2746]: F
+                            - generic [ref=e2747]: p
+                        - generic [ref=e2750]:
+                          - text: F
+                          - generic [ref=e2755]: p
+                      - text: by substituting
+                      - generic [ref=e2759]:
+                        - math [ref=e2761]:
+                          - generic [ref=e2764]: z
+                        - generic [ref=e2766]: z
+                      - text: with some random value, and interpolate later.
+                    - paragraph [ref=e2767]:
+                      - text: Notice that all of these “algebraic numbers tricks” will not break the coefficients of polynomial, i.e. the coefficients are still polynomials of
+                      - generic [ref=e2768]:
+                        - math [ref=e2770]:
+                          - generic [ref=e2773]: z
+                        - generic [ref=e2775]: z
+                      - text: . Thus, the only thing we need to do is to approximate the degree of the final polynomial.
+                    - paragraph [ref=e2776]:
+                      - text: Since the analysis is very hard, I just did some experiments to find the pattern of degree growth. The result shows that the degree of the final polynomial is about
+                      - generic [ref=e2777]:
+                        - math [ref=e2779]:
+                          - generic [ref=e2781]:
+                            - generic [ref=e2782]:
+                              - generic [ref=e2783]: "3"
+                              - generic [ref=e2784]: k
+                            - generic [ref=e2785]: c
+                            - generic [ref=e2786]: +
+                            - generic [ref=e2787]:
+                              - generic [ref=e2788]: "3"
+                              - generic [ref=e2789]:
+                                - generic [ref=e2790]: k
+                                - generic [ref=e2791]: −
+                                - generic [ref=e2792]: "1"
+                            - generic [ref=e2793]: max
+                            - generic: ⁡
+                            - generic [ref=e2794]: "{"
+                            - generic [ref=e2795]:
+                              - generic [ref=e2796]: ∑
+                              - generic [ref=e2797]:
+                                - generic [ref=e2798]: i
+                                - generic [ref=e2799]: =
+                                - generic [ref=e2800]: "1"
+                              - generic [ref=e2801]: "4"
+                            - generic [ref=e2802]:
+                              - generic [ref=e2803]: c
+                              - generic [ref=e2804]: i
+                            - generic [ref=e2805]: ","
+                            - generic [ref=e2806]:
+                              - generic [ref=e2807]: ∑
+                              - generic [ref=e2808]:
+                                - generic [ref=e2809]: i
+                                - generic [ref=e2810]: =
+                                - generic [ref=e2811]: "5"
+                              - generic [ref=e2812]: "8"
+                            - generic [ref=e2813]: −
+                            - generic [ref=e2814]:
+                              - generic [ref=e2815]: c
+                              - generic [ref=e2816]: i
+                            - generic [ref=e2817]: "}"
+                        - generic [ref=e2818]:
+                          - generic [ref=e2819]:
+                            - generic [ref=e2820]:
+                              - text: "3"
+                              - generic [ref=e2825]: k
+                            - text: c +
+                          - generic [ref=e2826]:
+                            - generic [ref=e2827]:
+                              - text: "3"
+                              - generic [ref=e2833]: k−1
+                            - text: "max{"
+                            - generic [ref=e2834]:
+                              - text: ∑
+                              - generic [ref=e2838]:
+                                - generic [ref=e2840]: i=1
+                                - generic [ref=e2841]: "4"
+                            - generic [ref=e2845]:
+                              - text: c
+                              - generic [ref=e2850]: i
+                            - text: ","
+                            - generic [ref=e2854]:
+                              - text: ∑
+                              - generic [ref=e2858]:
+                                - generic [ref=e2860]: i=5
+                                - generic [ref=e2861]: "8"
+                            - text: −
+                            - generic [ref=e2865]:
+                              - text: c
+                              - generic [ref=e2870]: i
+                            - text: "}"
+                      - text: . Now we can use it to choose the best LLL candidates and predict the degree of final polynomial, which is about
+                      - generic [ref=e2874]:
+                        - math [ref=e2876]:
+                          - generic [ref=e2879]:
+                            - generic [ref=e2880]: "2"
+                            - generic [ref=e2881]: "25"
+                        - generic [ref=e2884]:
+                          - text: "2"
+                          - generic [ref=e2890]: "25"
+                      - text: .
+                  - generic [ref=e2891]:
+                    - 'heading "Solve the polynomial #" [level=3] [ref=e2892]':
+                      - text: Solve the polynomial
+                      - link "#" [ref=e2893] [cursor=pointer]:
+                        - /url: "#solve-the-polynomial"
+                    - generic [ref=e2894]:
+                      - 'heading "Fast Lagrange interpolation #" [level=4] [ref=e2895]':
+                        - text: Fast Lagrange interpolation
+                        - link "#" [ref=e2896] [cursor=pointer]:
+                          - /url: "#fast-lagrange-interpolation"
+                      - paragraph [ref=e2897]:
+                        - text: Since we can free choose the evaluation points, we can use consecutive xs for interpolation. We can easily compute it in
+                        - generic [ref=e2898]:
+                          - math [ref=e2900]:
+                            - generic [ref=e2902]:
+                              - generic [ref=e2903]: O
+                              - generic [ref=e2904]: (
+                              - generic [ref=e2905]: "n"
+                              - generic [ref=e2906]: )
+                          - generic [ref=e2908]: O(n)
+                        - text: time.
+                        - superscript [ref=e2909]:
+                          - link "3" [ref=e2910] [cursor=pointer]:
+                            - /url: "#user-content-fn-3"
+                    - generic [ref=e2911]:
+                      - 'heading "Finding roots of univariate polynomial #" [level=4] [ref=e2912]':
+                        - text: Finding roots of univariate polynomial
+                        - link "#" [ref=e2913] [cursor=pointer]:
+                          - /url: "#finding-roots-of-univariate-polynomial"
+                      - paragraph [ref=e2914]:
+                        - text: In general, the best method to find roots is first compute
+                        - generic [ref=e2915]:
+                          - math [ref=e2917]:
+                            - generic [ref=e2919]:
+                              - generic [ref=e2920]: g
+                              - generic [ref=e2921]: c
+                              - generic [ref=e2922]: d
+                              - generic [ref=e2923]: (
+                              - generic [ref=e2924]: f
+                              - generic [ref=e2925]: ","
+                              - generic [ref=e2926]:
+                                - generic [ref=e2927]: z
+                                - generic [ref=e2928]: p
+                              - generic [ref=e2929]: −
+                              - generic [ref=e2930]: z
+                              - generic [ref=e2931]: )
+                          - generic [ref=e2932]:
+                            - generic [ref=e2933]:
+                              - text: gcd(f,
+                              - generic [ref=e2934]:
+                                - text: z
+                                - generic [ref=e2939]: p
+                              - text: −
+                            - generic [ref=e2940]: z)
+                        - text: and then factor the result. However, the degree of our polynomial is about
+                        - generic [ref=e2941]:
+                          - math [ref=e2943]:
+                            - generic [ref=e2946]:
+                              - generic [ref=e2947]: "2"
+                              - generic [ref=e2948]: "25"
+                          - generic [ref=e2951]:
+                            - text: "2"
+                            - generic [ref=e2957]: "25"
+                        - text: ", which is too large for NTL to run FFT, so it failed."
+                      - paragraph [ref=e2958]: Thus we have to compute two final polynomials and run gcd on them. Thanks to NTL and half-gcd and FFT(?), this time it doesn’t raise error and finished in about 20 minutes.
+                      - paragraph [ref=e2959]:
+                        - text: After getting the gcd, I find that it contains a large factor of
+                        - generic [ref=e2960]:
+                          - math [ref=e2962]:
+                            - generic [ref=e2965]:
+                              - generic [ref=e2966]: z
+                              - generic [ref=e2967]: i
+                          - generic [ref=e2970]:
+                            - text: z
+                            - generic [ref=e2975]: i
+                        - text: ", so it could be faster if we remove the factors of"
+                        - generic [ref=e2976]:
+                          - math [ref=e2978]:
+                            - generic [ref=e2981]:
+                              - generic [ref=e2982]: z
+                              - generic [ref=e2983]: i
+                          - generic [ref=e2986]:
+                            - text: z
+                            - generic [ref=e2991]: i
+                        - text: before computing gcd and interpolation.
+                      - paragraph [ref=e2992]:
+                        - text: The rest is simple as we have got
+                        - generic [ref=e2993]:
+                          - math [ref=e2995]:
+                            - generic [ref=e2998]:
+                              - generic [ref=e2999]: m
+                              - generic [ref=e3000]:
+                                - generic [ref=e3001]: (
+                                - generic [ref=e3002]: "1337"
+                                - generic [ref=e3003]: −
+                                - generic [ref=e3004]: "N"
+                                - generic [ref=e3005]: )
+                                - generic [ref=e3006]: /
+                                - generic [ref=e3007]: "2"
+                          - generic [ref=e3010]:
+                            - text: m
+                            - generic [ref=e3016]: (1337−N)/2
+                        - text: .
+                - generic [ref=e3017]:
+                  - 'heading "Conclusion #" [level=2] [ref=e3018]':
+                    - text: Conclusion
+                    - link "#" [ref=e3019] [cursor=pointer]:
+                      - /url: "#conclusion"
+                  - paragraph [ref=e3020]:
+                    - text: My final solution is written in sage mixed with pyx
+                    - superscript [ref=e3021]:
+                      - link "4" [ref=e3022] [cursor=pointer]:
+                        - /url: "#user-content-fn-4"
+                    - text: . The overall running time is
+                  - list [ref=e3023]:
+                    - listitem [ref=e3024]: "LLL: single thread, ~1 hour. This is not optimized at all."
+                    - listitem [ref=e3025]:
+                      - text: Compute many
+                      - generic [ref=e3026]:
+                        - math [ref=e3028]:
+                          - generic [ref=e3031]: z
+                        - generic [ref=e3033]: z
+                      - text: "‘s: multi-thread, ~2 hours per polynomial. We need 4 polynomials in total."
+                    - listitem [ref=e3034]: "Interpolation: single thread, ~50 minutes per polynomial."
+                    - listitem [ref=e3035]: "GCD: single thread, ~20 minutes."
+                  - paragraph [ref=e3036]: So the total running time is about 10 hours, which is quite long but still acceptable for a hard crypto challenge. It is still possible to optimize the code further, but I will leave it for future work.
+                - generic [ref=e3037]:
+                  - 'heading "Footnotes #" [level=2] [ref=e3038]':
+                    - text: Footnotes
+                    - link "#" [ref=e3039] [cursor=pointer]:
+                      - /url: "#footnote-label"
+                  - list [ref=e3040]:
+                    - listitem [ref=e3041]:
+                      - paragraph [ref=e3042]:
+                        - text: Please be aware that the real definition of algebraic number is the root of a non-zero polynomial with coefficients over
+                        - strong [ref=e3043]: integers
+                        - text: . But here we use it in finite field and the coefficients are polynomials of
+                        - generic [ref=e3044]:
+                          - math [ref=e3046]:
+                            - generic [ref=e3049]: z
+                          - generic [ref=e3051]: z
+                        - text: .
+                        - link "Back to reference 1" [ref=e3052] [cursor=pointer]:
+                          - /url: "#user-content-fnref-1"
+                          - text: ↩
+                    - listitem [ref=e3053]:
+                      - paragraph [ref=e3054]:
+                        - text: No need to worry if the roots exist in the field, these are just symbols over some unknown extension field.
+                        - link "Back to reference 2" [ref=e3055] [cursor=pointer]:
+                          - /url: "#user-content-fnref-2"
+                          - text: ↩
+                    - listitem [ref=e3056]:
+                      - paragraph [ref=e3057]:
+                        - text: Thanks Neobeo for the implementation in lance-hard?, and check
+                        - link "grhkm’s blog" [ref=e3058] [cursor=pointer]:
+                          - /url: https://codeforces.com/blog/entry/82953
+                        - text: for more details about the algorithm.
+                        - link "Back to reference 3" [ref=e3059] [cursor=pointer]:
+                          - /url: "#user-content-fnref-3"
+                          - text: ↩
+                    - listitem [ref=e3060]:
+                      - paragraph [ref=e3061]:
+                        - text: I was surprised that sage supports
+                        - code [ref=e3062]: load("file.pyx")
+                        - text: ", which will automatically compile the pyx file and load it."
+                        - link "Back to reference 4" [ref=e3063] [cursor=pointer]:
+                          - /url: "#user-content-fnref-4"
+                          - text: ↩
+          - generic [ref=e3064]:
+            - link "Previous Post" [disabled]:
+              - /url: "#"
+            - link "Next Post" [ref=e3065] [cursor=pointer]:
+              - /url: /posts/sekai-ctf-2025-writeup/unfairy-ring/
+              - generic [ref=e3066]:
+                - generic [ref=e3067]: "SekaiCTF 2025 Writeup #2 - unfairy-ring"
+                - img [ref=e3068]
+          - generic [ref=e3073]:
+            - text: © 2026 Sceleri. All Rights Reserved. /
+            - link "RSS" [ref=e3074] [cursor=pointer]:
+              - /url: /rss.xml
+            - text: /
+            - link "Sitemap" [ref=e3075] [cursor=pointer]:
+              - /url: /sitemap-index.xml
+            - text: Powered by
+            - link "Astro" [ref=e3076] [cursor=pointer]:
+              - /url: https://astro.build
+            - text: "&"
+            - link "Fuwari" [ref=e3077] [cursor=pointer]:
+              - /url: https://github.com/saicaca/fuwari
+    - generic:
+      - generic:
+        - button "Back to Top":
+          - img
+  - paragraph [ref=e3078]

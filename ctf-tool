@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+"""
+ctf-tool — Unified CLI for malrang_auto_ctf
+
+Usage:
+  ctf-tool triage <challenge_dir>
+  ctf-tool learn record --challenge-dir <dir> --status success --flag "DH{...}"
+  ctf-tool learn extract-technique --challenge-dir <dir> --name <technique>
+  ctf-tool decide <challenge_dir> [--failure <type>]
+  ctf-tool knowledge search <query> [--top N]
+  ctf-tool knowledge index
+  ctf-tool state get <challenge_dir> <key>
+  ctf-tool state set <challenge_dir> <key> <value>
+  ctf-tool bulk-learn crawl <url> [--max N] [--category CAT]
+  ctf-tool bulk-learn status
+  ctf-tool gen-meta
+  ctf-tool status
+"""
+import os
+import sys
+from pathlib import Path
+
+TOOLS_DIR = Path(__file__).resolve().parent / "tools"
+sys.path.insert(0, str(TOOLS_DIR))
+
+
+def main():
+    if len(sys.argv) < 2:
+        print(__doc__)
+        sys.exit(0)
+
+    cmd = sys.argv[1]
+    rest = sys.argv[2:]
+
+    if cmd == "triage":
+        from triage import main as triage_main
+        sys.argv = ["triage"] + rest
+        triage_main()
+
+    elif cmd == "learn":
+        from learn import main as learn_main
+        sys.argv = ["learn"] + rest
+        learn_main()
+
+    elif cmd == "decide":
+        from decision_tree import main as decide_main
+        sys.argv = ["decision_tree"] + rest
+        decide_main()
+
+    elif cmd == "knowledge":
+        from knowledge import main as kb_main
+        sys.argv = ["knowledge"] + rest
+        kb_main()
+
+    elif cmd == "state":
+        from state import main as state_main
+        sys.argv = ["state"] + rest
+        state_main()
+
+    elif cmd == "bulk-learn":
+        from bulk_learn import main as bl_main
+        sys.argv = ["bulk_learn"] + rest
+        bl_main()
+
+    elif cmd == "gen-meta":
+        from gen_meta import main as gm_main
+        gm_main()
+
+    elif cmd == "status":
+        # Quick project status
+        challenges = Path(__file__).resolve().parent / "challenges"
+        total = sum(1 for d in challenges.iterdir() if d.is_dir())
+        solved = 0
+        for d in challenges.iterdir():
+            meta = d / "meta.yaml"
+            if meta.exists() and "status: solved" in meta.read_text(encoding="utf-8"):
+                solved += 1
+        mem = Path(__file__).resolve().parent / "knowledge" / "CTF_SPEEDRUN_MEMORY.md"
+        import re
+        entries = len(re.findall(r"## Entry \d+", mem.read_text(encoding="utf-8"))) if mem.exists() else 0
+        print(f"Challenges: {total} ({solved} solved)")
+        print(f"Speedrun entries: {entries}")
+        staged = Path(__file__).resolve().parent / "knowledge" / "writeup_staging"
+        if staged.exists():
+            pending = sum(1 for f in staged.glob("*.json"))
+            print(f"Staged writeups: {pending}")
+
+    else:
+        print(f"Unknown command: {cmd}")
+        print(__doc__)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

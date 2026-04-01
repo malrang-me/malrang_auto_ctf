@@ -1,0 +1,5 @@
+[     708ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://play.picoctf.org/api/_allauth/browser/v1/auth/session:0
+[   73170ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://play.picoctf.org/api/challenges/722/feedback/:0
+[  119969ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://play.picoctf.org/api/challenges/718/feedback/:0
+[  170127ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://play.picoctf.org/api/challenges/702/feedback/:0
+[  446352ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://play.picoctf.org/api/challenges/722/feedback/:0

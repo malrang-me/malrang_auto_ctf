@@ -1,0 +1,261 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - banner:
+      - navigation [ref=e6]:
+        - generic [ref=e7]:
+          - list [ref=e8]:
+            - link [ref=e9] [cursor=pointer]:
+              - /url: /
+              - img [ref=e10]
+          - list [ref=e24]:
+            - listitem [ref=e25]:
+              - link "Learn" [ref=e26] [cursor=pointer]:
+                - /url: /lecture
+            - listitem [ref=e27]:
+              - link "Wargame" [ref=e28] [cursor=pointer]:
+                - /url: /wargame
+            - listitem [ref=e29]:
+              - link "CTF" [ref=e30] [cursor=pointer]:
+                - /url: /ctf
+            - listitem [ref=e31]:
+              - link "Community" [ref=e32] [cursor=pointer]:
+                - /url: /forum
+            - listitem [ref=e33]:
+              - link "Ranking" [ref=e34] [cursor=pointer]:
+                - /url: /ranking
+            - listitem [ref=e35]:
+              - link "Store" [ref=e36] [cursor=pointer]:
+                - /url: https://marpple.shop/kr/dreamhack/
+            - listitem [ref=e37]:
+              - link "Subscription" [ref=e38] [cursor=pointer]:
+                - /url: /payments/membership-pricing
+          - list [ref=e39]:
+            - listitem [ref=e40]:
+              - link [ref=e41] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e42]
+            - listitem [ref=e45]:
+              - link [ref=e46] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e48]
+            - listitem [ref=e54]:
+              - link [ref=e55] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e57]
+            - listitem [ref=e60]:
+              - link [ref=e61] [cursor=pointer]:
+                - /url: "#"
+            - generic [ref=e65]: "|"
+            - listitem [ref=e66]:
+              - link "Enterprise" [ref=e67] [cursor=pointer]:
+                - /url: /enterprise/introduction
+    - main [ref=e68]:
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - generic [ref=e73]:
+            - generic [ref=e75]: Description
+            - generic [ref=e76]:
+              - generic [ref=e77]:
+                - paragraph [ref=e78]: RBG sometimes stands for Random Bit Generator. I didn't really like a challenge that was required to guess Dual_EC_DRBG.
+                - paragraph [ref=e79]:
+                  - emphasis [ref=e80]:
+                    - text: 이 문제는
+                    - link "KalmarCTF 2026" [ref=e81] [cursor=pointer]:
+                      - /url: https://github.com/soon-haari/my-ctf-challenges/tree/main/2026-kalmar/rbg%2B%2B%2B
+                    - text: 에 출제되었습니다.
+                - list [ref=e82]:
+                  - listitem [ref=e83]:
+                    - link "Sceleri님의 Writeup" [ref=e84] [cursor=pointer]:
+                      - /url: https://blog.sceleri.cc/posts/kalmar-ctf-2026/
+              - button "Translate" [ref=e85] [cursor=pointer]:
+                - generic [ref=e87]: Translate
+          - generic [ref=e88]:
+            - button "Download" [ref=e89] [cursor=pointer]:
+              - generic [ref=e90]:
+                - img [ref=e91]
+                - generic [ref=e93]: Download
+            - alert [ref=e255]:
+              - generic [ref=e257]:
+                - generic [ref=e258]:
+                  - img [ref=e260]
+                  - text: Safety Notice
+                - generic [ref=e263]: This attachment may include potentially malicious code. For your safety, please make sure to open or run it only in an isolated environment, such as a virtual machine. Any consequences resulting from executing this file are the sole responsibility of the user.
+            - alert [ref=e264]:
+              - generic [ref=e265]:
+                - text: Download will begin shortly. If you need a download link, please click the button.
+                - button "Copy Link" [ref=e266] [cursor=pointer]:
+                  - generic [ref=e267]:
+                    - img [ref=e269]
+                    - text: Copy Link
+          - generic [ref=e94]:
+            - generic [ref=e95]:
+              - img [ref=e96]
+              - text: Submit Flag
+            - generic [ref=e98]:
+              - textbox "Submit Flag" [ref=e99]:
+                - /placeholder: Enter the flag according to the format
+              - button "Submit" [ref=e100] [cursor=pointer]
+          - generic [ref=e101]:
+            - generic [ref=e102]:
+              - generic [ref=e103]:
+                - text: Writeups
+                - generic [ref=e104]: "0"
+              - generic [ref=e105]:
+                - button [ref=e106] [cursor=pointer]:
+                  - img [ref=e108]
+                - button [ref=e112] [cursor=pointer]:
+                  - button [ref=e113]:
+                    - img [ref=e115]
+            - generic [ref=e117]: There are no writeups to the challenge yet.
+          - generic [ref=e118]:
+            - generic [ref=e119]:
+              - text: Difficulty votes
+              - generic [ref=e120]: "0"
+            - generic [ref=e121]: You can submit feedback after you solve the challenge.
+            - generic [ref=e122]: There are no feedbacks on the challenge yet.
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - text: Questions
+              - generic [ref=e125]: "0"
+            - generic [ref=e126]:
+              - generic [ref=e127]: Need help? Ask your question and get hints!
+              - link "Ask Questions" [ref=e128] [cursor=pointer]:
+                - /url: /forum/qna/new?challenge=2824
+                - text: Ask Questions
+                - img [ref=e129]
+            - generic [ref=e131]: There are no questions about the challenge yet.
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - img [ref=e135]
+              - generic [ref=e136]: LEVEL 10
+            - heading "RBG+++" [level=1] [ref=e137]
+            - generic [ref=e139]: crypto
+            - generic [ref=e140]:
+              - generic [ref=e141]:
+                - img [ref=e142]
+                - text: "125"
+              - generic [ref=e143]:
+                - img [ref=e144]
+                - text: "0"
+              - generic [ref=e146]:
+                - img [ref=e147]
+                - generic [ref=e148]: 2026.03.31. 17:32:12
+          - generic [ref=e149]:
+            - heading "Author" [level=2] [ref=e150]
+            - generic [ref=e152]:
+              - generic:
+                - generic:
+                  - img "avatar"
+              - generic [ref=e153]:
+                - link "soon_haari" [ref=e154] [cursor=pointer]:
+                  - /url: /users/18801
+                  - generic [ref=e155]: soon_haari
+                - generic [ref=e157]: There are no bios yet.
+          - generic [ref=e158]:
+            - generic [ref=e159]:
+              - img [ref=e161]
+              - generic [ref=e163]: First Blood!
+            - generic [ref=e165]: No one has solved yet.
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - generic [ref=e169]: Recent Solvers
+              - generic [ref=e171]:
+                - checkbox "Following" [ref=e172]
+                - generic [ref=e173]: Following
+            - generic [ref=e174]: There are no solvers yet.
+          - generic [ref=e175]:
+            - generic [ref=e176]: Comments
+            - generic [ref=e177]:
+              - textbox "Write your comment" [ref=e178]
+              - generic [ref=e179]:
+                - generic [ref=e180]: 0/500
+                - button "Post" [disabled] [ref=e182]:
+                  - img [ref=e183]
+                  - text: Post
+            - generic [ref=e185]: There are no comments on the challenge yet.
+    - contentinfo [ref=e188]:
+      - generic [ref=e189]:
+        - generic [ref=e190]:
+          - generic [ref=e191]:
+            - generic [ref=e192]: All
+            - generic [ref=e193]:
+              - link "Notices" [ref=e194] [cursor=pointer]:
+                - /url: /board/notice
+              - link "FAQs" [ref=e195] [cursor=pointer]:
+                - /url: /services/faq
+              - link "Contact Support" [ref=e196] [cursor=pointer]:
+                - /url: /myaccount/contact
+              - link "Terms of Service" [ref=e197] [cursor=pointer]:
+                - /url: /services/tos
+              - link "Privacy Policy" [ref=e198] [cursor=pointer]:
+                - /url: /services/privacy
+          - generic [ref=e199]:
+            - generic [ref=e200]: Learn
+            - generic [ref=e201]:
+              - link "All Paths" [ref=e202] [cursor=pointer]:
+                - /url: /lecture?type=path
+              - link "All Units" [ref=e203] [cursor=pointer]:
+                - /url: /lecture?type=unit
+          - generic [ref=e204]:
+            - generic [ref=e205]: Wargame
+            - generic [ref=e206]:
+              - link "All Challenges" [ref=e207] [cursor=pointer]:
+                - /url: /wargame
+              - link "Submit a Challenge" [ref=e208] [cursor=pointer]:
+                - /url: /wargame/challenges/new
+          - generic [ref=e209]:
+            - generic [ref=e210]: CTF
+            - link "All CTFs" [ref=e212] [cursor=pointer]:
+              - /url: /ctf/all
+          - generic [ref=e213]:
+            - generic [ref=e214]: Community
+            - generic [ref=e215]:
+              - link "Free Board" [ref=e216] [cursor=pointer]:
+                - /url: /forum/community/free-lounge/
+              - link "Job & Career" [ref=e217] [cursor=pointer]:
+                - /url: /forum/community/careers/
+              - link "Info & Tech" [ref=e218] [cursor=pointer]:
+                - /url: /forum/community/information/
+              - link "Study & Team" [ref=e219] [cursor=pointer]:
+                - /url: /forum/community/study/
+              - link "CTFs & Events" [ref=e220] [cursor=pointer]:
+                - /url: /forum/community/promotion/
+          - generic [ref=e221]:
+            - generic [ref=e222]: Ranking
+            - generic [ref=e223]:
+              - link "CTF" [ref=e224] [cursor=pointer]:
+                - /url: /ranking/ctf
+              - link "Wargame" [ref=e225] [cursor=pointer]:
+                - /url: /ranking/wargame
+              - link "Community" [ref=e226] [cursor=pointer]:
+                - /url: /ranking/community
+        - separator [ref=e227]
+        - generic [ref=e228]:
+          - generic [ref=e229]:
+            - img [ref=e230]
+            - generic [ref=e231]:
+              - link [ref=e232] [cursor=pointer]:
+                - /url: https://x.com/dreamhack_io
+                - img [ref=e234]
+              - link [ref=e236] [cursor=pointer]:
+                - /url: https://www.instagram.com/dreamhack_io/
+                - img [ref=e238]
+              - link [ref=e240] [cursor=pointer]:
+                - /url: https://www.facebook.com/dreamhack.io/
+                - img [ref=e242]
+              - link [ref=e244] [cursor=pointer]:
+                - /url: https://discord.gg/dreamhackio
+                - img [ref=e246]
+          - generic [ref=e248]:
+            - generic [ref=e249]:
+              - generic [ref=e250]: Theori Korea Co., Ltd.
+              - generic [ref=e251]: Copyright © 2019 - 2026 Theori Inc. All rights reserved.
+            - generic [ref=e252]:
+              - text: "Business Registration Number: 263-81-00731 | CEO: PAK BRIAN SEJOON |"
+              - generic [ref=e253]:
+                - text: "Business Number:"
+                - link "제2021-서울강남-05520호" [ref=e254] [cursor=pointer]:
+                  - /url: https://www.ftc.go.kr/bizCommPop.do?wrkr_no=2638100731
+              - text: "9F B1F, 14, Teheran-ro 4-gil, Gangnam-gu, Seoul, Republic of Korea | Email: dreamhack@dreamhack.io | Contact: 070-8864-1337"
+  - img

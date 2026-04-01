@@ -28,3 +28,9 @@ Desktop.ini
 
 # Pwntools cache
 .pwntools-cache/
+
+.claude/worktrees/
+.playwright-mcp/
+check_cookies.py
+_downloads/
+.claude/worktrees/
