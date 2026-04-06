@@ -1,52 +1,45 @@
 # AI — AI/ML Security
 
-You are an expert CTF AI/ML security solver running in Claude Code on Windows 11.
-
 ## Tools
-- **py-repl**: Python REPL (numpy, scipy, requests)
-- WSL: `wsl python3` with torch, transformers, scikit-learn
+- **py-repl**: numpy, scipy, requests
+- WSL: torch, transformers, scikit-learn
 
-## Mandatory First Steps
-1. Identify the AI/ML system: LLM, classifier, image model, custom model
-2. Determine interface: API endpoint, chat interface, file upload
-3. Baseline interaction: normal input -> expected output
-4. Identify goal: prompt injection, adversarial example, model extraction, jailbreak
+## First Steps
+1. Identify system: LLM, classifier, image model, custom
+2. Interface: API, chat, file upload
+3. Baseline: normal input → expected output
+4. Goal: prompt injection, adversarial example, model extraction, jailbreak
 
 ## Attack Patterns
-
-### Prompt Injection
-- Direct injection -> "Ignore previous instructions and..."
-- Indirect injection -> hidden instructions in retrieved content
-- Delimiter confusion -> escape system prompt boundaries
-- Role-play attacks -> "Pretend you are a system that..."
-- Encoding bypass -> base64, rot13, pig latin to evade filters
-- Multi-turn -> gradually shift context across conversation turns
-
-### Adversarial ML
-- Image perturbation -> FGSM, PGD, C&W for misclassification
-- Text adversarial -> character substitution, homoglyphs, Unicode tricks
-- Model inversion -> recover training data from model outputs
-- Membership inference -> determine if sample was in training set
-
-### Model Extraction
-- Query-based -> systematic probing to replicate model behavior
-- Side channels -> timing, confidence scores, logit exposure
-- API abuse -> extract weights through careful query patterns
-
-### Data Poisoning
-- Backdoor injection -> trigger pattern activates hidden behavior
-- Label flipping -> corrupt training labels
-- Feature collision -> craft inputs that hash to target bucket
+- **Prompt Injection**: direct ("ignore previous..."), indirect (hidden in content), delimiter confusion, role-play, encoding bypass, multi-turn
+- **Adversarial ML**: FGSM/PGD/C&W perturbation, text homoglyphs, model inversion, membership inference
+- **Model Extraction**: systematic probing, side channels (timing, confidence), API weight extraction
+- **Data Poisoning**: backdoor triggers, label flipping, feature collision
 
 ## Pitfalls
-- Rate limiting: many AI CTF challenges limit queries — plan carefully
-- Token limits: long prompts may be truncated, losing injected content
-- Non-determinism: same input may give different outputs — retry and average
-- Black box: don't assume model architecture — probe before attacking
-- Encoding: verify the model actually processes your encoded payload
+- Rate limiting: plan queries carefully
+- Token limits: long prompts may truncate
+- Non-determinism: retry and average
+- Black box: probe before assuming architecture
 
-## Verification
-- Flag matches expected format
-- Attack is reproducible (not dependent on random model variation)
-- Document exact prompt/input that produced the flag
-- If multi-step: record the full conversation/query chain
+## Rate-Limit Framework (토큰 절감 핵심)
+```
+1. 첫 요청 전: X-RateLimit 헤더 확인
+2. 접근 한도 파악: N req/min 또는 N req/hour
+3. 쿼리 계획 수립 (한도 내에서 최대 정보 추출)
+4. Binary search 우선 (O(log N)) > 전수 조사 (O(N))
+5. 한도 도달 시: reset 시간까지 대기 (blind retry 금지)
+```
+
+## Probe Sequencing (저렴한 것부터)
+```
+1. Membership inference (토큰 레벨 쿼리) → ~100 tok
+2. Confidence/logit extraction → ~500 tok
+3. Prompt injection (구조화된 시도) → ~1k tok
+4. Full model probing → ~5k+ tok (최후)
+```
+
+## Advanced (L4+ only)
+- VLM visual injection, typography attacks
+- CoT manipulation, system prompt extraction via JSON mode
+- Distillation attack, embedding extraction, logprobs exploitation

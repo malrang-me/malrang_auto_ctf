@@ -1,98 +1,65 @@
-# CTF Pipeline — Automatic Selection & Execution
+# CTF Pipeline — Selection & Execution
 
-## Pipeline Selection (MANDATORY)
-
+## Pipeline Selection
 ```
-if trivial (source provided, logic bug visible in 1-3 lines, one-liner exploit):
-    ctf-solver 1-agent (model=sonnet) → reporter
-elif type == "pwn" and vuln clear:
-    reverser → chain → critic → verifier → reporter  (5-agent)
-elif type == "pwn" and vuln unclear:
-    reverser → trigger → chain → critic → verifier → reporter  (6-agent)
-elif type == "crypto":
-    reverser → solver → critic → verifier → reporter  (5-agent)
-elif type == "reversing":
-    reverser → solver → critic → verifier → reporter  (5-agent)
-elif type == "web":
-    scout → analyst → exploiter → reporter  (4-agent)
-elif type == "web3":
-    reverser → solver → critic → verifier → reporter  (5-agent)
+trivial (1-3 line bug):     ctf-solver → [orch: report]                         (1-agent)
+crypto (easy RSA):          crypto_prescreen → [성공] verifier → [orch: report]  (1-2 agent)
+crypto (easy, 기타):         reverser → crypto-solver → verifier → [orch: report] (3-agent)
+crypto (medium/hard):        reverser → crypto-solver → critic → verifier → reporter (5-agent)
+rev (easy/medium):           reverser → solver → verifier → [orch: report]       (3-agent)
+rev (hard):                  reverser → solver → critic → verifier → reporter    (5-agent)
+pwn (vuln clear):            reverser → chain → critic → verifier → [orch: report] (4-agent)
+pwn (vuln unclear):          reverser → trigger → chain → critic → verifier      (6-agent)
+web (trivial vuln):          scout → ctf-solver → [orch: report]                 (2-agent)
+web (complex):               scout → analyst → exploiter → [orch: report]        (3-agent)
+web3:                        reverser → solver → critic → verifier → reporter    (5-agent)
+forensics (complex):         ctf-solver (recon → analyze → extract) → [orch: report] (1-agent)
 ```
+**[orch: report]** = 오케스트레이터가 직접 처리 (FLAGS.txt + learn.py + 간소화 보고서). reporter 에이전트 스폰 안 함.
+**reporter 에이전트** = hard 난이도 + 상세 모델/Effort 분석 필요 시에만 스폰. 그 외에는 ~20k 토큰 절감.
+**crypto prescreen**: RSA easy 문제는 `python tools/crypto_prescreen.py` 먼저 실행.
+**crypto-solver**: crypto 전용 에이전트 (`subagent_type="crypto-solver"`). SageMath + lattice + oracle.
+**web fast-path**: scout가 `TRIVIAL: true` 판정 시 analyst/exploiter 생략.
+Never use full 6-agent unconditionally. Unnecessary agents = token waste.
 
-**Never use full 6-agent pipeline unconditionally.** Unnecessary agents = token waste.
+## Agent Models (MANDATORY — no spawn without model)
+| Agent | Model | Agent | Model |
+|-------|-------|-------|-------|
+| reverser | sonnet / **opus**(hard) | scout | sonnet |
+| solver | opus | analyst | sonnet |
+| **crypto-solver** | **opus** | exploiter | opus |
+| chain | opus | reporter | sonnet |
+| trigger | sonnet | ctf-solver | sonnet |
+| critic | opus | verifier | sonnet |
 
-## Structured Handoff Protocol
+## 동적 모델 선택
+triage.py `difficulty` 결과 기준:
+- `easy/medium` → reverser=sonnet
+- `hard` → reverser=opus (Agent 스폰 시 `model: "opus"` 오버라이드)
+오케스트레이터가 판단. 에이전트 .md의 기본 model은 sonnet이지만 스폰 시 오버라이드 가능.
 
-All agent-to-agent transitions MUST use this format:
-
+## Contest Mode Pipeline (속도 최우선)
 ```
-[HANDOFF from @<agent> to @<next_agent>]
-- Finding/Artifact: <filename>
-- Confidence: PASS / PARTIAL / FAIL
-- Key Result: <1-2 sentence core result>
-- Next Action: <specific task for next agent>
-- Blockers: <if any, else "None">
+trivial:        ctf-solver → flag 기록                              (1-agent)
+crypto (easy):  crypto_prescreen → [실패시] crypto-solver → verifier (1-2 agent)
+crypto (hard):  reverser → crypto-solver (즉시 병렬) → verifier      (2-3 agent)
+rev:            reverser → solver (즉시 병렬) → verifier             (2-3 agent)
+pwn:            reverser → chain (즉시 병렬) → verifier              (2-3 agent)
+web:            scout → exploiter (analyst 스킵)                     (2 agent)
 ```
-
-## Context Positioning (Lost-in-Middle Prevention)
-
-```
-[Lines 1-2] Critical Facts — key addresses, offsets, vuln type, FLAG conditions
-[Lines 3-5] Remote info — host:port, platform, interaction limit
-[Middle]    Agent definition (auto-loaded from .claude/agents/)
-[End]       HANDOFF detail (full context, previous failure history)
-```
-
-## Agent Model Assignment (MANDATORY)
-
-| Agent | Model | Reason |
-|-------|-------|--------|
-| reverser | sonnet | Structure analysis, pattern matching |
-| solver | opus | Complex inverse computation, lattice |
-| chain | opus | Multi-stage exploit design |
-| trigger | opus | Crash discovery requires creative fuzzing |
-| critic | opus | Cross-verification, logic error detection |
-| verifier | sonnet | Execution + verification |
-| reporter | sonnet | Documentation |
-| scout | sonnet | Web recon, CWE checklist |
-| analyst | opus | Vuln confirmation requires reasoning |
-| exploiter | opus | Exploit chain execution |
-| ctf-solver | sonnet | Trivial single-agent solve |
+- critic: easy/medium 스킵. hard만 실행.
+- reporter: 대회 후 일괄. 풀이 중에는 FLAGS.txt + learn.py만.
+- effort: 난이도별 (easy=medium, medium=high, hard=max). practice와 동일.
+- dual approach: **1회 실패 시 즉시** 병렬.
 
 ## Failure Protocol
-
-- **2 consecutive failures → Dual-Approach**: spawn 2 solver/chain agents with different strategies in parallel. First success wins.
-- **4 failures → WebSearch**: mandatory external writeup search.
-- **Same failure signature 3x → Stall Mode**: stop current approach, re-examine assumptions, switch chain.
-
-## Dual-Approach Auto-Trigger
-
-When solver/chain fails 2x consecutively:
-```
-Orchestrator spawns 2 agents simultaneously:
-  solver-A (approach A: z3/formal) + solver-B (approach B: lattice/sage/brute)
-  First success adopted, other terminated.
-```
-
-## Fake Flag Protection
-
-- Local flag files are ALWAYS fake. Only `remote(host, port)` yields real flags.
-- Orchestrator MUST run solve.py directly to verify any FLAG_FOUND claim.
+- **2 consecutive failures → Dual-Approach**: 2 solver agents with different strategies, first success wins
+- **3 failures (same L3) → midsolve_search.py**: offline kb.db first (cisa_kev/exploitdb/HackTricks/PayloadsAllTheThings), `--web` only if 0 hits. 4 calls/challenge cap. 직접 WebSearch 금지 — `rules/common.md` 참조.
+- **3× same signature → Stall Mode**: stop, re-examine assumptions, switch chain
 
 ## Checkpoint Protocol
+All agents maintain `<challenge_dir>/checkpoint.json`. See `rules/common.md`.
 
-All work agents must maintain `<challenge_dir>/checkpoint.json`:
-```json
-{
-  "agent": "solver",
-  "status": "in_progress|completed|error",
-  "phase": 2,
-  "phase_name": "constraint_modeling",
-  "completed": ["recon", "structure_analysis"],
-  "in_progress": "z3_formulation",
-  "critical_facts": {"n_bits": 1024, "vuln": "phi_leaked"},
-  "expected_artifacts": ["solve.py"],
-  "produced_artifacts": [],
-  "timestamp": "2026-03-29T12:00:00"
-}
-```
+## Fake Flag Protection
+Local flag files are ALWAYS fake. Only `remote(host, port)` yields real flags.
+Orchestrator MUST run solve.py directly to verify FLAG_FOUND claims.

@@ -1,0 +1,15 @@
+name: Chatbot
+category: pwn
+platform: dreamhack
+url: https://dreamhack.io/wargame/challenges/545
+level: 5
+difficulty: hard
+remote:
+  host: host3.dreamhack.games
+  port: 17284
+files:
+  - deploy/chatbot_server
+  - deploy/chatbot_server.c
+  - deploy/chatbot_client
+  - deploy/chatbot_client.c
+flag_format: DH{...}

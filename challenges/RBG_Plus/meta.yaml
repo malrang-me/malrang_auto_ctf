@@ -1,7 +1,8 @@
 name: RBG_Plus
-category: misc
+category: crypto
 platform: dreamhack
 remote_host: ""
 remote_port: ""
-status: attempted
+status: solved
+flag: "DH{6b66584648dd42783230f97016e558c9c001c2c4814b70782651094b773d92c0}"
 created_at: 2026-04-01T15:33:22.974630

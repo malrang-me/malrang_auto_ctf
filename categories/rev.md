@@ -1,62 +1,89 @@
 # REV — Reverse Engineering
 
-You are an expert CTF reverse engineering solver running in Claude Code on Windows 11.
-
 ## MCP Tools
-- **pwn-local**: readelf, objdump disassembly, checksec
-- **ida-pro-mcp**: IDA Pro remote analysis (when IDA is running on 127.0.0.1:13337)
-- **solver-z3**: Z3 SMT solver for constraint extraction
-- **solver-pysat**: SAT solver for boolean constraint systems
-- **sage-helper**: symbolic math for algebraic constraints
-- **py-repl**: Python REPL for scripting
-- WSL: `wsl gdb`, `wsl ltrace`, `wsl strace`, `wsl strings`, `wsl objdump`
+- **pwn-local**: readelf, objdump, checksec | **solver-z3**: constraints | **solver-pysat**: boolean SAT
+- **sage-helper**: algebraic constraints | **py-repl**: scripting
+- WSL: gdb, ltrace, strace, strings, objdump
 
 ## Mandatory First Steps
-1. `file` on the binary — architecture, linking, stripped?
-2. `checksec` — protections (relevant if also pwn)
-3. `readelf -h -l -S` — segments, sections, entry point
-4. `strings` — flag format hints, interesting strings, library references
-5. `objdump -d` or IDA — locate main, input handling, validation routine
-6. One dynamic trace: run with sample input, observe behavior
+1. `file` → arch, linking, stripped?
+2. `checksec` → protections
+3. `readelf -h -l -S` → segments, entry
+4. `strings | grep -iE 'flag|DH\{|password|correct|wrong'` (filtered!)
+5. Decompile key functions (Ghidra → objdump fallback)
+6. Dynamic trace with sample input
 
 ## Attack Patterns
 
-### Static Analysis
-- Control flow recovery -> identify validation function, trace input path
-- Constraint extraction -> convert validation checks to Z3/SAT constraints
-- Constant extraction -> XOR keys, S-boxes, lookup tables
-- Anti-debug detection -> ptrace checks, timing checks, self-modifying code
-- Obfuscation -> virtualization (custom VM), control flow flattening, opaque predicates
+### Static
+- Control flow → validation function, input path
+- Constraint extraction → Z3/SAT model
+- Constants → XOR keys, S-boxes, lookup tables
+- Anti-debug → ptrace, timing, self-modifying code
 
-### Dynamic Analysis
-- GDB breakpoints -> break at comparison instructions, examine registers
-- ltrace/strace -> library call tracing for crypto/string operations
-- Pin/DynamoRIO -> instruction-level tracing for coverage
-- Patch-and-run -> NOP out anti-debug checks, force branches
+### Dynamic
+- GDB breakpoints at comparisons
+- ltrace/strace for library calls
+- Patch-and-run: NOP anti-debug, force branches
 
 ### Constraint Solving
-- Z3 model -> one BitVec per input byte, add constraints from validation
-- Angr -> symbolic execution with state exploration
-- SAT reduction -> boolean circuits to CNF clauses
-- Custom VM -> extract opcode table, build constraint system from bytecode
+- Z3: one BitVec per input byte + constraints from validation
+- Angr: symbolic execution with state exploration
+- SAT: boolean circuits to CNF
+- Custom VM: opcode table → constraint system
 
-### Common Patterns
-- XOR cipher -> find key from known plaintext (flag format prefix)
-- Custom encryption -> identify algorithm, extract key/IV, decrypt
-- Flag checker -> constraint system on input characters
-- Maze/game -> BFS/DFS on state space, pathfinding
-- Packing -> UPX (upx -d), custom packers (dump from memory after unpack)
+## Token-Efficient Tool Chain (IDA급 절감 도구)
+```bash
+# uncompyle6: dis 바이트코드 수백줄 → Python 소스 복원 (83% 절감)
+wsl uncompyle6 file.pyc > source.py  # 소스 있으면 Z3도 필요 없을 수 있음
+
+# IDA MCP: objdump 5000줄 → decompile 200줄 (97% 절감)
+# angr: 수동 constraint 추출 → 자동 symbolic execution
+wsl python3 templates/angr_solve.py <binary> <find_addr> <avoid_addr>
+```
+
+## Tool Routing
+| Task | Primary | Fallback |
+|------|---------|----------|
+| Decompile (ELF/PE) | `tools/ida_headless.py full` (1회 덤프) | `ghidra_decompile.py` |
+| Metadata dump (ELF/PE) | `tools/ida_headless.py metadata` | `readelf` + `objdump` |
+| Interactive patch | `tools/ida_headless.py patch --script X` | IDA MCP `py_eval` (예외적) |
+| Post-dump 조회 | `Read decompiled/<func>.c`, `Grep <pat> decompiled/` | — |
+| Decompile (bytecode) | `tools/decompile_bytecode.py decompile` | 개별 도구 직접 호출 |
+| Decompile (Python) | `uncompyle6` (소스 복원) | `pycdc` / `python -m dis` |
+| Decompile (Java) | `jadx` | `procyon` / `javap -c -p` |
+| Constraint solve | solver-z3 MCP | solver-pysat MCP |
+| Anti-debug detect | `tools/gdb_auto.py detect` | `strings \| grep ptrace` |
+| Anti-debug bypass | `tools/gdb_auto.py bypass` / `patch` | GDB `set $rax=0` |
+| Custom VM solve | `templates/vm_solver.py` (backward/z3/brute) | manual |
+| Side-channel | `perf stat -e instructions:u` | timing |
+
+**IDA MCP vs headless**: 일반 분석은 headless. MCP는 런타임 인터랙티브 작업(복잡한 xref 체인, 라이브 패치)에만 제한적으로 사용. 일반 `decompile`/`list_funcs`/`imports` MCP 호출은 금지(중복).
+
+## Decision Tree Triggers
+```bash
+python tools/decision_tree.py next --agent rev --trigger solver_fallback
+python tools/decision_tree.py next --agent rev --trigger custom_vm
+python tools/decision_tree.py next --agent rev --trigger z3_unsat
+python tools/decision_tree.py next --agent rev --trigger anti_debug
+```
+
+## Templates
+- `templates/angr_solve.py` — symbolic execution + explosion prevention (DFS/veritesting/loop bound)
+- `templates/vm_solver.py` — custom VM opcode solver (backward/z3/brute)
+- `templates/z3_debug.py` — Z3 UNSAT diagnosis (constraint grouping, incremental test, oracle)
+- `templates/interactive_rev.py` — multi-round TCP + solve
+- `templates/gdb_auto_analyze.py` — auto cmp breakpoints (legacy, use tools/gdb_auto.py)
 
 ## Pitfalls
-- Don't guess flag characters — use Z3/SAT for systematic solving
-- Z3 model completeness: ensure ALL constraints are captured, not just the obvious ones
-- Angr memory: limit exploration with `avoid` addresses, not just `find`
-- Anti-debug: check for ptrace, time-based, or self-integrity checks before dynamic analysis
-- Stripped binaries: use function signatures (FLIRT) or cross-reference from strings
-- IDA MCP may not be available — always have objdump/strings fallback ready
+- Z3 model completeness: capture ALL constraints
+- Angr: limit with `avoid` addresses + `angr.options.LAZY_SOLVES`
+- Anti-debug: **`tools/gdb_auto.py detect`** 먼저 실행 → bypass 후 분���
+- Stripped: use FLIRT signatures or string cross-refs
+- Custom VM: opcode map 불완전하면 풀이 실패 → IDA에서 모든 case 확인
+- 난독화 참조: `knowledge/techniques/obfuscation_patterns.md`
 
-## Verification
-- Flag matches expected format
-- Input satisfies ALL validation checks when re-run through the original binary
-- Solution found by solver, not guessed
-- If dynamic: replay the exact input to confirm output
+## Advanced (L4+ only)
+- JIT/V8 TurboFan type confusion
+- Firmware: binwalk + base address detection
+- Side-channel: instruction counting oracle

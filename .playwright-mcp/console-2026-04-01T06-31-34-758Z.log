@@ -1,3 +1,0 @@
-[     584ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ https://dreamhack.io/users/login?after=%2Fwargame%2Fchallenges%2F2822:0
-[   82699ms] [WARNING] [BootstrapVue warn]: popover - Unable to find target element by ID "#recover-button" in document. @ https://static.dreamhack.io/main/v2/js/7438ebb.js:1
-[   83877ms] [WARNING] [BootstrapVue warn]: popover - Unable to find target element by ID "#recover-button" in document. @ https://static.dreamhack.io/main/v2/js/7438ebb.js:1

@@ -1,2 +1,0 @@
-[    1734ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://play.picoctf.org/api/challenges/?page_size=12&difficulty=2&category=2&page=1:0
-[    1765ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://play.picoctf.org/api/_allauth/browser/v1/auth/session:0

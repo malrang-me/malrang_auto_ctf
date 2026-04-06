@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(*)",
       "mcp__filesystem__*",
@@ -12,42 +11,11 @@
       "mcp__sage-helper__*",
       "mcp__github__*",
       "WebSearch(*)",
-      "WebFetch(*)"
-    ]
-  },
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/post_solve_learn.sh",
-            "timeout": 30
-          }
-        ]
-      }
+      "WebFetch(*)",
+      "Skill(progress)",
+      "Skill(progress:*)"
     ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/check_completion.sh",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/post_solve_learn.sh",
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/validate_handoff.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
+    "defaultMode": "bypassPermissions"
   },
   "enabledMcpjsonServers": [
     "docker",
@@ -61,5 +29,39 @@
     "solver-pysat",
     "sage-helper",
     "solver-cryptominisat"
-  ]
+  ],
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo C:/Users/malrangme/Desktop/malrang_auto_ctf) && bash \"$ROOT/.claude/hooks/post_solve_learn.sh\"'",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo C:/Users/malrangme/Desktop/malrang_auto_ctf) && bash \"$ROOT/.claude/hooks/check_completion.sh\"'",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo C:/Users/malrangme/Desktop/malrang_auto_ctf) && bash \"$ROOT/.claude/hooks/post_solve_learn.sh\"'",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo C:/Users/malrangme/Desktop/malrang_auto_ctf) && bash \"$ROOT/.claude/hooks/validate_handoff.sh\"'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
 }

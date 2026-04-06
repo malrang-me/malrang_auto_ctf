@@ -1,0 +1,11 @@
+name: basic_login
+category: rev
+difficulty: medium
+platform: dreamhack
+url: https://dreamhack.io/wargame/challenges/2768
+remote:
+  host: host8.dreamhack.games
+  port: 8679
+description: "올바른 라이센스 키를 입력하여 flag를 획득하세요. Name과 Email 입력 필요."
+binary: prob
+flag_format: "DH{...}"

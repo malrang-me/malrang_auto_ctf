@@ -1,58 +1,36 @@
 # WEB3 — Blockchain / Smart Contracts
 
-You are an expert CTF blockchain solver running in Claude Code on Windows 11.
-
 ## Tools
-- **py-repl**: Python REPL with web3.py, eth_abi
-- **solver-z3**: constraint solving for math-heavy contracts
-- WSL: `wsl forge`, `wsl cast`, `wsl anvil` (Foundry suite)
+- **py-repl**: web3.py, eth_abi | **solver-z3**: math-heavy contracts
+- WSL: forge, cast, anvil (Foundry suite)
 
-## Mandatory First Steps
-1. Identify chain parameters: chainId, RPC endpoint, block number
-2. Read all contract source code — map inheritance, modifiers, state variables
-3. Identify access control: owner, roles, modifiers
-4. Map state transitions: what functions change what storage slots
-5. Deploy test environment: `anvil --fork-url <rpc>` for local testing
+## First Steps
+1. Chain params: chainId, RPC, block number
+2. Read ALL contract source → map inheritance, modifiers, state
+3. Identify access control
+4. Map state transitions
+5. Deploy test: `anvil --fork-url <rpc>`
 
 ## Attack Patterns
-
-### Access Control
-- Missing modifier -> public function that should be restricted
-- tx.origin vs msg.sender -> phishing via intermediate contract
-- Delegatecall context -> storage collision with proxy pattern
-- Initializer not protected -> re-initialize to become owner
-
-### Reentrancy
-- Classic reentrancy -> external call before state update
-- Cross-function -> shared state across multiple functions
-- Read-only reentrancy -> view function returns stale state during callback
-
-### Math / Logic
-- Integer overflow/underflow -> pre-0.8.0 Solidity (no built-in checks)
-- Precision loss -> division before multiplication in token math
-- Flash loan -> borrow unlimited funds within single transaction
-- Price oracle manipulation -> TWAP vs spot price, sandwich attack
-
-### Storage
-- Storage collision -> proxy + implementation have different layouts
-- Uninitialized storage pointer -> points to slot 0 (old Solidity)
-- Private != secret -> all storage readable via eth_getStorageAt
-
-### Misc
-- Blockhash randomness -> predictable within same block
-- Selfdestruct -> force ETH to contract, bypass balance checks
-- Signature replay -> missing nonce or chainId in signed message
-- Frontrunning -> mempool observation, sandwich attacks
+- **Access Control**: missing modifier, tx.origin, delegatecall storage collision, unprotected initializer
+- **Reentrancy**: classic (external call before state update), cross-function, read-only
+- **Math**: overflow/underflow (<0.8.0), precision loss, flash loan, oracle manipulation
+- **Storage**: collision (proxy), uninitialized pointer, private != secret (eth_getStorageAt)
+- **Misc**: blockhash randomness, selfdestruct force ETH, signature replay, frontrunning
 
 ## Pitfalls
-- Always fork mainnet state for testing — don't guess contract state
-- Check Solidity version: <0.8.0 has no overflow protection
-- Storage layout: count slots carefully, including dynamic arrays and mappings
-- Gas: some exploits need precise gas estimation — use forge test with -vvvv
-- Don't submit transactions to mainnet without testing on fork first
+- Fork mainnet for testing — don't guess state
+- Solidity <0.8.0: no overflow protection
+- Storage layout: count slots carefully (dynamic arrays, mappings)
+- Gas: `forge test -v` (single v). **`-vvvv` 금지** (5만 토큰 낭비)
 
-## Verification
-- Flag/success event emitted on actual target chain
-- Transaction hash recorded
-- Exploit reproducible on forked state
-- State diff matches expected outcome
+## Token-Saving Rules
+- **contract source**: solver 프롬프트에 전체 넣지 말 것. 취약 함수만 reversal_map.md에.
+- **forge test**: `-v` 최대. `-vvvv` = 20-50k 토큰 낭비 → 금지.
+- **cast call**: 결과를 `| jq '.result'`로 필터. raw 금지.
+- **ABI**: 필요한 함수 시그니처만. 전체 ABI dump 금지.
+
+## Advanced (L4+ only)
+- L2/rollup: challenge period, message replay, sequencer MEV
+- Proxy: UUPS upgradeTo, diamond facet routing, EIP-1167 confusion
+- DeFi: flash loan + oracle, governance attack, ERC-4626 vault inflation

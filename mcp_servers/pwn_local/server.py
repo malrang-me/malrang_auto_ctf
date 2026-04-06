@@ -83,12 +83,35 @@ def pwn_objdump(binary_path: str, pattern: str = "") -> str:
         return f"binary not found: {b}"
 
     out = _run(["objdump", "-d", "-M", "intel", str(b)], cwd=b.parent, timeout=60)
-    if not pattern:
-        return out
 
     lines = out.splitlines()
-    filtered = [ln for ln in lines if pattern.lower() in ln.lower()]
-    return "\n".join(filtered) if filtered else f"no match for pattern: {pattern}"
+
+    if pattern:
+        filtered = [ln for ln in lines if pattern.lower() in ln.lower()]
+        return "\n".join(filtered) if filtered else f"no match for pattern: {pattern}"
+
+    # Auto-truncate: if output > 500 lines, keep function headers + key sections
+    MAX_LINES = 500
+    if len(lines) > MAX_LINES:
+        head = lines[:80]  # headers + early functions
+        # Extract all function entry points
+        func_lines = [ln for ln in lines if ln.strip().endswith(">:")]
+        # Extract cmp/call/jmp instructions (most useful for RE)
+        key_insns = [ln for ln in lines
+                     if any(k in ln.lower() for k in ("call ", "cmp ", "test ", "jmp ", "je ", "jne ", "jle ", "jge "))]
+        tail = lines[-30:]
+
+        truncated = head
+        truncated.append(f"\n[--- {len(lines)} total lines, showing function list + key instructions ---]")
+        truncated.append(f"\n[FUNCTIONS ({len(func_lines)})]")
+        truncated.extend(func_lines[:50])
+        truncated.append(f"\n[KEY INSTRUCTIONS ({len(key_insns)} cmp/call/jmp)]")
+        truncated.extend(key_insns[:200])
+        truncated.append(f"\n[TAIL]")
+        truncated.extend(tail)
+        return "\n".join(truncated)
+
+    return out
 
 
 @mcp.tool(description="Run ROPGadget on an ELF and optionally filter by pattern")
@@ -99,25 +122,105 @@ def pwn_ropgadget(binary_path: str, pattern: str = "") -> str:
 
     cmd = ["ROPGadget", "--binary", str(b)]
     out = _run(cmd, cwd=b.parent, timeout=90)
-    if not pattern:
-        return out
 
-    filtered = [ln for ln in out.splitlines() if pattern.lower() in ln.lower()]
-    return "\n".join(filtered) if filtered else f"no match for pattern: {pattern}"
+    lines = out.splitlines()
+    if pattern:
+        filtered = [ln for ln in lines if pattern.lower() in ln.lower()]
+        return "\n".join(filtered) if filtered else f"no match for pattern: {pattern}"
+
+    # Auto-truncate: keep first 300 gadgets + summary
+    MAX_GADGETS = 300
+    if len(lines) > MAX_GADGETS:
+        return "\n".join(lines[:MAX_GADGETS]) + f"\n\n[... {len(lines) - MAX_GADGETS} more gadgets truncated. Use pattern filter to narrow.]"
+    return out
 
 
-@mcp.tool(description="Execute solve.py with args and return combined log")
+@mcp.tool(description="Run strings on a binary with auto-truncation and optional pattern filter")
+def pwn_strings(binary_path: str, pattern: str = "", max_lines: int = 100) -> str:
+    b = _resolve_under_root(binary_path)
+    if not b.exists():
+        return f"binary not found: {b}"
+
+    out = _run(["strings", "-a", str(b)], cwd=b.parent, timeout=30)
+    lines = out.splitlines()
+
+    if pattern:
+        filtered = [ln for ln in lines if pattern.lower() in ln.lower()]
+        return "\n".join(filtered[:max_lines]) if filtered else f"no match for pattern: {pattern}"
+
+    # Auto-categorize strings for token efficiency
+    flag_hints = [ln for ln in lines if any(p in ln for p in ["flag", "DH{", "CTF{", "FLAG{", "flag{"])]
+    func_names = [ln for ln in lines if any(p in ln for p in ["gets", "strcpy", "sprintf", "system", "execve", "/bin/sh", "puts", "printf"])]
+    interesting = [ln for ln in lines if any(p in ln for p in ["password", "secret", "key", "admin", "login", "token", "http"])]
+
+    result = [f"[strings] {len(lines)} total strings from {b.name}"]
+    if flag_hints:
+        result.append(f"\n[FLAG HINTS ({len(flag_hints)})]")
+        result.extend(flag_hints[:20])
+    if func_names:
+        result.append(f"\n[DANGEROUS FUNCTIONS ({len(func_names)})]")
+        result.extend(func_names[:20])
+    if interesting:
+        result.append(f"\n[INTERESTING ({len(interesting)})]")
+        result.extend(interesting[:20])
+
+    # Add head/tail of all strings if nothing categorized
+    if not (flag_hints or func_names or interesting):
+        result.append(f"\n[FIRST {min(50, len(lines))} STRINGS]")
+        result.extend(lines[:50])
+
+    if len(lines) > max_lines:
+        result.append(f"\n[... {len(lines) - max_lines} more. Use pattern param to filter.]")
+
+    return "\n".join(result)
+
+
+@mcp.tool(description="Execute solve.py with args and return combined log. timeout_sec up to 600 for brute/canary.")
 def pwn_run_solve(
     challenge_dir: str,
     args: str = "",
-    timeout_sec: int = 60,
+    timeout_sec: int = 90,
+    use_wsl: bool = False,
 ) -> str:
-    cdir = _resolve_under_root(challenge_dir)
-    solve = cdir / "solve.py"
-    if not solve.exists():
-        return f"solve.py not found in: {cdir}"
+    """Run challenge solver.
 
-    argv = ["python", str(solve)]
+    timeout_sec: default 90s. For canary/ASLR brute force or fork-server
+    interactions, pass up to 600 (10 min).
+
+    use_wsl: when True, .py solvers are launched via `wsl python3` so the
+    binary loads its real interpreter (and provided libc via patchelf).
+    Mandatory for any solver that does process(elf.path) on Linux ELFs.
+    """
+    cdir = _resolve_under_root(challenge_dir)
+
+    # Cap at 10 minutes regardless
+    timeout_sec = max(1, min(int(timeout_sec), 600))
+
+    # Find solver: exploit.py > solve.py > solve.sage
+    solve = None
+    for name in ["exploit.py", "solve.py", "solve.sage"]:
+        candidate = cdir / name
+        if candidate.exists():
+            solve = candidate
+            break
+
+    if solve is None:
+        return f"No solver found (tried exploit.py, solve.py, solve.sage) in: {cdir}"
+
+    # Choose interpreter based on file type
+    if solve.suffix == ".sage":
+        argv = ["wsl", "sage", str(solve).replace("\\", "/")]
+    elif use_wsl or (cdir / "use_wsl").exists():
+        # Translate Windows path to /mnt/<drive>/...
+        s = str(solve.resolve())
+        if len(s) >= 2 and s[1] == ":":
+            wsl_path = f"/mnt/{s[0].lower()}{s[2:].replace(chr(92), '/')}"
+        else:
+            wsl_path = s.replace("\\", "/")
+        argv = ["wsl", "--", "python3", wsl_path]
+    else:
+        argv = ["python", str(solve)]
+
     if args.strip():
         argv.extend(shlex.split(args))
 

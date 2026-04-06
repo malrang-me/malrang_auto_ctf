@@ -28,7 +28,15 @@ METRICS_FILE = PROJ_ROOT / "metrics" / "ctf_runs.jsonl"
 # ---------------------------------------------------------------------------
 # scaffold
 # ---------------------------------------------------------------------------
+def set_terminal_title(name: str):
+    """Set terminal tab title to current challenge name."""
+    import sys
+    sys.stderr.write(f"\033]0;CTF: {name}\007")
+    sys.stderr.flush()
+
+
 def cmd_scaffold(args):
+    set_terminal_title(args.name)
     chal_dir = CHALLENGES_DIR / args.name
     if chal_dir.exists():
         print(f"[!] Already exists: {chal_dir}")
@@ -133,7 +141,27 @@ def cmd_intake(args):
 # ---------------------------------------------------------------------------
 # run
 # ---------------------------------------------------------------------------
+def _parse_meta(chal_dir: Path) -> dict:
+    """Parse meta.yaml and return a dict of key fields."""
+    meta = chal_dir / "meta.yaml"
+    result = {"host": "", "port": "", "timeout": 300}
+    if not meta.exists():
+        return result
+    content = meta.read_text(encoding="utf-8")
+    m = re.search(r'remote_host:\s*"?([^"\n]*)"?', content)
+    if m:
+        result["host"] = m.group(1).strip()
+    m = re.search(r'remote_port:\s*"?([^"\n]*)"?', content)
+    if m:
+        result["port"] = m.group(1).strip()
+    m = re.search(r'timeout:\s*(\d+)', content)
+    if m:
+        result["timeout"] = int(m.group(1))
+    return result
+
+
 def cmd_run(args):
+    set_terminal_title(Path(args.path).name)
     chal_dir = Path(args.path)
     if not chal_dir.exists():
         chal_dir = CHALLENGES_DIR / args.path
@@ -141,28 +169,24 @@ def cmd_run(args):
         print(f"[error] Not found: {chal_dir}")
         sys.exit(1)
 
-    # Find entry point
+    # Find entry point: exploit.py > solve.py > solve.sage
     entry = None
-    for f in ["exploit.py", "solve.py"]:
+    for f in ["exploit.py", "solve.py", "solve.sage"]:
         if (chal_dir / f).exists():
             entry = chal_dir / f
             break
     if not entry:
-        print("[error] No solve.py or exploit.py found")
+        print("[error] No solve.py, exploit.py, or solve.sage found")
         sys.exit(1)
 
-    # Get remote info
-    host, port = args.host, args.port
-    if args.mode == "remote" and not host:
-        meta = chal_dir / "meta.yaml"
-        if meta.exists():
-            content = meta.read_text(encoding="utf-8")
-            m = re.search(r'remote_host:\s*"?([^"\n]*)"?', content)
-            if m:
-                host = m.group(1).strip()
-            m = re.search(r'remote_port:\s*"?([^"\n]*)"?', content)
-            if m:
-                port = m.group(1).strip()
+    # Determine interpreter for .sage files
+    is_sage = entry.suffix == ".sage"
+
+    # Get remote info from args or meta.yaml
+    meta = _parse_meta(chal_dir)
+    host = args.host or (meta["host"] if args.mode == "remote" else "")
+    port = args.port or (meta["port"] if args.mode == "remote" else "")
+    timeout = args.timeout or meta["timeout"]
 
     env = os.environ.copy()
     if host:
@@ -170,14 +194,37 @@ def cmd_run(args):
     if port:
         env["PORT"] = port
 
-    print(f"[run] {entry.name} mode={args.mode} host={host} port={port}")
-    result = subprocess.run(
-        [sys.executable, str(entry)],
-        cwd=str(chal_dir),
-        env=env,
-        timeout=300,
-    )
-    sys.exit(result.returncode)
+    # Build command
+    if is_sage:
+        cmd = ["wsl", "sage", str(entry).replace("\\", "/")]
+    else:
+        cmd = [sys.executable, str(entry)]
+
+    print(f"[run] {entry.name} mode={args.mode} host={host} port={port} timeout={timeout}s")
+
+    # Run with output capture to LAST_RUN.log
+    log_file = chal_dir / "LAST_RUN.log"
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=str(chal_dir),
+            env=env,
+            timeout=timeout,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        output = result.stdout + (result.stderr or "")
+        log_file.write_text(output, encoding="utf-8")
+        print(output)
+        if result.returncode != 0:
+            print(f"[run] Exit code: {result.returncode}")
+        sys.exit(result.returncode)
+    except subprocess.TimeoutExpired:
+        print(f"[run] TIMEOUT after {timeout}s")
+        log_file.write_text(f"TIMEOUT after {timeout}s\n", encoding="utf-8")
+        sys.exit(124)
 
 
 # ---------------------------------------------------------------------------
@@ -253,14 +300,28 @@ def cmd_metrics(args):
             category = m.group(1)
 
     METRICS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    entry = json.dumps({
+    entry_data = {
         "timestamp": datetime.now().isoformat(),
         "challenge": name,
         "category": category,
         "event": args.event,
         "branch": args.branch or "",
         "summary": args.summary or "",
-    })
+    }
+    # Extra fields for success events
+    if args.event == "success":
+        if args.elapsed:
+            entry_data["elapsed_sec"] = args.elapsed
+        if args.attempts:
+            entry_data["attempts"] = args.attempts
+        if args.failures:
+            entry_data["failures"] = args.failures
+        if args.technique:
+            entry_data["technique"] = args.technique
+        if args.next_estimate:
+            entry_data["next_estimate_sec"] = args.next_estimate
+
+    entry = json.dumps(entry_data, ensure_ascii=False)
     with open(METRICS_FILE, "a", encoding="utf-8") as f:
         f.write(entry + "\n")
     print(f"[metrics] {args.event}: {name}")
@@ -289,6 +350,7 @@ def main():
     p.add_argument("--mode", default="local", choices=["local", "remote"])
     p.add_argument("--host", default="")
     p.add_argument("--port", default="")
+    p.add_argument("--timeout", type=int, default=0, help="Timeout in seconds (0 = use meta.yaml or default 300)")
 
     p = sub.add_parser("gate")
     p.add_argument("path")
@@ -298,6 +360,11 @@ def main():
     p.add_argument("--event", required=True)
     p.add_argument("--branch", default="")
     p.add_argument("--summary", default="")
+    p.add_argument("--elapsed", type=int, default=0, help="Solve time in seconds")
+    p.add_argument("--attempts", type=int, default=0, help="Total solve attempts")
+    p.add_argument("--failures", type=int, default=0, help="Failed approach count")
+    p.add_argument("--technique", default="", help="Key technique used")
+    p.add_argument("--next-estimate", type=int, default=0, help="Predicted time for similar challenge (seconds)")
 
     args = parser.parse_args()
     if args.cmd == "scaffold":

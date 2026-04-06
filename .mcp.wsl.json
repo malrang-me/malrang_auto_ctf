@@ -15,6 +15,48 @@
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"]
+    },
+    "ida-pro-mcp": {
+      "command": "python3",
+      "args": [
+        "-m", "ida_pro_mcp",
+        "--ida-rpc", "http://172.21.80.1:13337"
+      ]
+    },
+    "pwn-local": {
+      "command": "python3",
+      "args": [
+        "/mnt/c/Users/malrangme/Desktop/malrang_auto_ctf/mcp_servers/pwn_local/server.py"
+      ],
+      "env": {
+        "PWN_MCP_ROOT": "/mnt/c/Users/malrangme/Desktop/malrang_auto_ctf/challenges"
+      }
+    },
+    "solver-z3": {
+      "command": "/home/malrangme/.local/bin/mcp-solver-wsl",
+      "args": ["--solver", "z3"]
+    },
+    "solver-pysat": {
+      "command": "/home/malrangme/.local/bin/mcp-solver-wsl",
+      "args": ["--solver", "pysat"]
+    },
+    "py-repl": {
+      "command": "python3",
+      "args": [
+        "/mnt/c/Users/malrangme/AppData/Roaming/Python/Python312/site-packages/mcp_py_repl/server.py"
+      ]
+    },
+    "sage-helper": {
+      "command": "python3",
+      "args": [
+        "/mnt/c/Users/malrangme/Desktop/malrang_auto_ctf/mcp_servers/sage_helper.py"
+      ]
+    },
+    "solver-cryptominisat": {
+      "command": "python3",
+      "args": [
+        "/mnt/c/Users/malrangme/Desktop/malrang_auto_ctf/mcp_servers/cryptominisat_helper.py"
+      ]
     }
   }
 }

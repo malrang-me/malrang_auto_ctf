@@ -158,6 +158,77 @@ def cmd_verify(args):
         print(f"[state] VERIFY OK — {len(args.artifacts)} artifact(s) confirmed")
 
 
+def cmd_handoff_state(args):
+    """Export or import structured state for agent handoff.
+
+    Export: dumps all verified facts + checkpoint as a single JSON block
+    that the next agent can consume.
+
+    Import: loads a handoff state JSON and merges facts into the DB.
+    """
+    if args.export:
+        conn = get_conn()
+        # Get all latest facts
+        rows = conn.execute("""
+            SELECT key, value, source, agent, ts, verified
+            FROM facts WHERE id IN (SELECT MAX(id) FROM facts GROUP BY key)
+            ORDER BY key
+        """).fetchall()
+        facts = {r["key"]: {"value": r["value"], "verified": bool(r["verified"]),
+                            "agent": r["agent"], "source": r["source"]} for r in rows}
+
+        # Get checkpoint
+        cp_path = challenge_dir() / "checkpoint.json"
+        checkpoint = {}
+        if cp_path.exists():
+            try:
+                checkpoint = json.loads(cp_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                pass
+
+        # Get handoff log
+        handoff_path = challenge_dir() / "handoff_log.json"
+        handoffs = []
+        if handoff_path.exists():
+            try:
+                handoffs = json.loads(handoff_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                pass
+
+        state = {
+            "schema_version": "1.0",
+            "challenge_dir": str(challenge_dir()),
+            "exported_at": utcnow(),
+            "exported_by": args.agent or "unknown",
+            "facts": facts,
+            "checkpoint": checkpoint,
+            "handoff_history": handoffs,
+        }
+        print(json.dumps(state, indent=2, ensure_ascii=False))
+
+    elif args.import_file:
+        import_path = Path(args.import_file)
+        if not import_path.exists():
+            print(f"[state] ERROR: import file not found: {import_path}", file=sys.stderr)
+            sys.exit(1)
+        state = json.loads(import_path.read_text(encoding="utf-8"))
+
+        if state.get("schema_version") != "1.0":
+            print(f"[state] WARN: unknown schema version {state.get('schema_version')}", file=sys.stderr)
+
+        conn = get_conn()
+        imported = 0
+        for key, fact in state.get("facts", {}).items():
+            conn.execute(
+                "INSERT INTO facts (key, value, source, agent, ts, verified) VALUES (?,?,?,?,?,?)",
+                (key, fact["value"], fact.get("source", ""), f"import:{fact.get('agent','?')}",
+                 utcnow(), 1 if fact.get("verified") else 0),
+            )
+            imported += 1
+        conn.commit()
+        print(f"[state] Imported {imported} facts from {args.import_file}")
+
+
 def cmd_checkpoint(args):
     """Read or write checkpoint.json for the current challenge."""
     cp_path = challenge_dir() / "checkpoint.json"
@@ -239,6 +310,12 @@ def main():
     p_cp.add_argument("--status", choices=["in_progress", "completed", "error"], default=None)
     p_cp.add_argument("--agent", default=None)
 
+    # handoff-state
+    p_hs = sub.add_parser("handoff-state", help="Export/import structured state for agent handoff")
+    p_hs.add_argument("--export", action="store_true", help="Export current state as JSON")
+    p_hs.add_argument("--import-file", default=None, help="Import state from JSON file")
+    p_hs.add_argument("--agent", default=None, help="Agent name for export")
+
     args = parser.parse_args()
 
     dispatch = {
@@ -247,6 +324,7 @@ def main():
         "facts": cmd_facts,
         "verify": cmd_verify,
         "checkpoint": cmd_checkpoint,
+        "handoff-state": cmd_handoff_state,
     }
     dispatch[args.cmd](args)
 

@@ -288,6 +288,50 @@ def cmd_add(args):
     print(f"[knowledge] {path.name} → {n} chunks 인덱싱")
 
 
+def cmd_sync(args):
+    """Detect new/modified/deleted MD files in challenges & techniques and reconcile kb.db.
+    Uses sha256 to skip unchanged files (cheap), prunes rows whose source file is gone."""
+    conn = get_conn()
+    fs_files: dict[str, Path] = {}  # rel_path -> Path
+    for d in (TECHNIQUES_DIR, CHALLENGES_DIR):
+        if not d.exists():
+            continue
+        for path in d.glob("*.md"):
+            rel = str(path.relative_to(MACHINE_ROOT))
+            fs_files[rel] = path
+
+    db_files = {row["path"] for row in conn.execute("SELECT path FROM sources").fetchall()}
+
+    added = 0
+    updated = 0
+    deleted = 0
+
+    # Add new + update changed
+    for rel, path in fs_files.items():
+        n = index_file(conn, path, force=False)  # mtime/sha skip handled internally
+        if n > 0:
+            if rel in db_files:
+                updated += 1
+                print(f"  updated  {path.name} → {n} chunks")
+            else:
+                added += 1
+                print(f"  added    {path.name} → {n} chunks")
+
+    # Prune deleted
+    for rel in db_files - set(fs_files.keys()):
+        # Only prune if it's under our managed dirs
+        if rel.startswith(("knowledge\\challenges", "knowledge/challenges",
+                           "knowledge\\techniques", "knowledge/techniques")):
+            conn.execute("DELETE FROM chunks WHERE source_path=?", (rel,))
+            conn.execute("DELETE FROM sources WHERE path=?", (rel,))
+            deleted += 1
+            print(f"  deleted  {rel}")
+
+    conn.commit()
+    print(f"[knowledge sync] added={added} updated={updated} deleted={deleted} "
+          f"total_in_db={len(fs_files)}")
+
+
 # ── External Indexing ─────────────────────────────────────────────────────────
 
 def _index_exploitdb(conn: sqlite3.Connection) -> int:
@@ -1137,6 +1181,9 @@ def main():
     p_add = sub.add_parser("add", help="단일 파일 추가/갱신")
     p_add.add_argument("file", help="MD 파일 경로")
 
+    # sync (new) — auto-detect new/modified/deleted MD files
+    sub.add_parser("sync", help="신규/변경/삭제된 challenges/techniques MD 자동 동기화")
+
     # index-external (new)
     p_idx_ext = sub.add_parser("index-external", help="외부 소스 인덱싱 (ExploitDB, Nuclei, PoC-in-GitHub, PayloadsAllTheThings)")
     p_idx_ext.add_argument("--force", action="store_true", help="강제 재인덱싱")
@@ -1160,6 +1207,7 @@ def main():
         "search": cmd_search,
         "status": cmd_status,
         "add": cmd_add,
+        "sync": cmd_sync,
         "index-external": cmd_index_external,
         "search-all": cmd_search_all,
         "search-exploits": cmd_search_exploits,

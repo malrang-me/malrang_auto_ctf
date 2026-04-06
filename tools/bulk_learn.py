@@ -35,6 +35,22 @@ WRITEUP_SIGNALS = re.compile(
     re.IGNORECASE
 )
 
+# Quality gate signals — content must contain at least one to pass
+CTF_CONTENT_SIGNALS = re.compile(
+    r"flag\{|CTF\{|DH\{|exploit|payload|shellcode|overflow|injection|"
+    r"reverse|decrypt|cipher|XOR|RSA|AES|SHA|HMAC|"
+    r"pwntools|gdb|objdump|checksec|z3|sage|angr|"
+    r"vulnerability|CVE-|CWE-|OWASP|"
+    r"base64|hex\(|unhex|from_bytes|to_bytes|"
+    r"libc|gadget|ROP|NOP|sled|canary|ASLR|PIE|RELRO|"
+    r"SSTI|SQLi|SSRF|XSS|LFI|RFI|IDOR|"
+    r"solved|solution|approach|technique|attack",
+    re.IGNORECASE
+)
+
+MIN_CONTENT_LENGTH = 300
+MIN_CTF_SIGNALS = 3
+
 
 # ---------------------------------------------------------------------------
 # Fetch
@@ -162,7 +178,39 @@ def crawl_github(repo_url: str, max_files: int = 30) -> list[dict]:
 # Stage
 # ---------------------------------------------------------------------------
 
-def stage(url: str, text: str, category: str = "unknown") -> Path:
+def quality_check(text: str, url: str = "") -> tuple[bool, str]:
+    """Check if content is CTF-related and high enough quality to learn from.
+    Returns (passed, reason)."""
+    if len(text) < MIN_CONTENT_LENGTH:
+        return False, f"too short ({len(text)} chars < {MIN_CONTENT_LENGTH})"
+
+    # Count CTF-related signals
+    signals = CTF_CONTENT_SIGNALS.findall(text)
+    unique_signals = len(set(s.lower() for s in signals))
+    if unique_signals < MIN_CTF_SIGNALS:
+        return False, f"low CTF signal count ({unique_signals} < {MIN_CTF_SIGNALS})"
+
+    # Check for duplicate against existing staged files
+    text_hash = hashlib.sha1(text[:5000].encode()).hexdigest()[:12]
+    for f in STAGING_DIR.glob("*.json"):
+        try:
+            existing = json.loads(f.read_text(encoding="utf-8"))
+            existing_hash = hashlib.sha1(existing.get("text", "")[:5000].encode()).hexdigest()[:12]
+            if text_hash == existing_hash:
+                return False, f"duplicate of {f.name}"
+        except (json.JSONDecodeError, OSError):
+            continue
+
+    return True, "passed"
+
+
+def stage(url: str, text: str, category: str = "unknown") -> Path | None:
+    """Stage a writeup for learning. Returns None if quality check fails."""
+    passed, reason = quality_check(text, url)
+    if not passed:
+        print(f"  [quality-gate] SKIP: {reason}")
+        return None
+
     uid = hashlib.sha1(url.encode()).hexdigest()[:10]
     out = STAGING_DIR / f"{category}_{uid}.json"
     out.write_text(json.dumps({
@@ -171,6 +219,7 @@ def stage(url: str, text: str, category: str = "unknown") -> Path:
         "text": text[:20000],
         "fetched_at": datetime.now().isoformat(),
         "processed": False,
+        "quality_signals": len(set(CTF_CONTENT_SIGNALS.findall(text))),
     }, ensure_ascii=False, indent=2), encoding="utf-8")
     return out
 
@@ -217,12 +266,13 @@ def cmd_crawl(args):
         for link in links[:args.max]:
             print(f"  [fetch] {link[:80]}")
             text = fetch_text(link)
-            if len(text) > 300:
-                stage(link, text, args.category)
-                total_staged += 1
-                print(f"  [staged] {total_staged}")
+            if len(text) > MIN_CONTENT_LENGTH:
+                result = stage(link, text, args.category)
+                if result:
+                    total_staged += 1
+                    print(f"  [staged] {total_staged}")
             else:
-                print(f"  [skip] too short")
+                print(f"  [skip] too short ({len(text)} chars)")
             time.sleep(0.4)
 
     # Print summary for Claude to read
@@ -256,7 +306,81 @@ def cmd_status(args):
         for f in files:
             d = json.loads(f.read_text(encoding="utf-8"))
             if not d.get("processed"):
-                print(f"  [{d['category']}] {d['url'][:70]}")
+                print(f"  {f.stem}  [{d['category']}] {d['url'][:70]}")
+
+
+def cmd_next(args):
+    """Emit one pending staging file (full JSON) for Claude to process."""
+    files = sorted(STAGING_DIR.glob("*.json"))
+    for f in files:
+        d = json.loads(f.read_text(encoding="utf-8"))
+        if not d.get("processed"):
+            print(json.dumps({
+                "id": f.stem,
+                "path": str(f),
+                **d,
+            }, ensure_ascii=False, indent=2))
+            return
+    print("[next] no pending writeups")
+
+
+def _find_staged(stem_or_path: str) -> Path | None:
+    p = Path(stem_or_path)
+    if p.exists():
+        return p
+    candidate = STAGING_DIR / f"{stem_or_path}.json"
+    if candidate.exists():
+        return candidate
+    matches = [f for f in STAGING_DIR.glob("*.json") if stem_or_path in f.name]
+    if len(matches) == 1:
+        return matches[0]
+    return None
+
+
+def cmd_mark(args):
+    """Toggle processed flag on a staged file."""
+    target = _find_staged(args.id)
+    if not target:
+        print(f"[mark] not found: {args.id}", file=sys.stderr)
+        sys.exit(1)
+    d = json.loads(target.read_text(encoding="utf-8"))
+    d["processed"] = not args.pending
+    if not args.pending:
+        d["processed_at"] = datetime.now().isoformat()
+    target.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"[mark] {target.name} -> processed={d['processed']}")
+
+
+def cmd_verify(args):
+    """Audit each processed=true file: confirm URL appears in SPEEDRUN_MEMORY.
+    Reset processed=false for ones that fail the audit."""
+    if not SPEEDRUN_MEMORY.exists():
+        print(f"[verify] {SPEEDRUN_MEMORY} not found", file=sys.stderr)
+        sys.exit(1)
+    sm = SPEEDRUN_MEMORY.read_text(encoding="utf-8", errors="replace")
+    files = sorted(STAGING_DIR.glob("*.json"))
+    confirmed = 0
+    reset = 0
+    skipped = 0
+    for f in files:
+        d = json.loads(f.read_text(encoding="utf-8"))
+        if not d.get("processed"):
+            skipped += 1
+            continue
+        url = d.get("url", "")
+        if url and url in sm:
+            confirmed += 1
+            continue
+        # Stale processed flag — reset
+        if args.reset:
+            d["processed"] = False
+            d.pop("processed_at", None)
+            f.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+            reset += 1
+            print(f"  [reset] {f.name}")
+        else:
+            print(f"  [stale] {f.name}  url not in SPEEDRUN_MEMORY")
+    print(f"[verify] confirmed={confirmed} | stale={'reset to pending: ' + str(reset) if args.reset else 'use --reset to clear'} | already-pending={skipped}")
 
 
 def cmd_clear(args):
@@ -277,14 +401,27 @@ def main():
 
     sub.add_parser("status")
     sub.add_parser("clear")
+    sub.add_parser("next", help="Print one pending staged writeup as JSON")
+    p_mark = sub.add_parser("mark", help="Mark a staged file processed (or pending)")
+    p_mark.add_argument("id", help="Staging file stem or path")
+    p_mark.add_argument("--pending", action="store_true",
+                        help="Mark as pending instead of processed")
+    p_verify = sub.add_parser("verify", help="Audit processed flags vs SPEEDRUN_MEMORY")
+    p_verify.add_argument("--reset", action="store_true",
+                          help="Reset stale processed=true to pending")
 
     args = parser.parse_args()
-    if args.cmd == "crawl":
-        cmd_crawl(args)
-    elif args.cmd == "status":
-        cmd_status(args)
-    elif args.cmd == "clear":
-        cmd_clear(args)
+    cmd_map = {
+        "crawl": cmd_crawl,
+        "status": cmd_status,
+        "clear": cmd_clear,
+        "next": cmd_next,
+        "mark": cmd_mark,
+        "verify": cmd_verify,
+    }
+    fn = cmd_map.get(args.cmd)
+    if fn:
+        fn(args)
     else:
         parser.print_help()
 

@@ -100,13 +100,8 @@ def login_platform(platform_key=None, custom_url=None):
     print("Log in manually in the browser window.")
     print("When done, close the browser window or press Ctrl+C.\n")
 
-    # Load existing state
-    existing_state = None
-    if os.path.exists(STATE_FILE):
-        try:
-            existing_state = STATE_FILE
-        except:
-            pass
+    # Load existing state (pass file path to Playwright, which reads the JSON)
+    existing_state = STATE_FILE if os.path.exists(STATE_FILE) else None
 
     with sync_playwright() as pw:
         # HEADED browser so user can see and interact

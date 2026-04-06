@@ -122,7 +122,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--file", type=str, help="Input file path")
     p.add_argument("--dir", type=str, help="Input directory path")
     p.add_argument("--prefer-gemini", action="store_true")
-    p.add_argument("--cache-dir", type=str, default="/tmp/machine_digest_cache")
+    import tempfile
+    default_cache = str(Path(tempfile.gettempdir()) / "machine_digest_cache")
+    p.add_argument("--cache-dir", type=str, default=default_cache)
     p.add_argument("--no-cache", action="store_true")
     p.add_argument("--json", action="store_true", help="Output as JSON with metadata")
     return p

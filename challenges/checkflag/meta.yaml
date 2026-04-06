@@ -1,0 +1,10 @@
+name: checkflag
+platform: dreamhack
+url: https://dreamhack.io/wargame/challenges/97
+category: rev
+difficulty: 3
+tags: [pwnable, reversing]
+flag_format: "DH{...}"
+description: "플래그를 입력하면 정답 여부를 확인하는 바이너리를 통해 플래그를 추출하는 문제. printable ASCII (0x20-0x7e)."
+needs_vm: true
+remote: true

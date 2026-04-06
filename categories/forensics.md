@@ -1,64 +1,59 @@
 # FORENSICS — Digital Forensics
 
-You are an expert CTF forensics solver running in Claude Code on Windows 11.
+## Tools (priority order — 토큰 절감 핵심)
+- **tshark** (PCAP — 전체 덤프 대비 100x 절감):
+  ```bash
+  wsl tshark -r <file> -qz io,phs                        # 프로토콜 요약 (1줄)
+  wsl tshark -r <file> -qz conv,tcp                       # TCP 연결 요약
+  wsl tshark -r <file> -Y "http" -T fields -e http.request.uri -e http.response.code
+  wsl tshark -r <file> -Y "dns" -T fields -e dns.qry.name
+  wsl tshark -r <file> -qz follow,tcp,ascii,0             # 첫 스트림만
+  ```
+  **Rule**: pcap → tshark 필터만. `tcpdump | strings` = **절대 금지** (5만+ 토큰).
+- **exiftool** (JSON + jq):
+  ```bash
+  wsl exiftool -j <file> | jq '.[0] | {Comment, Author, GPS*, Software}'
+  ```
+  verbose 텍스트 출력 금지. `-j` + `jq` 필수.
+- **py-repl**: PIL, struct, binascii
+- WSL: binwalk, foremost, steghide, volatility3, strings, xxd, file
 
-## Tools
-- **py-repl**: Python REPL (PIL, struct, binascii)
-- WSL: `wsl binwalk`, `wsl foremost`, `wsl exiftool`, `wsl steghide`, `wsl volatility3`, `wsl strings`, `wsl xxd`, `wsl file`
+## First Steps
+1. `file` all files
+2. `exiftool -j | jq keys` (키만 확인)
+3. `strings | grep -iE 'flag|DH\{|CTF\{'` (**필터 필수**, 전체 금지)
+4. `binwalk`
+5. Visual inspect if image
 
-## Mandatory First Steps
-1. `file` on all provided files — identify types precisely
-2. `exiftool` — metadata, hidden comments, GPS, timestamps
-3. `strings` — grep for flag format, URLs, base64, interesting text
-4. `binwalk` — check for embedded/appended files
-5. Visual inspection if image — open and look for visual anomalies
+## Stego Decision Tree
+```
+PNG/BMP → zsteg (LSB)
+JPEG → stegsolve + steghide (password: empty, common)
+WAV/audio → spectogram (Audacity/sox)
+Text → whitespace/zero-width decode
+```
+
+## PCAP Decision Tree
+```
+1. tshark -qz io,phs → 프로토콜 분포 확인
+2. HTTP 있으면 → tshark -Y http → URI + status 확인
+3. DNS 있으면 → tshark -Y dns → exfil 패턴 확인
+4. TCP stream → follow,tcp,ascii,0 (첫 스트림만)
+5. 파일 추출 → tshark --export-objects
+```
+
+## Memory Decision Tree
+```
+1. volatility3 -f dump.raw windows.info → OS 확인
+2. windows.pslist → 프로세스 목록
+3. 의심 프로세스 → windows.dumpfiles --pid X
+4. strings on dump → grep flag format
+```
 
 ## Attack Patterns
-
-### File Carving
-- Embedded files -> binwalk -e, foremost
-- Appended data -> check file size vs expected size, xxd tail
-- Polyglot files -> valid as multiple file types simultaneously
-- Corrupted headers -> fix magic bytes, repair chunk structure
-
-### Steganography
-- LSB in images -> stegsolve, zsteg (PNG/BMP), steghide (JPEG)
-- Audio steganography -> spectogram analysis (Audacity), SSTV
-- Whitespace -> tabs/spaces encoding, zero-width characters
-- Metadata -> EXIF comments, XMP data, IPTC fields
-
-### Memory Forensics
-- Volatility3 -> pslist, pstree, netscan, filescan, dumpfiles
-- Process memory -> strings on specific process dump
-- Registry hives -> hivelist, printkey for credentials
-- Browser artifacts -> history, cookies, cached pages
-
-### Network Forensics
-- PCAP analysis -> Wireshark/tshark filters, follow TCP stream
-- HTTP extraction -> export objects, reconstruct file transfers
-- DNS exfiltration -> look for encoded data in DNS queries
-- TLS -> check for RSA key to decrypt, or TLS keylog file
-
-### Disk / Filesystem
-- Deleted files -> autopsy, sleuthkit (fls, icat)
-- Hidden partitions -> fdisk, file system slack space
-- Alternate data streams (NTFS) -> dir /r, Get-Item -Stream
-- Encrypted volumes -> known password lists, brute-force with hashcat
-
-### Encoding / Obfuscation
-- Multi-layer -> base64 -> hex -> rot13 -> XOR (peel one layer at a time)
-- Custom encoding -> frequency analysis, known plaintext attack
-- QR codes -> embedded in images, partially damaged (error correction)
-
-## Pitfalls
-- Always check ALL files provided, not just the obvious one
-- binwalk can miss things — also try manual hex inspection
-- Steganography tools need the right password — try common ones and empty string
-- Memory dumps: match Volatility profile to OS version exactly
-- Don't assume encoding — verify each layer before proceeding to next
-
-## Verification
-- Flag matches expected format
-- Extraction method is reproducible (document exact commands)
-- No data corruption in extraction pipeline
-- If multi-step: verify each intermediate result
+- **File Carving**: binwalk -e, foremost, polyglot, corrupted headers
+- **Stego**: 위 decision tree 참조
+- **Memory**: 위 decision tree 참조
+- **Network**: 위 PCAP decision tree 참조
+- **Disk**: autopsy/sleuthkit, hidden partitions, ADS (NTFS)
+- **Encoding**: multi-layer (base64→hex→rot13→XOR), QR codes

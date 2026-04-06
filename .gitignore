@@ -1,36 +1,62 @@
-# Downloads staging
-_downloads/*.zip
-_downloads/*.tar.gz
+# ============================================================
+# PRIVACY: 개인정보 / 풀이 데이터 / 세션 데이터 차단
+# ============================================================
 
-# Challenge binaries & runtime
-challenges/*/deploy/
-challenges/*/core
-challenges/*/*.so*
-challenges/*/ld-*
-challenges/*/flag
-challenges/*/LAST_RUN.log
-challenges/*/__pycache__/
+# Flags (절대 업로드 금지)
+FLAGS.txt
 
-# Python
+# Knowledge base (풀이 전략 + 학습 데이터)
+knowledge/CTF_SPEEDRUN_MEMORY.md
+knowledge/kb.db
+knowledge/kb.db-shm
+knowledge/kb.db-wal
+knowledge/speedrun.db
+knowledge/speedrun.db-shm
+knowledge/speedrun.db-wal
+knowledge/sources.txt
+knowledge/writeup_staging/
+knowledge/challenges/
+
+# Project-root state DB (현재 풀이 facts)
+state.db
+state.db-shm
+state.db-wal
+
+# Challenge data: ALLOWLIST only (block everything, allow narrow metadata)
+# Every file under challenges/<name>/ is private by default.
+# Only explicitly listed file types get committed.
+challenges/*/**
+!challenges/*/
+!challenges/*/meta.yaml
+!challenges/*/Dockerfile
+!challenges/*/README.md
+
+# Downloads
+_downloads/
+
+# Browser session data (쿠키/세션 절대 금지)
+.playwright-mcp/
+.ctf-browser-data/
+check_cookies.py
+
+# Metrics (개인 풀이 이력)
+metrics/
+
+# Internal work plans (개인 작업 컨텍스트)
+.claude/plans/
+
+# ============================================================
+# STANDARD: Python / OS / IDE
+# ============================================================
+
 __pycache__/
 *.pyc
 *.pyo
 .venv/
-
-# OS
 Thumbs.db
 Desktop.ini
 .DS_Store
-
-# IDE
 .vscode/
 .idea/
-
-# Pwntools cache
 .pwntools-cache/
-
-.claude/worktrees/
-.playwright-mcp/
-check_cookies.py
-_downloads/
 .claude/worktrees/

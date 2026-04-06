@@ -1,0 +1,9 @@
+name: Dummy-Da
+category: rev
+difficulty: hard
+platform: dreamhack
+platform_id: 2397
+source: "Dreamhack CTF Season 7 Round #21 (Div1)"
+description: "funny but annoying binary!"
+binary: main
+flag_format: "DH{...}"

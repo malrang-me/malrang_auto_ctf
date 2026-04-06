@@ -68,6 +68,29 @@ def cmd_fail(args):
     print(f"[checkpoint] Failed: {d.name} ({args.error})")
 
 
+def cmd_init(args):
+    """Initialize checkpoint for a new challenge (called at pipeline start)."""
+    d = Path(args.challenge_dir)
+    d.mkdir(parents=True, exist_ok=True)
+    cp = load_checkpoint(d)
+    if cp and cp.get("status") in ("in_progress", "completed"):
+        print(f"[checkpoint] Already exists: {d.name} (status={cp.get('status')})")
+        return
+    cp = {
+        "agent": args.agent,
+        "status": "in_progress",
+        "phase": 0,
+        "phase_name": "init",
+        "completed": [],
+        "in_progress": "init",
+        "critical_facts": {},
+        "expected_artifacts": [],
+        "produced_artifacts": [],
+    }
+    save_checkpoint(d, cp)
+    print(f"[checkpoint] Initialized: {d.name} ({args.agent})")
+
+
 def cmd_show(args):
     d = Path(args.challenge_dir)
     cp = load_checkpoint(d)
@@ -99,18 +122,23 @@ def main():
     p_fail.add_argument("--agent", required=True)
     p_fail.add_argument("--error")
 
+    p_init = sub.add_parser("init")
+    p_init.add_argument("challenge_dir")
+    p_init.add_argument("--agent", required=True)
+
     p_show = sub.add_parser("show")
     p_show.add_argument("challenge_dir")
 
     args = parser.parse_args()
-    if args.cmd == "update":
-        cmd_update(args)
-    elif args.cmd == "complete":
-        cmd_complete(args)
-    elif args.cmd == "fail":
-        cmd_fail(args)
-    elif args.cmd == "show":
-        cmd_show(args)
+    dispatch = {
+        "update": cmd_update,
+        "complete": cmd_complete,
+        "fail": cmd_fail,
+        "init": cmd_init,
+        "show": cmd_show,
+    }
+    if args.cmd in dispatch:
+        dispatch[args.cmd](args)
     else:
         parser.print_help()
 

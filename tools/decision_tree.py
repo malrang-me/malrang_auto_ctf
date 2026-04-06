@@ -65,18 +65,11 @@ def set_attempt_count(conn, agent: str, trigger: str, action_id: str, count: int
     conn.commit()
 
 def get_total_failures(conn, agent: str) -> int:
-    rows = conn.execute(
-        "SELECT value FROM facts WHERE key LIKE ? ORDER BY id DESC",
-        (f"dt_{agent}_%",)
-    ).fetchall()
-    seen = {}
-    for r in rows:
-        # deduplicate by key (latest value wins)
-        pass
-    # simpler: count all dt_ records for this agent
+    """Sum the latest attempt count per unique dt_ key for this agent."""
     row = conn.execute(
-        "SELECT COALESCE(SUM(CAST(value AS INTEGER)),0) as total FROM "
-        "(SELECT key, value FROM facts WHERE key LIKE ? GROUP BY key HAVING id=MAX(id))",
+        "SELECT COALESCE(SUM(CAST(val AS INTEGER)), 0) AS total FROM "
+        "(SELECT key, value AS val FROM facts WHERE key LIKE ? "
+        "GROUP BY key ORDER BY MAX(id))",
         (f"dt_{agent}_%",)
     ).fetchone()
     return row["total"] if row else 0
@@ -92,34 +85,45 @@ TREES = {
             {"id": "fmt_leak", "desc": "Format string %p leak (if printf with user input)", "max": 2},
             {"id": "partial_overwrite", "desc": "Partial overwrite (PIE ON, 12-bit brute)", "max": 2},
             {"id": "ret2dlresolve", "desc": "ret2dlresolve (no leak needed)", "max": 2},
-            {"id": "heap_leak", "desc": "Unsorted bin fd pointer leak", "max": 2},
+            {"id": "heap_leak", "desc": "Unsorted bin fd pointer leak (templates/heap_attacks.py:unsorted_bin_leak)", "max": 2},
+            {"id": "verify_leak_gdb", "desc": "tools/gdb_pwn.py trace-leak <bin> --bp <addr> --reg rdi (validate leak primitive)", "max": 1},
         ],
         "rip_failure": [
-            {"id": "verify_offset", "desc": "Re-verify offset with cyclic pattern in GDB", "max": 2},
-            {"id": "check_canary", "desc": "Check for stack canary at rbp-0x8, add leak step if present", "max": 2},
-            {"id": "stack_pivot", "desc": "Buffer too small for ROP — pivot to .bss/heap", "max": 2},
-            {"id": "pie_leak", "desc": "PIE enabled — need base address leak first", "max": 2},
+            {"id": "verify_offset", "desc": "tools/gdb_pwn.py cyclic <bin> --func vuln (single-call BOF offset)", "max": 1},
+            {"id": "check_canary", "desc": "tools/gdb_pwn.py canary <bin> --func vuln (locate fs:0x28 + buffer size)", "max": 1},
+            {"id": "stack_pivot", "desc": "Buffer too small for ROP -- pivot to .bss/heap (leave;ret or xchg rsp,reg)", "max": 2},
+            {"id": "pie_leak", "desc": "PIE enabled -- need base address leak first", "max": 2},
+            {"id": "srop", "desc": "Short BOF / no pop gadgets -- templates/srop_frame.py (sigreturn frame)", "max": 2},
         ],
         "payload_failure": [
             {"id": "stack_align", "desc": "Add extra ret gadget before system/execve (movaps fix)", "max": 2},
-            {"id": "one_gadget", "desc": "Try all one_gadget results with -l 2", "max": 2},
+            {"id": "one_gadget", "desc": "tools/one_gadget_check.py <dir> --snapshot <file> (rank gadgets by satisfied constraints)", "max": 2},
             {"id": "execve_rop", "desc": "Build execve ROP: pop rdi; pop rsi; pop rdx; syscall", "max": 2},
-            {"id": "fsop", "desc": "FSOP via _IO_list_all overwrite (glibc >= 2.34)", "max": 2},
+            {"id": "seccomp_orw", "desc": "execve blocked -- templates/seccomp_orw.py (open/read/write shellcode or ROP)", "max": 2},
+            {"id": "fsop", "desc": "FSOP via _IO_str_jumps (glibc >= 2.34) -- templates/heap_attacks.py:fsop_io_str_jumps", "max": 2},
             {"id": "ret2dlresolve_payload", "desc": "ret2dlresolve to bypass FULL RELRO", "max": 2},
         ],
         "heap_selection": [
-            {"id": "tcache_poison", "desc": "tcache poisoning (glibc 2.26+)", "max": 2, "ctx": {"glibc_min": "2.26"}},
-            {"id": "fastbin_dup", "desc": "fastbin dup → __malloc_hook (glibc < 2.26)", "max": 2, "ctx": {"glibc_max": "2.26"}},
-            {"id": "safe_link_bypass", "desc": "tcache + safe-linking bypass + heap leak (glibc >= 2.32)", "max": 2, "ctx": {"glibc_min": "2.32"}},
-            {"id": "unsorted_bin", "desc": "Unsorted bin attack", "max": 2},
+            {"id": "tcache_poison", "desc": "tcache poisoning (glibc 2.26-2.31) -- templates/heap_attacks.py:tcache_poison", "max": 2, "ctx": {"glibc_min": "2.26"}},
+            {"id": "fastbin_dup", "desc": "fastbin dup -> __malloc_hook (glibc < 2.26) -- templates/heap_attacks.py:fastbin_dup_to_target", "max": 2, "ctx": {"glibc_max": "2.26"}},
+            {"id": "safe_link_bypass", "desc": "tcache + safe-linking (glibc >= 2.32) -- templates/heap_attacks.py:tcache_safe_link", "max": 2, "ctx": {"glibc_min": "2.32"}},
+            {"id": "unsorted_bin", "desc": "Unsorted bin attack -- templates/heap_attacks.py:unsorted_bin_leak", "max": 2},
             {"id": "house_of_orange", "desc": "House of Orange (no free needed)", "max": 2},
             {"id": "large_bin_attack", "desc": "Large bin attack", "max": 2},
+            {"id": "dump_heap", "desc": "tools/gdb_pwn.py heap <bin> --bp <addr> (dump tcache/fastbin/unsorted as JSON)", "max": 2},
         ],
         "remote_failure": [
-            {"id": "libc_mismatch", "desc": "Check libc version on remote (strings/leak + database)", "max": 2},
-            {"id": "timeout_fix", "desc": "Increase sleep/recv timeouts in solve.py", "max": 2},
+            {"id": "libc_mismatch", "desc": "python tools/pwn_setup.py <dir> -- pin libc + extract offsets", "max": 1},
+            {"id": "timeout_fix", "desc": "pwn_run_solve(timeout_sec=300) for fork-server / brute", "max": 2},
             {"id": "aslr_brute", "desc": "Run in loop (max 100 iterations for partial overwrite)", "max": 3},
             {"id": "binary_diff", "desc": "Re-check remote binary if downloadable", "max": 1},
+            {"id": "fork_server_probe", "desc": "Detect fork-server: nc twice; same canary => fork-server confirmed (canary brute viable)", "max": 1},
+            {"id": "buffering_check", "desc": "stdout buffering: check setbuf/setvbuf in main; if missing, sendline may not flush", "max": 1},
+        ],
+        "seccomp_detected": [
+            {"id": "dump_seccomp", "desc": "wsl seccomp-tools dump <bin> > seccomp_dump.txt (do this in reverser Phase 0)", "max": 1},
+            {"id": "use_orw_template", "desc": "templates/seccomp_orw.py:pick_orw_method(policy, has_nx, has_writable_exec)", "max": 1},
+            {"id": "openat_variant", "desc": "open blocked but openat allowed -- shellcode_openat_orw template", "max": 1},
         ],
     },
     "rev": {
@@ -138,18 +142,50 @@ TREES = {
             {"id": "manual_trace", "desc": "Trace execution until original code, dump memory region", "max": 2},
         ],
         "custom_vm": [
-            {"id": "map_opcodes", "desc": "Map opcodes: Ghidra switch/case → opcode_map.md", "max": 1},
-            {"id": "trace_exec", "desc": "GDB breakpoint on dispatch → log opcode sequence", "max": 2},
-            {"id": "decompile_vm", "desc": "Opcode sequence → pseudocode", "max": 1},
+            {"id": "use_vm_template", "desc": "Use templates/vm_solver.py framework: extract opcodes, fill OPCODE_MAP, backward_solve()", "max": 1},
+            {"id": "map_opcodes", "desc": "Map opcodes: IDA decompile switch/case or vm_solver.py --extract-switch", "max": 1},
+            {"id": "trace_exec", "desc": "GDB breakpoint on dispatch → log opcode sequence (vm_solver.py --trace)", "max": 2},
+            {"id": "z3_vm_solve", "desc": "Z3 fallback for non-invertible ops: vm_solver.py --z3", "max": 2},
             {"id": "pattern_match", "desc": "Identify algorithm (XOR, TEA, AES-like, matrix)", "max": 2},
             {"id": "vm_oracle", "desc": "GDB oracle on VM as black box (side-channel)", "max": 2},
         ],
         "z3_unsat": [
-            {"id": "remove_constraint", "desc": "Remove constraints one-by-one → find conflicting pair", "max": 2},
+            {"id": "use_z3_debug", "desc": "Use templates/z3_debug.py ConstraintDebugger.diagnose() for incremental UNSAT analysis", "max": 1},
             {"id": "verify_expected", "desc": "Verify expected output bytes in GDB (may have read wrong data)", "max": 2},
-            {"id": "check_signedness", "desc": "Check BitVec signed vs unsigned operations", "max": 1},
-            {"id": "check_modular", "desc": "Check missing modulo in constraint", "max": 1},
-            {"id": "test_known", "desc": "Test with known input/output pair first", "max": 1},
+            {"id": "check_signedness", "desc": "Check BitVec signed vs unsigned operations (SignExt vs ZeroExt)", "max": 1},
+            {"id": "check_modular", "desc": "Check missing modulo/mask (& 0xFF, & 0xFFFFFFFF) in constraint", "max": 1},
+            {"id": "test_known", "desc": "ConstraintDebugger.validate_known() with known I/O pair", "max": 1},
+            {"id": "oracle_validate", "desc": "ConstraintDebugger.oracle_validate() run binary as ground truth", "max": 2},
+        ],
+        "anti_debug": [
+            {"id": "auto_detect", "desc": "Run tools/gdb_auto.py detect <binary> — auto-scan imports/strings/patterns", "max": 1},
+            {"id": "ld_preload", "desc": "tools/gdb_auto.py bypass <binary> — generate LD_PRELOAD bypass.c (ptrace/time/alarm/getauxval/fopen)", "max": 2},
+            {"id": "nop_patch", "desc": "tools/gdb_auto.py patch <binary> — binary-patch anti-debug calls to NOP/xor eax,eax", "max": 2},
+            {"id": "gdb_script", "desc": "tools/gdb_auto.py script <binary> --anti-debug — GDB breakpoint bypass script", "max": 2},
+            {"id": "env_vars", "desc": "Set LD_PRELOAD or DISPLAY or HOME to bypass env checks", "max": 1},
+            {"id": "gdb_set_return", "desc": "GDB: break at check, set $rax=0 to bypass", "max": 2},
+        ],
+        "bytecode_failure": [
+            {"id": "auto_decompile", "desc": "tools/decompile_bytecode.py decompile <file> (auto-detect + fallback chain)", "max": 1},
+            {"id": "decompile_pyc", "desc": "Python .pyc: uncompyle6/decompile3/pycdc", "max": 2},
+            {"id": "decompile_java", "desc": "Java: jadx/procyon/CFR on .class/.jar", "max": 2},
+            {"id": "decompile_dotnet", "desc": ".NET: ilspycmd/monodis on .exe/.dll", "max": 2},
+            {"id": "decompile_wasm", "desc": "WASM: wasm2wat/wasm-decompile from wabt", "max": 2},
+            {"id": "dis_manual", "desc": "Manual: python -m dis / javap -c / ildasm", "max": 1},
+        ],
+        "side_channel": [
+            {"id": "timing_oracle", "desc": "Measure execution time per candidate char (pin/perf)", "max": 2},
+            {"id": "insn_count", "desc": "Use perf stat -e instructions:u for byte-by-byte oracle", "max": 2},
+            {"id": "gdb_step_count", "desc": "GDB stepi count: correct char = more steps before exit", "max": 2},
+            {"id": "strcmp_leak", "desc": "If strcmp-based: ltrace to see compared strings directly", "max": 1},
+            {"id": "error_position", "desc": "Error message reveals position of first wrong byte", "max": 1},
+        ],
+        "interactive_rev": [
+            {"id": "auto_parse_elf", "desc": "Parse received ELF: symtab/sections → extract data structures", "max": 2},
+            {"id": "table_inversion", "desc": "Build inverse lookup tables for O(N*256) brute per round", "max": 2},
+            {"id": "z3_per_round", "desc": "Z3 model per round binary (if tables change each round)", "max": 2},
+            {"id": "template_interactive", "desc": "Use templates/interactive_rev.py as base", "max": 1},
+            {"id": "parallel_socket", "desc": "Multi-threaded recv/solve/send for tight timeouts", "max": 1},
         ],
     },
     "crypto": {
@@ -191,6 +227,39 @@ TREES = {
             {"id": "exact_arith", "desc": "Use exact arithmetic (Sage Fraction) not float", "max": 1},
             {"id": "mod_inverse", "desc": "Verify gcd(a, n) == 1 for modular inverse", "max": 1},
             {"id": "alt_formulation", "desc": "Try alternative formulation of same math", "max": 2},
+        ],
+        "ecc_attack": [
+            {"id": "check_anomalous", "desc": "Check #E == p (Smart's attack via p-adic lift)", "max": 1},
+            {"id": "check_supersingular", "desc": "Check #E == p+1 (MOV attack via Weil pairing)", "max": 1},
+            {"id": "pohlig_hellman", "desc": "Pohlig-Hellman if curve order is smooth", "max": 2},
+            {"id": "invalid_curve", "desc": "Invalid curve attack (no point validation → fake curves)", "max": 2},
+            {"id": "singular_curve", "desc": "Singular curve (disc=0) → additive/multiplicative group", "max": 1},
+            {"id": "twist_attack", "desc": "Quadratic twist attack (Montgomery/x-only ECDH)", "max": 2},
+            {"id": "hnp_nonce", "desc": "ECDSA biased nonce → HNP lattice attack", "max": 2},
+        ],
+        "lattice_attack": [
+            {"id": "coppersmith_direct", "desc": "Coppersmith small_roots (stereotyped/partial key)", "max": 2},
+            {"id": "hnp_construct", "desc": "Build HNP lattice from leaked nonce bits", "max": 2},
+            {"id": "knapsack_lll", "desc": "Low-density knapsack via LLL/CJLOSS", "max": 2},
+            {"id": "boneh_durfee", "desc": "Boneh-Durfee for small d (lattice reduction)", "max": 2},
+            {"id": "tune_params", "desc": "Adjust epsilon/beta/block_size: try BKZ(25→30→40)", "max": 3},
+            {"id": "scale_lattice", "desc": "Re-scale lattice columns to balance row norms", "max": 2},
+        ],
+        "prng_attack": [
+            {"id": "mt_clone", "desc": "MT19937: untemper 624 outputs → clone state → predict", "max": 1},
+            {"id": "lcg_crack", "desc": "LCG: 3+ outputs → recover (a, b, m) via GCD", "max": 2},
+            {"id": "lfsr_bm", "desc": "LFSR: Berlekamp-Massey from 2n bits → predict", "max": 2},
+            {"id": "truncated_lcg", "desc": "Truncated LCG: lattice reduction (LLL) on output bits", "max": 2},
+            {"id": "z3_prng", "desc": "Custom PRNG: Z3 constraint model of state transitions", "max": 2},
+            {"id": "gf2_linear", "desc": "GF(2) linear system via CryptoMiniSat (XOR constraints)", "max": 2},
+        ],
+        "oracle_attack": [
+            {"id": "padding_oracle", "desc": "CBC padding oracle (Vaudenay): byte-by-byte decrypt", "max": 2},
+            {"id": "parity_oracle", "desc": "RSA parity/LSB oracle: binary search via homomorphism", "max": 2},
+            {"id": "bit_flip", "desc": "CBC bit-flipping: XOR known plaintext in IV/prev block", "max": 2},
+            {"id": "ecb_byte", "desc": "ECB byte-at-a-time: align block boundary + brute 1 byte", "max": 2},
+            {"id": "bleichenbacher", "desc": "Bleichenbacher PKCS#1 v1.5: adaptive CCA", "max": 2},
+            {"id": "manger", "desc": "Manger OAEP oracle: ~1100 queries vs ~2048 for parity", "max": 2},
         ],
     },
     "web": {
@@ -308,12 +377,18 @@ def cmd_next(args):
     actions = TREES[agent][trigger]
 
     for i, action in enumerate(actions):
-        # Context filtering (e.g., glibc version)
+        # Context filtering (e.g., glibc version) — use tuple comparison for semver
         if "ctx" in action:
             ctx = action["ctx"]
-            if "glibc_min" in ctx and context.get("glibc", "0") < ctx["glibc_min"]:
+            def _ver(s):
+                """Parse version string '2.35' into tuple (2, 35) for correct comparison."""
+                try:
+                    return tuple(int(x) for x in str(s).split("."))
+                except (ValueError, AttributeError):
+                    return (0,)
+            if "glibc_min" in ctx and _ver(context.get("glibc", "0")) < _ver(ctx["glibc_min"]):
                 continue
-            if "glibc_max" in ctx and context.get("glibc", "99") >= ctx["glibc_max"]:
+            if "glibc_max" in ctx and _ver(context.get("glibc", "99")) >= _ver(ctx["glibc_max"]):
                 continue
             if "e_max" in ctx and int(context.get("e", 99999)) > ctx["e_max"]:
                 continue
@@ -402,6 +477,55 @@ def cmd_vuln_priority(args):
         print(json.dumps({"framework": fw, "priority": [], "note": "Unknown framework, check manually"}))
 
 
+def cmd_suggest(args):
+    """Suggest initial attack based on crypto subtype and parameters."""
+    subtype = args.subtype
+    params = json.loads(args.params) if args.params else {}
+
+    # Map subtype to relevant trigger
+    trigger_map = {
+        "rsa": "rsa_attack",
+        "ecc": "ecc_attack",
+        "lattice": "lattice_attack",
+        "symmetric": "symmetric_attack",
+        "prng": "prng_attack",
+        "hash": "hash_crack",
+        "number_theory": "math_failure",
+    }
+
+    trigger = trigger_map.get(subtype)
+    if not trigger or trigger not in TREES.get("crypto", {}):
+        print(json.dumps({"error": f"No trigger for subtype: {subtype}",
+                          "fallback": "rsa_attack"}))
+        sys.exit(0)
+
+    actions = TREES["crypto"][trigger]
+
+    # Filter by context (e.g., e value for RSA)
+    context = params
+    filtered = []
+    for action in actions:
+        if "ctx" in action:
+            ctx = action["ctx"]
+            skip = False
+            if "e_max" in ctx and int(context.get("e_value", 99999)) > ctx["e_max"]:
+                skip = True
+            if not skip:
+                filtered.append(action)
+        else:
+            filtered.append(action)
+
+    result = {
+        "subtype": subtype,
+        "trigger": trigger,
+        "suggested_actions": [
+            {"id": a["id"], "desc": a["desc"]} for a in filtered[:5]
+        ],
+        "total_available": len(filtered),
+    }
+    print(json.dumps(result, indent=2))
+
+
 def cmd_list(args):
     """List available triggers for an agent."""
     agent = args.agent
@@ -444,6 +568,11 @@ def main():
     s = sub.add_parser("vuln-priority", help="Get vulnerability priority for a web framework")
     s.add_argument("--framework", required=True)
 
+    # suggest
+    s = sub.add_parser("suggest", help="Suggest initial attack for crypto subtype")
+    s.add_argument("--subtype", required=True, help="Crypto subtype (rsa/ecc/lattice/symmetric/prng/hash)")
+    s.add_argument("--params", default=None, help="JSON params from triage (e.g., '{\"e_value\":3}')")
+
     # list
     s = sub.add_parser("list", help="List available triggers for an agent")
     s.add_argument("--agent", required=True)
@@ -455,6 +584,7 @@ def main():
         "status": cmd_status,
         "reset": cmd_reset,
         "vuln-priority": cmd_vuln_priority,
+        "suggest": cmd_suggest,
         "list": cmd_list,
     }
     dispatch[args.cmd](args)

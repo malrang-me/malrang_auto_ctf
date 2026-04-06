@@ -26,6 +26,7 @@ CHALLENGES_DIR = KNOWLEDGE_DIR / "challenges"
 TECHNIQUES_DIR = KNOWLEDGE_DIR / "techniques"
 INDEX_PATH = KNOWLEDGE_DIR / "index.md"
 KB_SCRIPT = MACHINE_ROOT / "tools" / "knowledge.py"
+SPEEDRUN_SCRIPT = MACHINE_ROOT / "tools" / "speedrun_db.py"
 
 
 # ---------------------------------------------------------------------------
@@ -236,7 +237,7 @@ def update_index(name: str, category: str, technique: str,
     if not INDEX_PATH.exists():
         return
 
-    content = INDEX_PATH.read_text()
+    content = INDEX_PATH.read_text(encoding="utf-8")
 
     # Check if already exists
     if name in content:
@@ -263,24 +264,62 @@ def update_index(name: str, category: str, technique: str,
                 f"{entry}\n\n{marker}"
             )
 
-    INDEX_PATH.write_text(content)
+    INDEX_PATH.write_text(content, encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
 # Knowledge DB Indexing
 # ---------------------------------------------------------------------------
 
-def index_to_kb(writeup_path: Path):
-    """Add writeup to the FTS5 knowledge base."""
-    if KB_SCRIPT.exists():
-        try:
-            subprocess.run(
-                [sys.executable, str(KB_SCRIPT), "add", str(writeup_path)],
-                capture_output=True, timeout=30,
-                cwd=str(MACHINE_ROOT)
-            )
-        except Exception:
-            pass
+def index_to_kb(writeup_path: Path) -> tuple[bool, str]:
+    """Add writeup to the FTS5 knowledge base. Returns (ok, message)."""
+    if not KB_SCRIPT.exists():
+        return False, "knowledge.py not found"
+    try:
+        r = subprocess.run(
+            [sys.executable, str(KB_SCRIPT), "add", str(writeup_path)],
+            capture_output=True, timeout=30, text=True,
+            encoding="utf-8", errors="replace",
+            cwd=str(MACHINE_ROOT),
+        )
+        if r.returncode != 0:
+            return False, (r.stderr or r.stdout or "unknown error").strip()[:200]
+        return True, (r.stdout or "").strip()[:200]
+    except Exception as e:
+        return False, str(e)[:200]
+
+
+def rebuild_speedrun_index() -> tuple[bool, str]:
+    """Rebuild the SPEEDRUN_MEMORY FTS5 index. Returns (ok, message)."""
+    if not SPEEDRUN_SCRIPT.exists():
+        return False, "speedrun_db.py not found"
+    try:
+        r = subprocess.run(
+            [sys.executable, str(SPEEDRUN_SCRIPT), "rebuild"],
+            capture_output=True, timeout=30, text=True,
+            encoding="utf-8", errors="replace",
+            cwd=str(MACHINE_ROOT),
+        )
+        if r.returncode != 0:
+            return False, (r.stderr or r.stdout or "unknown error").strip()[:200]
+        return True, (r.stdout or "").strip()[:200]
+    except Exception as e:
+        return False, str(e)[:200]
+
+
+def run_post_record_cascade(writeup_path: Path) -> dict:
+    """Run knowledge.py add + speedrun_db rebuild after writeup is saved.
+    Returns status dict for inclusion in summary output."""
+    kb_ok, kb_msg = index_to_kb(writeup_path)
+    print(f"[learn] kb.db {'OK' if kb_ok else 'FAIL'}: {kb_msg}")
+    sp_ok, sp_msg = rebuild_speedrun_index()
+    print(f"[learn] speedrun.db {'OK' if sp_ok else 'FAIL'}: {sp_msg}")
+    return {
+        "kb_indexed": kb_ok,
+        "kb_message": kb_msg,
+        "speedrun_rebuilt": sp_ok,
+        "speedrun_message": sp_msg,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -305,7 +344,7 @@ def cmd_record(args):
     if status == "success":
         flag = args.flag or ""
         writeup = generate_writeup(challenge_dir, category, flag, artifacts)
-        writeup_path.write_text(writeup)
+        writeup_path.write_text(writeup, encoding="utf-8")
         print(f"[learn] Writeup saved: {writeup_path}")
 
         # Extract technique name for index
@@ -318,16 +357,15 @@ def cmd_record(args):
         update_index(name, category, technique, flag, "success")
         print(f"[learn] Index updated: {name} → solved")
 
-        # Index to KB
-        index_to_kb(writeup_path)
-        print(f"[learn] KB indexed: {name}")
+        # Cascade: kb.db add + speedrun.db rebuild
+        cascade = run_post_record_cascade(writeup_path)
 
     elif status == "failed":
         notes = args.notes or ""
         record = generate_failure_record(challenge_dir, category, notes, artifacts)
         # Save failure record (don't overwrite success writeup if exists)
         failure_path = CHALLENGES_DIR / f"{name}_failed.md"
-        failure_path.write_text(record)
+        failure_path.write_text(record, encoding="utf-8")
         print(f"[learn] Failure record saved: {failure_path}")
 
         technique = ""
@@ -338,8 +376,8 @@ def cmd_record(args):
         update_index(name, category, technique or "unknown", "", "failed")
         print(f"[learn] Index updated: {name} → failed")
 
-        # Index failure too (useful for avoiding repeat mistakes)
-        index_to_kb(failure_path)
+        # Cascade: kb.db add + speedrun.db rebuild (failures too — used for repeat-mistake avoidance)
+        cascade = run_post_record_cascade(failure_path)
 
     else:
         print(f"Error: unknown status '{status}'", file=sys.stderr)
@@ -353,6 +391,7 @@ def cmd_record(args):
         "artifacts_found": list(artifacts.keys()),
         "writeup": str(writeup_path) if status == "success" else str(
             CHALLENGES_DIR / f"{name}_failed.md"),
+        "cascade": cascade,
     }, indent=2))
 
 
@@ -392,7 +431,7 @@ def cmd_extract_technique(args):
 """
 
     tech_path = TECHNIQUES_DIR / f"{name}.md"
-    tech_path.write_text(tech_doc)
+    tech_path.write_text(tech_doc, encoding="utf-8")
     print(f"[learn] Technique saved: {tech_path}")
 
     # Index
